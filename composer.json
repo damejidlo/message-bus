@@ -17,7 +17,8 @@
 	"require-dev": {
 		"nette/tester": "^2.1",
         "mockery/mockery": "^1.2",
-        "damejidlo/coding-standard": "^0.9.0"
+        "damejidlo/coding-standard": "^0.9.0",
+        "phpstan/phpstan": "^0.10.5"
 	},
 	"autoload-dev": {
         "classmap": [
