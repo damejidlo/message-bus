@@ -8,12 +8,13 @@ use Tester\TestCase;
 
 
 
-
 class DjTestCase extends TestCase
 {
+
 	protected function tearDown() : void
 	{
 		parent::tearDown();
 		Mockery::close();
 	}
+
 }
