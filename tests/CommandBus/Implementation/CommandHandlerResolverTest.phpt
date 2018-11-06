@@ -7,7 +7,7 @@ declare(strict_types = 1);
 
 namespace DamejidloTests\CommandBus\Implementation;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\CommandBus\CommandHandlerNotFoundException;
 use Damejidlo\CommandBus\ICommand;

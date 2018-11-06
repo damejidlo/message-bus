@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace DamejidloTests\MessageBus\Implementation;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;

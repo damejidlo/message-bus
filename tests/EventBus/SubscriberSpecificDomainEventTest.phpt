@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace DamejidloTests\EventBus;
 
-require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;

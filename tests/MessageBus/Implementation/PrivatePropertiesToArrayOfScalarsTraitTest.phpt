@@ -7,7 +7,7 @@ declare(strict_types = 1);
 
 namespace DamejidloTests\MessageBus\Implementation;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 use Consistence\Enum\Enum;
 use Damejidlo\Mail\EmailAddress;
