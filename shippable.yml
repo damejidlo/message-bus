@@ -1,0 +1,40 @@
+language: php
+
+env:
+- secure: PQeXnxjCUHor31zsoq2dQNcAdFzFyEnAYrU4+wLXyRY61XaFaL1gaPJXIfZViCCBq7IacaS7iAYux9l+2QNIAe1IFF93dBWW/POcAh8a3TAgDgFkOUSXSo+XjoD+v3CNVhqWD72UxyMi/eAxHif2b1C5YRYYQMDXp1nYFqQmjGFR7IFIR80A3pDkgadwzbP79mPFzRkfLy5In1rD1ZhTsATh+t/uRyUkMjCjcCQwgoxLS1yHplw5IRNeIuZQdzU+I5NdHYylua0t4S13ZTokKWxKz6Q1xCb7W1nAUwGQI/PHiyKXAhxeu+yeiZn8wYmpHrMig+8ksT29EZ5xAkLUoQ==
+
+branches:
+  except:
+  - production
+
+build:
+  pre_ci_boot:
+    image_name: damejidloci/build-k4
+    pull: true
+    image_tag: latest
+    options: "-e HOME=/root --privileged"
+
+  ci:
+  # install
+
+  - composer self-update || echo "failed :("
+  - composer config --global github-oauth.github.com $GITHUB_TOKEN
+  - time composer install --no-interaction --optimize-autoloader
+
+  # before_script
+  - ./vendor/bin/tester --info
+  - time ./vendor/bin/parallel-lint -e php,phpt --exclude vendor .
+
+  # script
+  - ./vendor/bin/tester tests
+
+  - rm -R -f ./tests/tmp/*/
+  - ./vendor/bin/phpcs --standard=vendor/damejidlo/coding-standard/DameJidloCodingStandard/ruleset.xml --extensions=php,phpt --ignore=tests/tmp/* --encoding=utf-8  src/ tests/
+  - ./vendor/bin/phpstan analyse -l 4 src tests
+
+  post_ci:
+  - df
+
+  on_failure:
+  - 'for i in $(find ./tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done'
+  - 'for i in $(find ./tests -name \*.expected); do echo "--- $i"; cat $i; echo; echo; done'
