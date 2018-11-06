@@ -1,0 +1,14 @@
+{
+    "name": "damejidlo/message-bus",
+    "description": "",
+    "type": "library",
+    "require": {
+        "php": ">=7.1",
+        "nette/utils": "^2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Damejidlo\\": "src/"
+        }
+    }
+}
