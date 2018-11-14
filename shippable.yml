@@ -18,7 +18,7 @@ build:
   # install
 
   - composer self-update || echo "failed :("
-  - composer config --global github-oauth.github.com $GITHUB_TOKEN
+  - composer config --global --auth github-oauth.github.com $GITHUB_TOKEN
   - time composer install --no-interaction --optimize-autoloader
 
   # before_script
