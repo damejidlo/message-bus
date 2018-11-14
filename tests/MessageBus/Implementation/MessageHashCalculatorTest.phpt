@@ -8,7 +8,6 @@ require_once __DIR__ . '/../../bootstrap.php';
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
 use DamejidloTests\DjTestCase;
-use Nette\SmartObject;
 use Tester\Assert;
 
 
@@ -32,10 +31,6 @@ class MessageHashCalculatorTest extends DjTestCase
 
 final class TestMessage implements IBusMessage
 {
-
-	use SmartObject;
-
-
 
 	/**
 	 * @return mixed[]

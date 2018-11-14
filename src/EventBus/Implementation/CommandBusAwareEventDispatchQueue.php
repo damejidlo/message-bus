@@ -6,14 +6,11 @@ namespace Damejidlo\EventBus\Implementation;
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\IEventDispatchQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
-use Nette\SmartObject;
 
 
 
 class CommandBusAwareEventDispatchQueue implements IEventDispatchQueue
 {
-
-	use SmartObject;
 
 	/**
 	 * @var IsCurrentlyHandlingAwareMiddleware

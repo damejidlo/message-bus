@@ -8,15 +8,12 @@ use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
-use Nette\SmartObject;
 use Psr\Log\LoggerInterface;
 
 
 
 class LoggingMiddleware implements IMessageBusMiddleware
 {
-
-	use SmartObject;
 
 	private const MESSAGE_ATTRIBUTE_KEY_PREFIX = 'messageAttribute_';
 

@@ -8,14 +8,11 @@ use Damejidlo\CommandBus\ICommandHandlerProvider;
 use Damejidlo\CommandBus\ICommandHandlerResolver;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Nette\SmartObject;
 
 
 
 final class HandlerResolvingMiddleware implements IMessageBusMiddleware
 {
-
-	use SmartObject;
 
 	/**
 	 * @var ICommandHandlerResolver

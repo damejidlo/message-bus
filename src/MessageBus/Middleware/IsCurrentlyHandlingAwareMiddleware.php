@@ -5,7 +5,6 @@ namespace Damejidlo\MessageBus\Middleware;
 
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Nette\SmartObject;
 
 
 
@@ -14,8 +13,6 @@ use Nette\SmartObject;
  */
 class IsCurrentlyHandlingAwareMiddleware implements IMessageBusMiddleware
 {
-
-	use SmartObject;
 
 	/**
 	 * @var bool

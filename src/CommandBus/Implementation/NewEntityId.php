@@ -3,14 +3,8 @@ declare(strict_types = 1);
 
 namespace Damejidlo\CommandBus\Implementation;
 
-use Nette\SmartObject;
-
-
-
 class NewEntityId
 {
-
-	use SmartObject;
 
 	/**
 	 * @var string
