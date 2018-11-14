@@ -30,7 +30,8 @@ build:
 
   - rm -R -f ./tests/tmp/*/
   - ./vendor/bin/phpcs --standard=vendor/damejidlo/coding-standard/DameJidloCodingStandard/ruleset.xml --extensions=php,phpt --ignore=tests/tmp/* --encoding=utf-8  src/ tests/
-  - ./vendor/bin/phpstan analyse -l 4 src tests
+  - ./vendor/bin/phpstan analyse -l 4 src
+  - IS_PHPSTAN=1 ./vendor/bin/phpstan analyse -l 7 -c ./tests/phpstan.tests.neon tests
 
   post_ci:
   - df

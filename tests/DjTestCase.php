@@ -11,6 +11,16 @@ use Tester\TestCase;
 class DjTestCase extends TestCase
 {
 
+	public function run() : void
+	{
+		if (getenv('IS_PHPSTAN') === '1') {
+			return;
+		}
+		parent::run();
+	}
+
+
+
 	protected function tearDown() : void
 	{
 		parent::tearDown();
