@@ -1,0 +1,9 @@
+includes:
+	- ../vendor/phpstan/phpstan-mockery/extension.neon
+
+parameters:
+	fileExtensions:
+		- php
+		- phpt
+	autoload_directories:
+		- %currentWorkingDirectory%/tests

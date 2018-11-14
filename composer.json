@@ -19,7 +19,8 @@
         "mockery/mockery": "^1.2",
         "damejidlo/coding-standard": "^0.9.0",
         "phpstan/phpstan": "^0.10.5",
-        "jakub-onderka/php-parallel-lint": "^1.0"
+        "jakub-onderka/php-parallel-lint": "^1.0",
+        "phpstan/phpstan-mockery": "^0.10.2"
 	},
 	"autoload-dev": {
         "classmap": [

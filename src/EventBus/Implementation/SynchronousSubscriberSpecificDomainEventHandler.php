@@ -53,7 +53,15 @@ class SynchronousSubscriberSpecificDomainEventHandler implements ISubscriberSpec
 		$subscriber = $this->eventSubscriberProvider->getByType($message->getSubscriberType());
 
 		$endChainWithCallback = function (SubscriberSpecificDomainEvent $message) use ($subscriber) : void {
-			$callback = [$subscriber, 'handle'];
+			$handleMethod = 'handle';
+			$callback = [$subscriber, $handleMethod];
+
+			if (!is_callable($callback)) {
+				throw new \LogicException(
+					sprintf('Method "%s" of subscriber "%s" is not callable.', $handleMethod, get_class($subscriber))
+				);
+			}
+
 			call_user_func($callback, $message->getEvent());
 		};
 

@@ -1,0 +1,4 @@
+parameters:
+	ignoreErrors:
+		# see issue https://github.com/phpstan/phpstan/issues/1271
+		- '#^Call to function is_callable\(\) with array\([a-zA-Z0-9\\]+, .+\) will always evaluate to false\.$#'

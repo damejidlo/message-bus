@@ -67,6 +67,38 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 
+	public function testHandleSucceedsEmptyArray() : void
+	{
+		$logger = $this->mockLogger();
+		$hashCalculator = $this->mockMessageHashCalculator();
+
+		$middleware = new LoggingMiddleware($logger, $hashCalculator);
+
+		$command = $this->mockCommand();
+		$command->shouldReceive('toArray')->andReturn([]);
+
+		$nextMiddlewareCallbackCalled = FALSE;
+
+		$expectedContext = [
+			'commandType' => get_class($command),
+			'commandHash' => self::MESSAGE_HASH,
+		];
+
+		// expectations
+		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
+		$logger->shouldReceive('info')->once()->with('Command handling ended successfully.', $expectedContext);
+
+		$result = $middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
+			$nextMiddlewareCallbackCalled = TRUE;
+			return self::CALLBACK_RETURN_VALUE;
+		});
+
+		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
+		Assert::true($nextMiddlewareCallbackCalled);
+	}
+
+
+
 	public function testHandleFailsWithCommand() : void
 	{
 		$logger = $this->mockLogger();

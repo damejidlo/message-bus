@@ -49,7 +49,15 @@ final class HandlerResolvingMiddleware implements IMessageBusMiddleware
 		$handlerType = $this->commandHandlerResolver->resolve($command);
 		$handler = $this->commandHandlerProvider->getByType($handlerType);
 
-		$callback = [$handler, 'handle'];
+		$handleMethod = 'handle';
+		$callback = [$handler, $handleMethod];
+
+		if (!is_callable($callback)) {
+			throw new \LogicException(
+				sprintf('Method "%s" of handler "%s" is not callable.', $handleMethod, $handlerType)
+			);
+		}
+
 		return call_user_func($callback, $command);
 	}
 
