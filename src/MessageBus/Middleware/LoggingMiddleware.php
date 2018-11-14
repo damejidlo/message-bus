@@ -111,7 +111,13 @@ class LoggingMiddleware implements IMessageBusMiddleware
 			return self::MESSAGE_ATTRIBUTE_KEY_PREFIX . $key;
 		}, array_keys($attributes));
 
-		return array_combine($keys, $attributes);
+		$result = array_combine($keys, $attributes);
+
+		if ($result === FALSE) {
+			throw new \LogicException('Array combine failed.');
+		}
+
+		return $result;
 	}
 
 }
