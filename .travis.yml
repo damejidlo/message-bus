@@ -1,0 +1,38 @@
+language: php
+php:
+    - 7.1
+    - 7.2
+    - 7.3
+
+env:
+    - COMPOSER_ARGS=""
+    - COMPOSER_ARGS="--prefer-lowest"
+
+jobs:
+    include:
+        -   stage: Code Standard Checker
+            php: 7.1
+            install:
+                - travis_retry composer update --no-interaction --optimize-autoloader --prefer-dist
+            script:
+                - vendor/bin/phpcs --standard=vendor/damejidlo/coding-standard/DameJidloCodingStandard/ruleset.xml --extensions=php,phpt -s src tests
+
+install:
+    - travis_retry composer update --no-interaction --optimize-autoloader --prefer-dist $COMPOSER_ARGS
+
+script:
+    - vendor/bin/tester --info
+    - vendor/bin/parallel-lint -e php,phpt --exclude vendor .
+    - vendor/bin/tester tests
+    - vendor/bin/phpstan analyse -l max -c tests/phpstan.src.neon src
+    - IS_PHPSTAN=1 vendor/bin/phpstan analyse -l max -c tests/phpstan.tests.neon tests
+
+after_failure:
+    - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+    - for i in $(find tests -name \*.expected); do echo "--- $i"; cat $i; echo; echo; done
+
+sudo: false
+
+cache:
+    directories:
+        - $HOME/.composer/cache
