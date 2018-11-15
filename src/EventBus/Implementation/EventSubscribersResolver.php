@@ -5,14 +5,11 @@ namespace Damejidlo\EventBus\Implementation;
 
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\IEventSubscribersResolver;
-use Nette\SmartObject;
 
 
 
 final class EventSubscribersResolver implements IEventSubscribersResolver
 {
-
-	use SmartObject;
 
 	/**
 	 * @var string[][]

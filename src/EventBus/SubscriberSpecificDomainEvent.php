@@ -4,14 +4,11 @@ declare(strict_types = 1);
 namespace Damejidlo\EventBus;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Nette\SmartObject;
 
 
 
 final class SubscriberSpecificDomainEvent implements IBusMessage
 {
-
-	use SmartObject;
 
 	/**
 	 * @var IDomainEvent

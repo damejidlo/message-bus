@@ -4,14 +4,11 @@ declare(strict_types = 1);
 namespace Damejidlo\EventBus\Implementation;
 
 use Damejidlo\EventBus\IDomainEvent;
-use Nette\SmartObject;
 
 
 
 class InMemoryEventQueue
 {
-
-	use SmartObject;
 
 	/**
 	 * @var IDomainEvent[]

@@ -9,14 +9,11 @@ use Damejidlo\EventBus\ISubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Nette\SmartObject;
 
 
 
 final class SubscribersResolvingMiddleware implements IMessageBusMiddleware
 {
-
-	use SmartObject;
 
 	/**
 	 * @var IEventSubscribersResolver

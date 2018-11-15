@@ -3,16 +3,8 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus;
 
-use Nette\SmartObject;
-
-
-
 class MiddlewareCallbackChainCreator
 {
-
-	use SmartObject;
-
-
 
 	/**
 	 * @param IMessageBusMiddleware[] $middleware

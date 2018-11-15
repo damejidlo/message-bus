@@ -7,7 +7,6 @@ use Damejidlo\EventBus\IEventDispatchQueue;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Nette\SmartObject;
 
 
 
@@ -16,8 +15,6 @@ use Nette\SmartObject;
  */
 class EventDispatchingMiddleware implements IMessageBusMiddleware
 {
-
-	use SmartObject;
 
 	/**
 	 * @var InMemoryEventQueue

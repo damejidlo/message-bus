@@ -6,14 +6,11 @@ namespace Damejidlo\CommandBus\Implementation;
 use Damejidlo\CommandBus\CommandHandlerNotFoundException;
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\CommandBus\ICommandHandlerResolver;
-use Nette\SmartObject;
 
 
 
 final class CommandHandlerResolver implements ICommandHandlerResolver
 {
-
-	use SmartObject;
 
 	/**
 	 * @var string[]

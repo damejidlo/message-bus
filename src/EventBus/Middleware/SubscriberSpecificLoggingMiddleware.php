@@ -7,15 +7,12 @@ use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
-use Nette\SmartObject;
 use Psr\Log\LoggerInterface;
 
 
 
 class SubscriberSpecificLoggingMiddleware implements IMessageBusMiddleware
 {
-
-	use SmartObject;
 
 	/**
 	 * @var LoggerInterface
