@@ -7,9 +7,6 @@ interface IBusMessage
 {
 
 	/**
-	 * Can be implemented by using
-	 * @see PrivatePropertiesToArrayOfScalarsTrait
-	 *
 	 * @return mixed[] array of scalar values
 	 */
 	public function toArray() : array;
