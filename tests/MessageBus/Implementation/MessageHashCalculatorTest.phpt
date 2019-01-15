@@ -5,9 +5,11 @@ namespace DamejidloTests\MessageBus\Implementation;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
 use DamejidloTests\DjTestCase;
+use DamejidloTests\MessageBus\Implementation\Fixtures\TestMessage;
+use DamejidloTests\MessageBus\Implementation\Fixtures\TestMessageWithDifferentAttributes;
+use DamejidloTests\MessageBus\Implementation\Fixtures\TestMessageWithDifferentName;
 use Tester\Assert;
 
 
@@ -18,35 +20,51 @@ use Tester\Assert;
 class MessageHashCalculatorTest extends DjTestCase
 {
 
-	public function testCalculateHash() : void
+	public function testCalculatorIsDeterministic() : void
 	{
-		$message = new TestMessage();
 		$calculator = new MessageHashCalculator();
 
-		Assert::same('5a89620683763773e2f00952f0dceeaba24369f0', $calculator->calculateHash($message));
+		$message1 = new TestMessage(new \DateTimeImmutable('2019-01-01 13:00:00'));
+		$firstResult = $calculator->calculateHash($message1);
+
+		$message2 = new TestMessage(new \DateTimeImmutable('2019-01-01 13:00:00'));
+		$secondResult = $calculator->calculateHash($message2);
+
+		Assert::same($firstResult, $secondResult);
 	}
 
-}
 
 
-final class TestMessage implements IBusMessage
-{
-
-	/**
-	 * @return mixed[]
-	 */
-	public function getLoggingContext() : array
+	public function testCalculatorReturnsDifferentResultForDifferentTypes() : void
 	{
-		return [
-			'string' => 'foo',
-			'array' => [
-				'float' => 3.14,
-				'integer' => 42,
-			],
-		];
+		$calculator = new MessageHashCalculator();
+
+		$message1 = new TestMessage(new \DateTimeImmutable('2019-01-01 13:00:00'));
+		$firstResult = $calculator->calculateHash($message1);
+
+		$message2 = new TestMessageWithDifferentName(new \DateTimeImmutable('2019-01-01 13:00:00'));
+		$secondResult = $calculator->calculateHash($message2);
+
+		Assert::notSame($firstResult, $secondResult);
+	}
+
+
+
+	public function testCalculatorReturnsDifferentResultForDifferentAttributes() : void
+	{
+		$calculator = new MessageHashCalculator();
+
+		$message1 = new TestMessage(new \DateTimeImmutable('2019-01-01 13:00:00'));
+		$firstResult = $calculator->calculateHash($message1);
+
+		$message2 = new TestMessageWithDifferentAttributes();
+		$secondResult = $calculator->calculateHash($message2);
+
+		Assert::notSame($firstResult, $secondResult);
 	}
 
 }
+
 
 
 (new MessageHashCalculatorTest())->run();
