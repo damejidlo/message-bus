@@ -42,7 +42,7 @@ class LoggingMiddlewareTest extends DjTestCase
 		];
 
 		$command = $this->mockCommand();
-		$command->shouldReceive('toArray')->andReturn($commandAsArray);
+		$command->shouldReceive('getLoggingContext')->andReturn($commandAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -75,7 +75,7 @@ class LoggingMiddlewareTest extends DjTestCase
 		$middleware = new LoggingMiddleware($logger, $hashCalculator);
 
 		$command = $this->mockCommand();
-		$command->shouldReceive('toArray')->andReturn([]);
+		$command->shouldReceive('getLoggingContext')->andReturn([]);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -111,7 +111,7 @@ class LoggingMiddlewareTest extends DjTestCase
 		];
 
 		$command = $this->mockCommand();
-		$command->shouldReceive('toArray')->andReturn($commandAsArray);
+		$command->shouldReceive('getLoggingContext')->andReturn($commandAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -157,7 +157,7 @@ class LoggingMiddlewareTest extends DjTestCase
 		];
 
 		$event = $this->mockEvent();
-		$event->shouldReceive('toArray')->andReturn($eventAsArray);
+		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -194,7 +194,7 @@ class LoggingMiddlewareTest extends DjTestCase
 		];
 
 		$event = $this->mockEvent();
-		$event->shouldReceive('toArray')->andReturn($eventAsArray);
+		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 

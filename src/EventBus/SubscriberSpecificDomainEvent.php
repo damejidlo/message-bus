@@ -47,14 +47,14 @@ final class SubscriberSpecificDomainEvent implements IBusMessage
 	/**
 	 * @return mixed[]
 	 */
-	public function toArray() : array
+	public function getLoggingContext() : array
 	{
 		$data = [
 			'subscriberType' => $this->subscriberType,
 			'eventType' => get_class($this->event),
 		];
 
-		return array_merge($data, $this->event->toArray());
+		return array_merge($data, $this->event->getLoggingContext());
 	}
 
 }

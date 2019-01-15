@@ -23,7 +23,7 @@ class SubscriberSpecificDomainEventTest extends DjTestCase
 
 
 
-	public function testToArray() : void
+	public function testGetLoggingContext() : void
 	{
 		$eventAsArray = ['property' => 'value'];
 		$event = $this->mockEvent($eventAsArray);
@@ -34,7 +34,7 @@ class SubscriberSpecificDomainEventTest extends DjTestCase
 				'eventType' => get_class($event),
 				'property' => 'value',
 			],
-			$subscriberSpecificDomainEvent->toArray()
+			$subscriberSpecificDomainEvent->getLoggingContext()
 		);
 	}
 
@@ -47,7 +47,7 @@ class SubscriberSpecificDomainEventTest extends DjTestCase
 	private function mockEvent(array $asArray) : IDomainEvent
 	{
 		$mock = \Mockery::mock(IDomainEvent::class);
-		$mock->shouldReceive('toArray')->andReturn($asArray);
+		$mock->shouldReceive('getLoggingContext')->andReturn($asArray);
 
 		return $mock;
 	}

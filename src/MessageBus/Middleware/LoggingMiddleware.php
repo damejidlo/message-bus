@@ -102,7 +102,7 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	 */
 	private function getMessageAttributes(IBusMessage $message) : array
 	{
-		$attributes = $message->toArray();
+		$attributes = $message->getLoggingContext();
 
 		$keys = array_map(function (string $key) : string {
 			return self::MESSAGE_ATTRIBUTE_KEY_PREFIX . $key;

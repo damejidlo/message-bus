@@ -12,7 +12,7 @@ class MessageHashCalculator
 
 	public function calculateHash(IBusMessage $message) : string
 	{
-		$data = $message->toArray();
+		$data = $message->getLoggingContext();
 		$serializedMessage = sprintf('%s:%s', get_class($message), serialize($data));
 
 		return sha1($serializedMessage);

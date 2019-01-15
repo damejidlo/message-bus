@@ -35,7 +35,7 @@ final class TestMessage implements IBusMessage
 	/**
 	 * @return mixed[]
 	 */
-	public function toArray() : array
+	public function getLoggingContext() : array
 	{
 		return [
 			'string' => 'foo',

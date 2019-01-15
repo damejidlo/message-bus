@@ -43,7 +43,7 @@ class SubscriberSpecificLoggingMiddleware implements IMessageBusMiddleware
 	{
 		$subscriberSpecificDomainEvent = $this->castMessageToSubscriberSpecificDomainEvent($message);
 
-		$context = $subscriberSpecificDomainEvent->toArray();
+		$context = $subscriberSpecificDomainEvent->getLoggingContext();
 		$context['eventHash'] = $this->messageHashCalculator->calculateHash($subscriberSpecificDomainEvent->getEvent());
 
 		$this->logger->info('Event handling in subscriber started.', $context);

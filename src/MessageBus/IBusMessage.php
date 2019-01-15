@@ -7,8 +7,8 @@ interface IBusMessage
 {
 
 	/**
-	 * @return mixed[] array of scalar values
+	 * @return mixed[]
 	 */
-	public function toArray() : array;
+	public function getLoggingContext() : array;
 
 }

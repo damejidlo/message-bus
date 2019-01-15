@@ -41,7 +41,7 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 			'someProperty' => 123,
 		];
 		$event = $this->mockEvent();
-		$event->shouldReceive('toArray')->andReturn($eventAsArray);
+		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
 
 		$message = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
 
@@ -80,7 +80,7 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 			'someProperty' => 123,
 		];
 		$event = $this->mockEvent();
-		$event->shouldReceive('toArray')->andReturn($eventAsArray);
+		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
 
 		$message = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
 
