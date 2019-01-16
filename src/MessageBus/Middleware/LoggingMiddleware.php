@@ -3,11 +3,10 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Middleware;
 
-use Damejidlo\CommandBus\ICommand;
-use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
+use Damejidlo\MessageBus\Logging\MessageTypeResolver;
 use Psr\Log\LoggerInterface;
 
 
@@ -27,12 +26,21 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	 */
 	private $messageHashCalculator;
 
+	/**
+	 * @var MessageTypeResolver
+	 */
+	private $messageTypeResolver;
 
 
-	public function __construct(LoggerInterface $logger, MessageHashCalculator $messageHashCalculator)
-	{
+
+	public function __construct(
+		LoggerInterface $logger,
+		MessageHashCalculator $messageHashCalculator,
+		?MessageTypeResolver $messageTypeResolver = NULL
+	) {
 		$this->logger = $logger;
 		$this->messageHashCalculator = $messageHashCalculator;
+		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
 	}
 
 
@@ -42,7 +50,7 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	 */
 	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
 	{
-		$messageType = $this->getMessageType($message);
+		$messageType = $this->messageTypeResolver->getMessageType($message);
 		$messageTypeFirstUpper = ucfirst($messageType);
 
 		$context = [
@@ -76,21 +84,6 @@ class LoggingMiddleware implements IMessageBusMiddleware
 			$this->logger->warning($logMessage, $context);
 
 			throw $exception;
-		}
-	}
-
-
-
-	private function getMessageType(IBusMessage $message) : string
-	{
-		if ($message instanceof ICommand) {
-			return 'command';
-
-		} elseif ($message instanceof IDomainEvent) {
-			return 'event';
-
-		} else {
-			return 'message';
 		}
 	}
 
