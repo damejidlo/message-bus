@@ -52,7 +52,6 @@ final class SubscriberSpecificDomainEvent implements IBusMessage, ILoggableBusMe
 	{
 		$result = [
 			'subscriberType' => $this->subscriberType,
-			'eventType' => get_class($this->event),
 		];
 
 		if ($this->event instanceof ILoggableBusMessage) {

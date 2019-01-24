@@ -31,7 +31,6 @@ class SubscriberSpecificDomainEventTest extends DjTestCase
 		Assert::same(
 			[
 				'subscriberType' => self::SUBSCRIBER_TYPE,
-				'eventType' => get_class($event),
 			],
 			$subscriberSpecificDomainEvent->getLoggingContext()
 		);
@@ -47,7 +46,6 @@ class SubscriberSpecificDomainEventTest extends DjTestCase
 		Assert::same(
 			[
 				'subscriberType' => self::SUBSCRIBER_TYPE,
-				'eventType' => get_class($event),
 				'property' => 'value',
 			],
 			$subscriberSpecificDomainEvent->getLoggingContext()

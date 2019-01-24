@@ -6,7 +6,7 @@ namespace Damejidlo\EventBus\Middleware;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
+use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Psr\Log\LoggerInterface;
 
 
@@ -20,16 +20,16 @@ class SubscriberSpecificLoggingMiddleware implements IMessageBusMiddleware
 	private $logger;
 
 	/**
-	 * @var MessageHashCalculator
+	 * @var MessageContextResolver
 	 */
-	private $messageHashCalculator;
+	private $messageContextResolver;
 
 
 
-	public function __construct(LoggerInterface $logger, MessageHashCalculator $messageHashCalculator)
+	public function __construct(LoggerInterface $logger, ?MessageContextResolver $messageContextResolver = NULL)
 	{
 		$this->logger = $logger;
-		$this->messageHashCalculator = $messageHashCalculator;
+		$this->messageContextResolver = $messageContextResolver ?? new MessageContextResolver();
 	}
 
 
@@ -43,8 +43,7 @@ class SubscriberSpecificLoggingMiddleware implements IMessageBusMiddleware
 	{
 		$subscriberSpecificDomainEvent = $this->castMessageToSubscriberSpecificDomainEvent($message);
 
-		$context = $subscriberSpecificDomainEvent->getLoggingContext();
-		$context['eventHash'] = $this->messageHashCalculator->calculateHash($subscriberSpecificDomainEvent->getEvent());
+		$context = $this->messageContextResolver->getContext($subscriberSpecificDomainEvent);
 
 		$this->logger->info('Event handling in subscriber started.', $context);
 

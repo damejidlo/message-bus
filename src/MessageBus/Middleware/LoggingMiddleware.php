@@ -5,7 +5,7 @@ namespace Damejidlo\MessageBus\Middleware;
 
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
+use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Logging\MessageTypeResolver;
 use Psr\Log\LoggerInterface;
 
@@ -14,33 +14,31 @@ use Psr\Log\LoggerInterface;
 class LoggingMiddleware implements IMessageBusMiddleware
 {
 
-	private const MESSAGE_ATTRIBUTE_KEY_PREFIX = 'messageAttribute_';
-
 	/**
 	 * @var LoggerInterface
 	 */
 	private $logger;
 
 	/**
-	 * @var MessageHashCalculator
-	 */
-	private $messageHashCalculator;
-
-	/**
 	 * @var MessageTypeResolver
 	 */
 	private $messageTypeResolver;
+
+	/**
+	 * @var MessageContextResolver
+	 */
+	private $messageContextResolver;
 
 
 
 	public function __construct(
 		LoggerInterface $logger,
-		MessageHashCalculator $messageHashCalculator,
-		?MessageTypeResolver $messageTypeResolver = NULL
+		?MessageTypeResolver $messageTypeResolver = NULL,
+		?MessageContextResolver $messageContextResolver = NULL
 	) {
 		$this->logger = $logger;
-		$this->messageHashCalculator = $messageHashCalculator;
 		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
+		$this->messageContextResolver = $messageContextResolver ?? new MessageContextResolver();
 	}
 
 
@@ -53,13 +51,7 @@ class LoggingMiddleware implements IMessageBusMiddleware
 		$messageType = $this->messageTypeResolver->getMessageType($message);
 		$messageTypeFirstUpper = ucfirst($messageType);
 
-		$context = [
-			sprintf('%sType', $messageType) => get_class($message),
-			sprintf('%sHash', $messageType) => $this->messageHashCalculator->calculateHash($message),
-		];
-
-		$messageAttributes = $this->getMessageAttributes($message);
-		$context = array_merge($context, $messageAttributes);
+		$context = $this->messageContextResolver->getContext($message);
 
 		$this->logger->info(
 			sprintf('%s handling started.', $messageTypeFirstUpper),
@@ -85,29 +77,6 @@ class LoggingMiddleware implements IMessageBusMiddleware
 
 			throw $exception;
 		}
-	}
-
-
-
-	/**
-	 * @param IBusMessage $message
-	 * @return mixed[]
-	 */
-	private function getMessageAttributes(IBusMessage $message) : array
-	{
-		$attributes = $message->getLoggingContext();
-
-		$keys = array_map(function (string $key) : string {
-			return self::MESSAGE_ATTRIBUTE_KEY_PREFIX . $key;
-		}, array_keys($attributes));
-
-		$result = array_combine($keys, $attributes);
-
-		if ($result === FALSE) {
-			throw new \LogicException('Array combine failed.');
-		}
-
-		return $result;
 	}
 
 }

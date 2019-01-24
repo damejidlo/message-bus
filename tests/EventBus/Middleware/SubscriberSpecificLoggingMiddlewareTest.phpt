@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../bootstrap.php';
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\Middleware\SubscriberSpecificLoggingMiddleware;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
+use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -26,33 +26,25 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 
 	private const CALLBACK_RETURN_VALUE = 1;
 	private const SUBSCRIBER_TYPE = 'Subscriber';
-	private const EVENT_HASH = 'event-hash';
+	private const MESSAGE_CONTEXT = [
+		'someAttribute' => 'someValue',
+	];
 
 
 
 	public function testHandleSucceeds() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new SubscriberSpecificLoggingMiddleware($logger, $hashCalculator);
+		$middleware = new SubscriberSpecificLoggingMiddleware($logger, $messageContextResolver);
 
-		$eventAsArray = [
-			'someProperty' => 123,
-		];
 		$event = $this->mockEvent();
-		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
-
 		$message = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$expectedContext = [
-			'eventType' => get_class($event),
-			'subscriberType' => self::SUBSCRIBER_TYPE,
-			'someProperty' => 123,
-			'eventHash' => self::EVENT_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		// expectations
 		$logger->shouldReceive('info')->once()->with('Event handling in subscriber started.', $expectedContext);
@@ -72,16 +64,11 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 	public function testHandleFails() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new SubscriberSpecificLoggingMiddleware($logger, $hashCalculator);
+		$middleware = new SubscriberSpecificLoggingMiddleware($logger, $messageContextResolver);
 
-		$eventAsArray = [
-			'someProperty' => 123,
-		];
 		$event = $this->mockEvent();
-		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
-
 		$message = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
 
 		$nextMiddlewareCallbackCalled = FALSE;
@@ -89,12 +76,7 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 		$exceptionMessage = 'some message';
 		$exception = new \Exception($exceptionMessage);
 
-		$expectedContext = [
-			'eventType' => get_class($event),
-			'subscriberType' => self::SUBSCRIBER_TYPE,
-			'someProperty' => 123,
-			'eventHash' => self::EVENT_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		$expectedErrorContext = $expectedContext;
 		$expectedErrorContext['exceptionType'] = 'Exception';
@@ -141,12 +123,12 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return MessageHashCalculator|MockInterface
+	 * @return MessageContextResolver|MockInterface
 	 */
-	private function mockMessageHashCalculator() : MessageHashCalculator
+	private function mockMessageContextResolver() : MessageContextResolver
 	{
-		$mock = \Mockery::mock(MessageHashCalculator::class);
-		$mock->shouldReceive('calculateHash')->withArgs([IDomainEvent::class])->andReturn(self::EVENT_HASH);
+		$mock = \Mockery::mock(MessageContextResolver::class);
+		$mock->shouldReceive('getContext')->andReturn(self::MESSAGE_CONTEXT);
 
 		return $mock;
 	}

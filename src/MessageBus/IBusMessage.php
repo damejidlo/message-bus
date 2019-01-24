@@ -6,9 +6,4 @@ namespace Damejidlo\MessageBus;
 interface IBusMessage
 {
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getLoggingContext() : array;
-
 }

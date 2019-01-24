@@ -11,8 +11,7 @@ require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
+use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -26,63 +25,24 @@ class LoggingMiddlewareTest extends DjTestCase
 {
 
 	private const CALLBACK_RETURN_VALUE = 1;
-	private const MESSAGE_HASH = 'message-hash';
+	private const MESSAGE_CONTEXT = [
+		'someAttribute' => 'someValue',
+	];
 
 
 
 	public function testHandleSucceedsWithCommand() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$commandAsArray = [
-			'someAttribute' => 123,
-		];
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
 		$command = $this->mockCommand();
-		$command->shouldReceive('getLoggingContext')->andReturn($commandAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$expectedContext = [
-			'commandType' => get_class($command),
-			'messageAttribute_someAttribute' => 123,
-			'commandHash' => self::MESSAGE_HASH,
-		];
-
-		// expectations
-		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
-		$logger->shouldReceive('info')->once()->with('Command handling ended successfully.', $expectedContext);
-
-		$result = $middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
-			$nextMiddlewareCallbackCalled = TRUE;
-			return self::CALLBACK_RETURN_VALUE;
-		});
-
-		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
-		Assert::true($nextMiddlewareCallbackCalled);
-	}
-
-
-
-	public function testHandleSucceedsEmptyArray() : void
-	{
-		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
-
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$command = $this->mockCommand();
-		$command->shouldReceive('getLoggingContext')->andReturn([]);
-
-		$nextMiddlewareCallbackCalled = FALSE;
-
-		$expectedContext = [
-			'commandType' => get_class($command),
-			'commandHash' => self::MESSAGE_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		// expectations
 		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
@@ -102,27 +62,18 @@ class LoggingMiddlewareTest extends DjTestCase
 	public function testHandleFailsWithCommand() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$commandAsArray = [
-			'someAttribute' => 123,
-		];
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
 		$command = $this->mockCommand();
-		$command->shouldReceive('getLoggingContext')->andReturn($commandAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
 		$exceptionMessage = 'some message';
 		$exception = new \Exception($exceptionMessage);
 
-		$expectedContext = [
-			'commandType' => get_class($command),
-			'messageAttribute_someAttribute' => 123,
-			'commandHash' => self::MESSAGE_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		$expectedErrorContext = $expectedContext;
 		$expectedErrorContext['exceptionType'] = 'Exception';
@@ -148,24 +99,15 @@ class LoggingMiddlewareTest extends DjTestCase
 	public function testHandleSucceedsWithEvent() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$eventAsArray = [
-			'someAttribute' => 123,
-		];
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
 		$event = $this->mockEvent();
-		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$expectedContext = [
-			'eventType' => get_class($event),
-			'messageAttribute_someAttribute' => 123,
-			'eventHash' => self::MESSAGE_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		// expectations
 		$logger->shouldReceive('info')->once()->with('Event handling started.', $expectedContext);
@@ -185,27 +127,18 @@ class LoggingMiddlewareTest extends DjTestCase
 	public function testHandleFailsWithEvent() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$eventAsArray = [
-			'someAttribute' => 123,
-		];
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
 		$event = $this->mockEvent();
-		$event->shouldReceive('getLoggingContext')->andReturn($eventAsArray);
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
 		$exceptionMessage = 'some message';
 		$exception = new \Exception($exceptionMessage);
 
-		$expectedContext = [
-			'eventType' => get_class($event),
-			'messageAttribute_someAttribute' => 123,
-			'eventHash' => self::MESSAGE_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		$expectedErrorContext = $expectedContext;
 		$expectedErrorContext['exceptionType'] = 'Exception';
@@ -264,12 +197,12 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return MessageHashCalculator|MockInterface
+	 * @return MessageContextResolver|MockInterface
 	 */
-	private function mockMessageHashCalculator() : MessageHashCalculator
+	private function mockMessageContextResolver() : MessageContextResolver
 	{
-		$mock = \Mockery::mock(MessageHashCalculator::class);
-		$mock->shouldReceive('calculateHash')->withArgs([IBusMessage::class])->andReturn(self::MESSAGE_HASH);
+		$mock = \Mockery::mock(MessageContextResolver::class);
+		$mock->shouldReceive('getContext')->andReturn(self::MESSAGE_CONTEXT);
 
 		return $mock;
 	}
