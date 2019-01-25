@@ -9,8 +9,7 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\CommandBus\ICommand;
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use DamejidloTests\DjTestCase;
@@ -31,24 +30,24 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 
-	public function testHandleSucceedsWithCommand() : void
+	public function testHandleSucceeds() : void
 	{
 		$logger = $this->mockLogger();
 		$messageContextResolver = $this->mockMessageContextResolver();
 
 		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$command = $this->mockCommand();
+		$message = $this->mockBusMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
 		$expectedContext = self::MESSAGE_CONTEXT;
 
 		// expectations
-		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
-		$logger->shouldReceive('info')->once()->with('Command handling ended successfully.', $expectedContext);
+		$logger->shouldReceive('info')->once()->with('Message handling started.', $expectedContext);
+		$logger->shouldReceive('info')->once()->with('Message handling ended successfully.', $expectedContext);
 
-		$result = $middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
+		$result = $middleware->handle($message, function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled) {
 			$nextMiddlewareCallbackCalled = TRUE;
 			return self::CALLBACK_RETURN_VALUE;
 		});
@@ -59,14 +58,14 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 
-	public function testHandleFailsWithCommand() : void
+	public function testHandleFails() : void
 	{
 		$logger = $this->mockLogger();
 		$messageContextResolver = $this->mockMessageContextResolver();
 
 		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$command = $this->mockCommand();
+		$message = $this->mockBusMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -80,80 +79,16 @@ class LoggingMiddlewareTest extends DjTestCase
 		$expectedErrorContext['exceptionMessage'] = $exceptionMessage;
 
 		// expectations
-		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
-		$logger->shouldReceive('warning')->once()->with('Command handling ended with error: some message', $expectedErrorContext);
+		$logger->shouldReceive('info')->once()->with('Message handling started.', $expectedContext);
+		$logger->shouldReceive('warning')->once()->with('Message handling ended with error: some message', $expectedErrorContext);
 
-		$actualException = Assert::exception(function () use ($middleware, $command, &$nextMiddlewareCallbackCalled, $exception) : void {
-			$middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled, $exception) : void {
+		$actualException = Assert::exception(function () use ($middleware, $message, &$nextMiddlewareCallbackCalled, $exception) : void {
+			$middleware->handle($message, function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
 				$nextMiddlewareCallbackCalled = TRUE;
 				throw $exception;
 			});
 		}, \Exception::class);
 		Assert::same($exception, $actualException);
-
-		Assert::true($nextMiddlewareCallbackCalled);
-	}
-
-
-
-	public function testHandleSucceedsWithEvent() : void
-	{
-		$logger = $this->mockLogger();
-		$messageContextResolver = $this->mockMessageContextResolver();
-
-		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
-
-		$event = $this->mockEvent();
-
-		$nextMiddlewareCallbackCalled = FALSE;
-
-		$expectedContext = self::MESSAGE_CONTEXT;
-
-		// expectations
-		$logger->shouldReceive('info')->once()->with('Event handling started.', $expectedContext);
-		$logger->shouldReceive('info')->once()->with('Event handling ended successfully.', $expectedContext);
-
-		$result = $middleware->handle($event, function (IDomainEvent $event) use (&$nextMiddlewareCallbackCalled) {
-			$nextMiddlewareCallbackCalled = TRUE;
-			return self::CALLBACK_RETURN_VALUE;
-		});
-
-		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
-		Assert::true($nextMiddlewareCallbackCalled);
-	}
-
-
-
-	public function testHandleFailsWithEvent() : void
-	{
-		$logger = $this->mockLogger();
-		$messageContextResolver = $this->mockMessageContextResolver();
-
-		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
-
-		$event = $this->mockEvent();
-
-		$nextMiddlewareCallbackCalled = FALSE;
-
-		$exceptionMessage = 'some message';
-		$exception = new \Exception($exceptionMessage);
-
-		$expectedContext = self::MESSAGE_CONTEXT;
-
-		$expectedErrorContext = $expectedContext;
-		$expectedErrorContext['exceptionType'] = 'Exception';
-		$expectedErrorContext['exceptionMessage'] = $exceptionMessage;
-
-		// expectations
-		$logger->shouldReceive('info')->once()->with('Event handling started.', $expectedContext);
-		$logger->shouldReceive('warning')->once()->with('Event handling ended with error: some message', $expectedErrorContext);
-
-		Assert::exception(function () use ($middleware, $event, &$nextMiddlewareCallbackCalled, $exception) : void {
-			$middleware->handle($event, function (IDomainEvent $event) use (&$nextMiddlewareCallbackCalled, $exception) : void {
-				$nextMiddlewareCallbackCalled = TRUE;
-				throw $exception;
-			});
-		}, \Exception::class);
 
 		Assert::true($nextMiddlewareCallbackCalled);
 	}
@@ -173,23 +108,11 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return ICommand|MockInterface
+	 * @return IBusMessage|MockInterface
 	 */
-	private function mockCommand() : ICommand
+	private function mockBusMessage() : IBusMessage
 	{
-		$mock = Mockery::mock(ICommand::class);
-
-		return $mock;
-	}
-
-
-
-	/**
-	 * @return IDomainEvent|MockInterface
-	 */
-	private function mockEvent() : IDomainEvent
-	{
-		$mock = Mockery::mock(IDomainEvent::class);
+		$mock = Mockery::mock(IBusMessage::class);
 
 		return $mock;
 	}
