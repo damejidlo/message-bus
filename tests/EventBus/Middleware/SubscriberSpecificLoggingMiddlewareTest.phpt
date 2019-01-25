@@ -10,9 +10,9 @@ namespace DamejidloTests\EventBus\Middleware;
 require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\Middleware\SubscriberSpecificLoggingMiddleware;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
+use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -37,7 +37,7 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 		$logger = $this->mockLogger();
 		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new SubscriberSpecificLoggingMiddleware($logger, $messageContextResolver);
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
 		$event = $this->mockEvent();
 		$message = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
@@ -66,7 +66,7 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 		$logger = $this->mockLogger();
 		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new SubscriberSpecificLoggingMiddleware($logger, $messageContextResolver);
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
 		$event = $this->mockEvent();
 		$message = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
@@ -84,7 +84,7 @@ class SubscriberSpecificLoggingMiddlewareTest extends DjTestCase
 
 		// expectations
 		$logger->shouldReceive('info')->once()->with('Event handling in subscriber started.', $expectedContext);
-		$logger->shouldReceive('error')->once()->with('Event handling in subscriber ended with error: some message', $expectedErrorContext);
+		$logger->shouldReceive('warning')->once()->with('Event handling in subscriber ended with error: some message', $expectedErrorContext);
 
 		Assert::exception(function () use ($middleware, $message, &$nextMiddlewareCallbackCalled, $exception) : void {
 			$middleware->handle($message, function () use (&$nextMiddlewareCallbackCalled, $exception) : void {
