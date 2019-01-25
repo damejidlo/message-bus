@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\MessageBus;
+namespace Damejidlo\MessageBus\Logging;
 
 interface ILoggableBusMessage
 {

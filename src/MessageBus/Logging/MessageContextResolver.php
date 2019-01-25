@@ -3,7 +3,6 @@
 namespace Damejidlo\MessageBus\Logging;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\ILoggableBusMessage;
 use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
 
 

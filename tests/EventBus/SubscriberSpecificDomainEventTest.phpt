@@ -7,7 +7,7 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\ILoggableBusMessage;
+use Damejidlo\MessageBus\Logging\ILoggableBusMessage;
 use DamejidloTests\DjTestCase;
 use Mockery\MockInterface;
 use Tester\Assert;

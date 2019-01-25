@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Damejidlo\EventBus;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\ILoggableBusMessage;
+use Damejidlo\MessageBus\Logging\ILoggableBusMessage;
 
 
 

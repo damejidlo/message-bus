@@ -3,7 +3,7 @@
 namespace DamejidloTests\MessageBus\Logging\Fixtures;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\ILoggableBusMessage;
+use Damejidlo\MessageBus\Logging\ILoggableBusMessage;
 
 
 
