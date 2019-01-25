@@ -5,8 +5,8 @@ namespace Damejidlo\MessageBus\Middleware;
 
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Logging\LogMessageResolver;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
-use Damejidlo\MessageBus\Logging\MessageTypeResolver;
 use Psr\Log\LoggerInterface;
 
 
@@ -20,9 +20,9 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	private $logger;
 
 	/**
-	 * @var MessageTypeResolver
+	 * @var LogMessageResolver
 	 */
-	private $messageTypeResolver;
+	private $logMessageResolver;
 
 	/**
 	 * @var MessageContextResolver
@@ -33,11 +33,11 @@ class LoggingMiddleware implements IMessageBusMiddleware
 
 	public function __construct(
 		LoggerInterface $logger,
-		?MessageTypeResolver $messageTypeResolver = NULL,
+		?LogMessageResolver $logMessageResolver = NULL,
 		?MessageContextResolver $messageContextResolver = NULL
 	) {
 		$this->logger = $logger;
-		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
+		$this->logMessageResolver = $logMessageResolver ?? new LogMessageResolver();
 		$this->messageContextResolver = $messageContextResolver ?? new MessageContextResolver();
 	}
 
@@ -48,27 +48,24 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	 */
 	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
 	{
-		$messageType = $this->messageTypeResolver->getMessageType($message);
-		$messageTypeFirstUpper = ucfirst($messageType);
-
 		$context = $this->messageContextResolver->getContext($message);
 
 		$this->logger->info(
-			sprintf('%s handling started.', $messageTypeFirstUpper),
+			$this->logMessageResolver->getHandlingStartedMessage($message),
 			$context
 		);
 
 		try {
 			$result = $nextMiddlewareCallback($message);
 			$this->logger->info(
-				sprintf('%s handling ended successfully.', $messageTypeFirstUpper),
+				$this->logMessageResolver->getHandlingEndedSuccessfullyMessage($message),
 				$context
 			);
 
 			return $result;
 
 		} catch (\Throwable $exception) {
-			$logMessage = sprintf('%s handling ended with error: %s', $messageTypeFirstUpper, $exception->getMessage());
+			$logMessage = $this->logMessageResolver->getHandlingEndedWithErrorMessage($message, $exception);
 
 			$context['exceptionType'] = get_class($exception);
 			$context['exceptionMessage'] = $exception->getMessage();
