@@ -18,7 +18,7 @@ use Tester\Assert;
 class PrivatePropertiesToLoggingContextTraitTest extends DjTestCase
 {
 
-	public function testWhatava() : void
+	public function testTrait() : void
 	{
 		$object = new TestLoggableMessageWithDifferentProperties();
 
