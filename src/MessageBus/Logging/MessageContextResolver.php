@@ -67,29 +67,34 @@ class MessageContextResolver
 
 
 	/**
-	 * @param mixed[] $array1
-	 * @param mixed[] $array2
+	 * @param mixed[] $arrayToMergeInto
+	 * @param mixed[] $arrayToMerge
 	 * @return mixed[]
 	 */
-	private function mergeSafely(array $array1, array $array2) : array
+	private function mergeSafely(array $arrayToMergeInto, array $arrayToMerge) : array
 	{
-		$keyIntersection = array_intersect_key($array1, $array2);
+		$itemsFromArrayToMergeAmbiguousByKey = array_intersect_key($arrayToMerge, $arrayToMergeInto);
 
-		if ($keyIntersection !== []) {
+		if ($itemsFromArrayToMergeAmbiguousByKey !== []) {
 			trigger_error(
 				sprintf(
 					'Message context merge failed with following duplicate keys: "%s"',
-					implode(', ', array_keys($keyIntersection))
+					implode(', ', array_keys($itemsFromArrayToMergeAmbiguousByKey))
 				),
 				E_USER_WARNING
 			);
 
-			$array2 = $this->prefixArrayKeys($array2, 'disambiguated_');
+			$itemsFromArrayToMergeWithDisambiguatedKeys = $this->prefixArrayKeys($itemsFromArrayToMergeAmbiguousByKey, 'disambiguated_');
+			$result = $this->mergeSafely($arrayToMergeInto, $itemsFromArrayToMergeWithDisambiguatedKeys);
 
-			return $this->mergeSafely($array1, $array2);
+			$itemsFromArrayToMergeNotAmbiguousByKey = array_diff_key($arrayToMerge, $itemsFromArrayToMergeAmbiguousByKey);
+			$result = array_merge($result, $itemsFromArrayToMergeNotAmbiguousByKey);
+
+			return $result;
+
 		}
 
-		return array_merge($array1, $array2);
+		return array_merge($arrayToMergeInto, $arrayToMerge);
 	}
 
 

@@ -109,13 +109,15 @@ class MessageContextResolverTest extends DjTestCase
 			Assert::equal(
 				[
 					'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
-					'messageHash' => '54b953fad1149b972ede8bd2bcba0ceae6ed639f',
+					'messageHash' => 'ba206a6d76efabc24dfa4b5b0a92eefc2969c0bd',
 					'disambiguated_messageType' => 1,
 					'disambiguated_messageHash' => 1,
+					'uniqueKey' => 1,
 				],
 				$resolver->getContext(new TestLoggableBusMessage([
 					'messageType' => 1,
 					'messageHash' => 1,
+					'uniqueKey' => 1,
 				]))
 			);
 		}, E_USER_WARNING, 'Message context merge failed with following duplicate keys: "messageType, messageHash"');
