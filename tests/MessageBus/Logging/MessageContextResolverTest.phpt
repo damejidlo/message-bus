@@ -118,7 +118,7 @@ class MessageContextResolverTest extends DjTestCase
 					'messageHash' => 1,
 				]))
 			);
-		}, E_USER_WARNING);
+		}, E_USER_WARNING, 'Message context merge failed with following duplicate keys: "messageType, messageHash"');
 	}
 
 }

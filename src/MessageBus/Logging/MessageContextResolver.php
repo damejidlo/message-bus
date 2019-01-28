@@ -79,7 +79,7 @@ class MessageContextResolver
 			trigger_error(
 				sprintf(
 					'Message context merge failed with following duplicate keys: "%s"',
-					implode(',', $keyIntersection)
+					implode(', ', array_keys($keyIntersection))
 				),
 				E_USER_WARNING
 			);
