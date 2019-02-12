@@ -8,7 +8,7 @@ use Damejidlo\MessageBus\Logging\ILoggableBusMessage;
 
 
 
-final class SubscriberSpecificDomainEvent implements IBusMessage, ILoggableBusMessage, IDomainEvent
+final class SubscriberSpecificDomainEvent implements IBusMessage, ILoggableBusMessage
 {
 
 	/**

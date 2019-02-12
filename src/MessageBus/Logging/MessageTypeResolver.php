@@ -4,6 +4,7 @@ namespace Damejidlo\MessageBus\Logging;
 
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 
 
@@ -17,6 +18,9 @@ class MessageTypeResolver
 			return 'command';
 
 		} elseif ($message instanceof IDomainEvent) {
+			return 'event';
+
+		} elseif ($message instanceof SubscriberSpecificDomainEvent) {
 			return 'event';
 
 		} else {
