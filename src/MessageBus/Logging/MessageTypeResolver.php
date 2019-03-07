@@ -14,6 +14,17 @@ class MessageTypeResolver
 
 	public function getMessageType(IBusMessage $message) : string
 	{
+		if ($message instanceof SubscriberSpecificDomainEvent) {
+			return get_class($message->getEvent());
+		}
+
+		return get_class($message);
+	}
+
+
+
+	public function getSimplifiedMessageType(IBusMessage $message) : string
+	{
 		if ($message instanceof ICommand) {
 			return 'command';
 

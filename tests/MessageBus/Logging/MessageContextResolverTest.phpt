@@ -5,9 +5,11 @@ namespace DamejidloTests\MessageBus\Logging;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
+use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestBusMessage;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestEvent;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestLoggableBusMessage;
 use Tester\Assert;
 
@@ -29,6 +31,24 @@ class MessageContextResolverTest extends DjTestCase
 				'messageHash' => '27c835e9b99868d641c28065d6ddc6b1e856edf5',
 			],
 			$resolver->getContext(new TestBusMessage())
+		);
+	}
+
+
+
+	public function testSubscriberSpecificDomainEvent() : void
+	{
+		$resolver = new MessageContextResolver();
+
+		$message  = new SubscriberSpecificDomainEvent(new TestEvent(), 'someSubscriberType');
+
+		Assert::equal(
+			[
+				'eventType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestEvent',
+				'eventHash' => '122c2306068df25a75385f976287ce2125d0f9b9',
+				'subscriberType' => 'someSubscriberType',
+			],
+			$resolver->getContext($message)
 		);
 	}
 

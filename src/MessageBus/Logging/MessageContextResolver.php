@@ -45,11 +45,12 @@ class MessageContextResolver
 	 */
 	public function getContext(IBusMessage $message) : array
 	{
+		$simplifiedMessageType = $this->messageTypeResolver->getSimplifiedMessageType($message);
 		$messageType = $this->messageTypeResolver->getMessageType($message);
 
 		$result = [
-			sprintf('%sType', $messageType) => get_class($message),
-			sprintf('%sHash', $messageType) => $this->messageHashCalculator->calculateHash($message),
+			sprintf('%sType', $simplifiedMessageType) => $messageType,
+			sprintf('%sHash', $simplifiedMessageType) => $this->messageHashCalculator->calculateHash($message),
 		];
 
 		if ($message instanceof ILoggableBusMessage) {

@@ -30,7 +30,7 @@ class LogMessageResolver
 		return ucfirst(
 			sprintf(
 				'%s handling%s started.',
-				$this->messageTypeResolver->getMessageType($message),
+				$this->messageTypeResolver->getSimplifiedMessageType($message),
 				$this->getWhere($message)
 			)
 		);
@@ -43,7 +43,7 @@ class LogMessageResolver
 		return ucfirst(
 			sprintf(
 				'%s handling%s ended successfully.',
-				$this->messageTypeResolver->getMessageType($message),
+				$this->messageTypeResolver->getSimplifiedMessageType($message),
 				$this->getWhere($message)
 			)
 		);
@@ -56,7 +56,7 @@ class LogMessageResolver
 		return ucfirst(
 			sprintf(
 				'%s handling%s ended with error: %s',
-				$this->messageTypeResolver->getMessageType($message),
+				$this->messageTypeResolver->getSimplifiedMessageType($message),
 				$this->getWhere($message),
 				$exception->getMessage()
 			)

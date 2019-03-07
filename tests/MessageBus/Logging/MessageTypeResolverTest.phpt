@@ -5,13 +5,13 @@ namespace DamejidloTests\MessageBus\Logging;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\CommandBus\ICommand;
-use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\Logging\MessageTypeResolver;
 use DamejidloTests\DjTestCase;
-use Mockery;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestBusMessage;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestCommand;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestEvent;
 use Tester\Assert;
 
 
@@ -26,13 +26,15 @@ class MessageTypeResolverTest extends DjTestCase
 	 * @dataProvider provideDataForTestGetMessageType
 	 *
 	 * @param string $expectedMessageType
+	 * @param string $expectedSimplifiedMessageType
 	 * @param IBusMessage $message
 	 */
-	public function testGetMessageType(string $expectedMessageType, IBusMessage $message) : void
+	public function testGetMessageType(string $expectedMessageType, string $expectedSimplifiedMessageType, IBusMessage $message) : void
 	{
 		$resolver = new MessageTypeResolver();
 
 		Assert::same($expectedMessageType, $resolver->getMessageType($message));
+		Assert::same($expectedSimplifiedMessageType, $resolver->getSimplifiedMessageType($message));
 	}
 
 
@@ -44,19 +46,24 @@ class MessageTypeResolverTest extends DjTestCase
 	{
 		return [
 			[
+				TestCommand::class,
 				'command',
-				Mockery::mock(ICommand::class),
+				new TestCommand(),
 			],
 			[
+				TestEvent::class,
 				'event',
-				Mockery::mock(IDomainEvent::class),
+				new TestEvent(),
 			],
 			[
+				TestEvent::class,
 				'event',
-				new SubscriberSpecificDomainEvent(Mockery::mock(IDomainEvent::class), 'someType'),
+				new SubscriberSpecificDomainEvent(new TestEvent(), 'someType'),
 			],
 			[
-				'message', Mockery::mock(IBusMessage::class),
+				TestBusMessage::class,
+				'message',
+				new TestBusMessage(),
 			],
 		];
 	}
