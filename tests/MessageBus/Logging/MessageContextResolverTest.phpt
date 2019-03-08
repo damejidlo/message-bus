@@ -28,7 +28,6 @@ class MessageContextResolverTest extends DjTestCase
 		Assert::equal(
 			[
 				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestBusMessage',
-				'messageHash' => '27c835e9b99868d641c28065d6ddc6b1e856edf5',
 			],
 			$resolver->getContext(new TestBusMessage())
 		);
@@ -45,7 +44,6 @@ class MessageContextResolverTest extends DjTestCase
 		Assert::equal(
 			[
 				'eventType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestEvent',
-				'eventHash' => '122c2306068df25a75385f976287ce2125d0f9b9',
 				'subscriberType' => 'someSubscriberType',
 			],
 			$resolver->getContext($message)
@@ -61,7 +59,6 @@ class MessageContextResolverTest extends DjTestCase
 		Assert::equal(
 			[
 				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
-				'messageHash' => '2d31634f453c402c1a975379886a5a5048bc1dee',
 			],
 			$resolver->getContext(new TestLoggableBusMessage([]))
 		);
@@ -76,7 +73,6 @@ class MessageContextResolverTest extends DjTestCase
 		Assert::equal(
 			[
 				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
-				'messageHash' => '0f7aa597b520c8cad947fc869cede7e72a56e63a',
 				'integerAttribute' => 1,
 				'stringAttribute' => 'string',
 				'arrayAttribute' => [
@@ -97,12 +93,11 @@ class MessageContextResolverTest extends DjTestCase
 
 	public function testLoggableMessageWithContextAndPrefixing() : void
 	{
-		$resolver = new MessageContextResolver(NULL, NULL, 'prefix_');
+		$resolver = new MessageContextResolver(NULL, 'prefix_');
 
 		Assert::equal(
 			[
 				'prefix_messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
-				'prefix_messageHash' => '0f7aa597b520c8cad947fc869cede7e72a56e63a',
 				'prefix_integerAttribute' => 1,
 				'prefix_stringAttribute' => 'string',
 				'prefix_arrayAttribute' => [
@@ -129,18 +124,15 @@ class MessageContextResolverTest extends DjTestCase
 			Assert::equal(
 				[
 					'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
-					'messageHash' => 'ba206a6d76efabc24dfa4b5b0a92eefc2969c0bd',
 					'disambiguated_messageType' => 1,
-					'disambiguated_messageHash' => 1,
 					'uniqueKey' => 1,
 				],
 				$resolver->getContext(new TestLoggableBusMessage([
 					'messageType' => 1,
-					'messageHash' => 1,
 					'uniqueKey' => 1,
 				]))
 			);
-		}, E_USER_WARNING, 'Message context merge failed with following duplicate keys: "messageType, messageHash"');
+		}, E_USER_WARNING, 'Message context merge failed with following duplicate keys: "messageType"');
 	}
 
 }

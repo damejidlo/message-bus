@@ -3,17 +3,11 @@
 namespace Damejidlo\MessageBus\Logging;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
 
 
 
 class MessageContextResolver
 {
-
-	/**
-	 * @var MessageHashCalculator
-	 */
-	private $messageHashCalculator;
 
 	/**
 	 * @var MessageTypeResolver
@@ -28,11 +22,9 @@ class MessageContextResolver
 
 
 	public function __construct(
-		?MessageHashCalculator $messageHashCalculator = NULL,
 		?MessageTypeResolver $messageTypeResolver = NULL,
 		string $keyPrefix = ''
 	) {
-		$this->messageHashCalculator = $messageHashCalculator ?? new MessageHashCalculator();
 		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
 		$this->keyPrefix = $keyPrefix;
 	}
@@ -50,7 +42,6 @@ class MessageContextResolver
 
 		$result = [
 			sprintf('%sType', $simplifiedMessageType) => $messageType,
-			sprintf('%sHash', $simplifiedMessageType) => $this->messageHashCalculator->calculateHash($message),
 		];
 
 		if ($message instanceof ILoggableBusMessage) {
