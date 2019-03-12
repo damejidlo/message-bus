@@ -3,61 +3,21 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Logging;
 
-class PrivatePropertiesToScalarsExtractor
+class RecursiveArrayToScalarsTypecaster
 {
 
 	/**
-	 * Implements
-	 * @see ILoggableBusMessage::getLoggingContext()
-	 *
-	 * @param object $object
-	 * @return mixed[] array of scalar values
-	 */
-	public function extract($object) : array
-	{
-		$array = $this->extractVariables($object);
-
-		$array = $this->toArrayOfScalarsRecursive($array);
-
-		return $array;
-	}
-
-
-
-	/**
-	 * @param object $object
-	 * @return mixed[]
-	 */
-	private function extractVariables($object) : array
-	{
-		// magic :)
-		$extract = \Closure::bind(
-			function ($object) {
-				return get_object_vars($object);
-			},
-			NULL,
-			$object
-		);
-
-		return $extract($object);
-	}
-
-
-
-	/**
-	 * @internal
-	 *
 	 * @param mixed[] $array
 	 * @return mixed[]
 	 */
-	private function toArrayOfScalarsRecursive(array $array) : array
+	public function cast(array $array) : array
 	{
 		$array = $this->formatProperties($array);
 		$array = $this->filterOutNonScalarAndNotArray($array);
 
 		array_walk($array, function (&$value) : void {
 			if (is_array($value)) {
-				$value = $this->toArrayOfScalarsRecursive($value);
+				$value = $this->cast($value);
 			}
 		});
 

@@ -9,7 +9,8 @@ namespace DamejidloTests\MessageBus\Logging;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\MessageBus\Logging\PrivatePropertiesToScalarsExtractor;
+use Damejidlo\MessageBus\Logging\RecursiveArrayToScalarsTypecaster;
+use Damejidlo\MessageBus\Logging\PrivateClassPropertiesExtractor;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestLoggableMessageWithDifferentProperties;
 use Tester\Assert;
@@ -22,7 +23,8 @@ class PrivatePropertiesToScalarsExtractorTest extends DjTestCase
 	public function testExtract() : void
 	{
 		$object = new TestLoggableMessageWithDifferentProperties();
-		$extractedProperties = (new PrivatePropertiesToScalarsExtractor())->extract($object);
+		$extractedProperties = (new PrivateClassPropertiesExtractor())->extract($object);
+		$castProperties = (new RecursiveArrayToScalarsTypecaster())->cast($extractedProperties);
 
 		Assert::equal([
 			'public' => 'public',
@@ -43,7 +45,7 @@ class PrivatePropertiesToScalarsExtractorTest extends DjTestCase
 			],
 			'dtoWithToStringMethod' => 'toString',
 			'dtoWithMagicToStringMethod' => 'magicToString',
-		], $extractedProperties);
+		], $castProperties);
 	}
 
 }
