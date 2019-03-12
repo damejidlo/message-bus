@@ -2,6 +2,7 @@
 
 namespace Damejidlo\MessageBus\Logging;
 
+use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 
 
@@ -44,8 +45,14 @@ class MessageContextResolver
 			sprintf('%sType', $simplifiedMessageType) => $messageType,
 		];
 
-		$extractedProperties = (new PrivateClassPropertiesExtractor())->extract($message);
-		$castProperties = (new RecursiveArrayToScalarsTypecaster())->cast($extractedProperties);
+		if ($message instanceof SubscriberSpecificDomainEvent) {
+			$result['subscriberType'] = $message->getSubscriberType();
+			$castProperties = $this->extractAndCastProperties($message->getEvent());
+
+		} else {
+			$castProperties = $this->extractAndCastProperties($message);
+		}
+
 		$result = $this->mergeSafely($result, $castProperties);
 
 		if ($this->keyPrefix !== '') {
@@ -111,6 +118,20 @@ class MessageContextResolver
 		}
 
 		return $result;
+	}
+
+
+
+	/**
+	 * @param IBusMessage $message
+	 * @return array|mixed[]
+	 */
+	private function extractAndCastProperties(IBusMessage $message) : array
+	{
+		$extractedProperties = (new PrivateClassPropertiesExtractor())->extract($message);
+		$castProperties = (new RecursiveArrayToScalarsTypecaster())->cast($extractedProperties);
+
+		return $castProperties;
 	}
 
 }

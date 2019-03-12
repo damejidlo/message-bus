@@ -4,11 +4,10 @@ declare(strict_types = 1);
 namespace Damejidlo\EventBus;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\Logging\ILoggableBusMessage;
 
 
 
-final class SubscriberSpecificDomainEvent implements IBusMessage, ILoggableBusMessage
+final class SubscriberSpecificDomainEvent implements IBusMessage
 {
 
 	/**
@@ -41,24 +40,6 @@ final class SubscriberSpecificDomainEvent implements IBusMessage, ILoggableBusMe
 	public function getSubscriberType() : string
 	{
 		return $this->subscriberType;
-	}
-
-
-
-	/**
-	 * @return mixed[]
-	 */
-	public function getLoggingContext() : array
-	{
-		$result = [
-			'subscriberType' => $this->subscriberType,
-		];
-
-		if ($this->event instanceof ILoggableBusMessage) {
-			$result = array_merge($result, $this->event->getLoggingContext());
-		}
-
-		return $result;
 	}
 
 }
