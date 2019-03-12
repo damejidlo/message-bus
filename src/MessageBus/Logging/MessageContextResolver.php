@@ -25,22 +25,15 @@ class MessageContextResolver
 	 */
 	private $privateClassPropertiesExtractor;
 
-	/**
-	 * @var RecursiveArrayToScalarsTypecaster
-	 */
-	private $recursiveArrayToScalarsTypecaster;
-
 
 
 	public function __construct(
 		?MessageTypeResolver $messageTypeResolver = NULL,
 		?PrivateClassPropertiesExtractor $privateClassPropertiesExtractor = NULL,
-		?RecursiveArrayToScalarsTypecaster $recursiveArrayToScalarsTypecaster = NULL,
 		string $keyPrefix = ''
 	) {
 		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
 		$this->privateClassPropertiesExtractor = $privateClassPropertiesExtractor ?? new PrivateClassPropertiesExtractor();
-		$this->recursiveArrayToScalarsTypecaster = $recursiveArrayToScalarsTypecaster ?? new RecursiveArrayToScalarsTypecaster();
 		$this->keyPrefix = $keyPrefix;
 	}
 
@@ -61,10 +54,10 @@ class MessageContextResolver
 
 		if ($message instanceof SubscriberSpecificDomainEvent) {
 			$result['subscriberType'] = $message->getSubscriberType();
-			$castProperties = $this->extractAndCastProperties($message->getEvent());
+			$castProperties = $this->privateClassPropertiesExtractor->extract($message->getEvent());
 
 		} else {
-			$castProperties = $this->extractAndCastProperties($message);
+			$castProperties = $this->privateClassPropertiesExtractor->extract($message);
 		}
 
 		$result = $this->mergeSafely($result, $castProperties);
@@ -132,20 +125,6 @@ class MessageContextResolver
 		}
 
 		return $result;
-	}
-
-
-
-	/**
-	 * @param IBusMessage $message
-	 * @return array|mixed[]
-	 */
-	private function extractAndCastProperties(IBusMessage $message) : array
-	{
-		$extractedProperties = $this->privateClassPropertiesExtractor->extract($message);
-		$castProperties = $this->recursiveArrayToScalarsTypecaster->cast($extractedProperties);
-
-		return $castProperties;
 	}
 
 }
