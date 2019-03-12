@@ -79,7 +79,7 @@ class MessageContextResolverTest extends DjTestCase
 
 	public function testPrefixing() : void
 	{
-		$resolver = new MessageContextResolver(NULL, 'prefix_');
+		$resolver = new MessageContextResolver(NULL, NULL, NULL, 'prefix_');
 
 		Assert::equal(
 			[

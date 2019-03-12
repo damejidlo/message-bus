@@ -20,13 +20,27 @@ class MessageContextResolver
 	 */
 	private $keyPrefix;
 
+	/**
+	 * @var PrivateClassPropertiesExtractor
+	 */
+	private $privateClassPropertiesExtractor;
+
+	/**
+	 * @var RecursiveArrayToScalarsTypecaster
+	 */
+	private $recursiveArrayToScalarsTypecaster;
+
 
 
 	public function __construct(
 		?MessageTypeResolver $messageTypeResolver = NULL,
+		?PrivateClassPropertiesExtractor $privateClassPropertiesExtractor = NULL,
+		?RecursiveArrayToScalarsTypecaster $recursiveArrayToScalarsTypecaster = NULL,
 		string $keyPrefix = ''
 	) {
 		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
+		$this->privateClassPropertiesExtractor = $privateClassPropertiesExtractor ?? new PrivateClassPropertiesExtractor();
+		$this->recursiveArrayToScalarsTypecaster = $recursiveArrayToScalarsTypecaster ?? new RecursiveArrayToScalarsTypecaster();
 		$this->keyPrefix = $keyPrefix;
 	}
 
@@ -128,8 +142,8 @@ class MessageContextResolver
 	 */
 	private function extractAndCastProperties(IBusMessage $message) : array
 	{
-		$extractedProperties = (new PrivateClassPropertiesExtractor())->extract($message);
-		$castProperties = (new RecursiveArrayToScalarsTypecaster())->cast($extractedProperties);
+		$extractedProperties = $this->privateClassPropertiesExtractor->extract($message);
+		$castProperties = $this->recursiveArrayToScalarsTypecaster->cast($extractedProperties);
 
 		return $castProperties;
 	}
