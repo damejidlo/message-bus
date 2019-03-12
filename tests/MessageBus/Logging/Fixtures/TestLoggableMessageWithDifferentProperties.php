@@ -3,14 +3,11 @@
 namespace DamejidloTests\MessageBus\Logging\Fixtures;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\Logging\PrivatePropertiesToLoggingContextTrait;
 
 
 
 class TestLoggableMessageWithDifferentProperties implements IBusMessage
 {
-
-	use PrivatePropertiesToLoggingContextTrait;
 
 	/**
 	 * @var string

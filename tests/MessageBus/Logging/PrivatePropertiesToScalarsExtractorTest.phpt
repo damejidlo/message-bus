@@ -9,18 +9,20 @@ namespace DamejidloTests\MessageBus\Logging;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
+use Damejidlo\MessageBus\Logging\PrivatePropertiesToScalarsExtractor;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestLoggableMessageWithDifferentProperties;
 use Tester\Assert;
 
 
 
-class PrivatePropertiesToLoggingContextTraitTest extends DjTestCase
+class PrivatePropertiesToScalarsExtractorTest extends DjTestCase
 {
 
-	public function testTrait() : void
+	public function testExtract() : void
 	{
 		$object = new TestLoggableMessageWithDifferentProperties();
+		$extractedProperties = (new PrivatePropertiesToScalarsExtractor())->extract($object);
 
 		Assert::equal([
 			'public' => 'public',
@@ -41,7 +43,7 @@ class PrivatePropertiesToLoggingContextTraitTest extends DjTestCase
 			],
 			'dtoWithToStringMethod' => 'toString',
 			'dtoWithMagicToStringMethod' => 'magicToString',
-		], $object->getLoggingContext());
+		], $extractedProperties);
 	}
 
 }
@@ -52,4 +54,4 @@ class PrivatePropertiesToLoggingContextTraitTest extends DjTestCase
 
 
 
-(new PrivatePropertiesToLoggingContextTraitTest())->run();
+(new PrivatePropertiesToScalarsExtractorTest())->run();

@@ -3,22 +3,43 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Logging;
 
-trait PrivatePropertiesToLoggingContextTrait
+class PrivatePropertiesToScalarsExtractor
 {
 
 	/**
 	 * Implements
 	 * @see ILoggableBusMessage::getLoggingContext()
 	 *
+	 * @param object $object
 	 * @return mixed[] array of scalar values
 	 */
-	public function getLoggingContext() : array
+	public function extract($object) : array
 	{
-		$array = get_object_vars($this);
+		$array = $this->extractVariables($object);
 
 		$array = $this->toArrayOfScalarsRecursive($array);
 
 		return $array;
+	}
+
+
+
+	/**
+	 * @param object $object
+	 * @return mixed[]
+	 */
+	private function extractVariables($object) : array
+	{
+		// magic :)
+		$extract = \Closure::bind(
+			function ($object) {
+				return get_object_vars($object);
+			},
+			NULL,
+			$object
+		);
+
+		return $extract($object);
 	}
 
 
