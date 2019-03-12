@@ -3,36 +3,20 @@
 namespace DamejidloTests\MessageBus\Logging\Fixtures;
 
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\Logging\ILoggableBusMessage;
 
 
 
-class TestLoggableBusMessage implements IBusMessage, ILoggableBusMessage
+class TestLoggableBusMessage implements IBusMessage
 {
 
 	/**
-	 * @var mixed[]
+	 * @param mixed[] $properties
 	 */
-	private $loggingContextToReturn;
-
-
-
-	/**
-	 * @param mixed[] $loggingContextToReturn
-	 */
-	public function __construct(array $loggingContextToReturn)
+	public function __construct(array $properties)
 	{
-		$this->loggingContextToReturn = $loggingContextToReturn;
-	}
-
-
-
-	/**
-	 * @return mixed[]
-	 */
-	public function getLoggingContext() : array
-	{
-		return $this->loggingContextToReturn;
+		foreach ($properties as $key => $value) {
+			$this->$key = $value;
+		}
 	}
 
 }

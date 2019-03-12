@@ -6,7 +6,7 @@ use Damejidlo\MessageBus\IBusMessage;
 
 
 
-class TestLoggableMessageWithDifferentProperties implements IBusMessage
+class TestMessageWithDifferentProperties implements IBusMessage
 {
 
 	/**

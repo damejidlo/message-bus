@@ -44,10 +44,9 @@ class MessageContextResolver
 			sprintf('%sType', $simplifiedMessageType) => $messageType,
 		];
 
-		if ($message instanceof ILoggableBusMessage) {
-			$messageContext = $message->getLoggingContext();
-			$result = $this->mergeSafely($result, $messageContext);
-		}
+		$extractedProperties = (new PrivateClassPropertiesExtractor())->extract($message);
+		$castProperties = (new RecursiveArrayToScalarsTypecaster())->cast($extractedProperties);
+		$result = $this->mergeSafely($result, $castProperties);
 
 		if ($this->keyPrefix !== '') {
 			$result = $this->prefixArrayKeys($result, $this->keyPrefix);

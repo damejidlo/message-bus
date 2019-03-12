@@ -52,21 +52,7 @@ class MessageContextResolverTest extends DjTestCase
 
 
 
-	public function testEmptyLoggableMessage() : void
-	{
-		$resolver = new MessageContextResolver();
-
-		Assert::equal(
-			[
-				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
-			],
-			$resolver->getContext(new TestLoggableBusMessage([]))
-		);
-	}
-
-
-
-	public function testLoggableMessageWithContext() : void
+	public function testMessageWithProperties() : void
 	{
 		$resolver = new MessageContextResolver();
 
@@ -91,7 +77,7 @@ class MessageContextResolverTest extends DjTestCase
 
 
 
-	public function testLoggableMessageWithContextAndPrefixing() : void
+	public function testPrefixing() : void
 	{
 		$resolver = new MessageContextResolver(NULL, 'prefix_');
 
