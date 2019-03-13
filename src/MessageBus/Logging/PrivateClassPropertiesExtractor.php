@@ -10,7 +10,7 @@ class PrivateClassPropertiesExtractor
 	 * @param object $object
 	 * @return mixed[]
 	 */
-	public function extract($object) : array
+	public function extract(object $object) : array
 	{
 		// magic :)
 		$extract = \Closure::bind(
