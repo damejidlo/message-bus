@@ -9,10 +9,8 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\CommandBus\ICommand;
-use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
-use Damejidlo\MessageBus\Implementation\MessageHashCalculator;
+use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -26,37 +24,30 @@ class LoggingMiddlewareTest extends DjTestCase
 {
 
 	private const CALLBACK_RETURN_VALUE = 1;
-	private const MESSAGE_HASH = 'message-hash';
+	private const MESSAGE_CONTEXT = [
+		'someAttribute' => 'someValue',
+	];
 
 
 
-	public function testHandleSucceedsWithCommand() : void
+	public function testHandleSucceeds() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$commandAsArray = [
-			'someAttribute' => 123,
-		];
-
-		$command = $this->mockCommand();
-		$command->shouldReceive('toArray')->andReturn($commandAsArray);
+		$message = $this->mockBusMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$expectedContext = [
-			'commandType' => get_class($command),
-			'messageAttribute_someAttribute' => 123,
-			'commandHash' => self::MESSAGE_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		// expectations
-		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
-		$logger->shouldReceive('info')->once()->with('Command handling ended successfully.', $expectedContext);
+		$logger->shouldReceive('info')->once()->with('Message handling started.', $expectedContext);
+		$logger->shouldReceive('info')->once()->with('Message handling ended successfully.', $expectedContext);
 
-		$result = $middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
+		$result = $middleware->handle($message, function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled) {
 			$nextMiddlewareCallbackCalled = TRUE;
 			return self::CALLBACK_RETURN_VALUE;
 		});
@@ -67,160 +58,37 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 
-	public function testHandleSucceedsEmptyArray() : void
+	public function testHandleFails() : void
 	{
 		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
+		$messageContextResolver = $this->mockMessageContextResolver();
 
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
+		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$command = $this->mockCommand();
-		$command->shouldReceive('toArray')->andReturn([]);
-
-		$nextMiddlewareCallbackCalled = FALSE;
-
-		$expectedContext = [
-			'commandType' => get_class($command),
-			'commandHash' => self::MESSAGE_HASH,
-		];
-
-		// expectations
-		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
-		$logger->shouldReceive('info')->once()->with('Command handling ended successfully.', $expectedContext);
-
-		$result = $middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
-			$nextMiddlewareCallbackCalled = TRUE;
-			return self::CALLBACK_RETURN_VALUE;
-		});
-
-		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
-		Assert::true($nextMiddlewareCallbackCalled);
-	}
-
-
-
-	public function testHandleFailsWithCommand() : void
-	{
-		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
-
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$commandAsArray = [
-			'someAttribute' => 123,
-		];
-
-		$command = $this->mockCommand();
-		$command->shouldReceive('toArray')->andReturn($commandAsArray);
+		$message = $this->mockBusMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
 		$exceptionMessage = 'some message';
 		$exception = new \Exception($exceptionMessage);
 
-		$expectedContext = [
-			'commandType' => get_class($command),
-			'messageAttribute_someAttribute' => 123,
-			'commandHash' => self::MESSAGE_HASH,
-		];
+		$expectedContext = self::MESSAGE_CONTEXT;
 
 		$expectedErrorContext = $expectedContext;
 		$expectedErrorContext['exceptionType'] = 'Exception';
 		$expectedErrorContext['exceptionMessage'] = $exceptionMessage;
 
 		// expectations
-		$logger->shouldReceive('info')->once()->with('Command handling started.', $expectedContext);
-		$logger->shouldReceive('warning')->once()->with('Command handling ended with error: some message', $expectedErrorContext);
+		$logger->shouldReceive('info')->once()->with('Message handling started.', $expectedContext);
+		$logger->shouldReceive('warning')->once()->with('Message handling ended with error: some message', $expectedErrorContext);
 
-		$actualException = Assert::exception(function () use ($middleware, $command, &$nextMiddlewareCallbackCalled, $exception) : void {
-			$middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled, $exception) : void {
+		$actualException = Assert::exception(function () use ($middleware, $message, &$nextMiddlewareCallbackCalled, $exception) : void {
+			$middleware->handle($message, function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
 				$nextMiddlewareCallbackCalled = TRUE;
 				throw $exception;
 			});
 		}, \Exception::class);
 		Assert::same($exception, $actualException);
-
-		Assert::true($nextMiddlewareCallbackCalled);
-	}
-
-
-
-	public function testHandleSucceedsWithEvent() : void
-	{
-		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
-
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$eventAsArray = [
-			'someAttribute' => 123,
-		];
-
-		$event = $this->mockEvent();
-		$event->shouldReceive('toArray')->andReturn($eventAsArray);
-
-		$nextMiddlewareCallbackCalled = FALSE;
-
-		$expectedContext = [
-			'eventType' => get_class($event),
-			'messageAttribute_someAttribute' => 123,
-			'eventHash' => self::MESSAGE_HASH,
-		];
-
-		// expectations
-		$logger->shouldReceive('info')->once()->with('Event handling started.', $expectedContext);
-		$logger->shouldReceive('info')->once()->with('Event handling ended successfully.', $expectedContext);
-
-		$result = $middleware->handle($event, function (IDomainEvent $event) use (&$nextMiddlewareCallbackCalled) {
-			$nextMiddlewareCallbackCalled = TRUE;
-			return self::CALLBACK_RETURN_VALUE;
-		});
-
-		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
-		Assert::true($nextMiddlewareCallbackCalled);
-	}
-
-
-
-	public function testHandleFailsWithEvent() : void
-	{
-		$logger = $this->mockLogger();
-		$hashCalculator = $this->mockMessageHashCalculator();
-
-		$middleware = new LoggingMiddleware($logger, $hashCalculator);
-
-		$eventAsArray = [
-			'someAttribute' => 123,
-		];
-
-		$event = $this->mockEvent();
-		$event->shouldReceive('toArray')->andReturn($eventAsArray);
-
-		$nextMiddlewareCallbackCalled = FALSE;
-
-		$exceptionMessage = 'some message';
-		$exception = new \Exception($exceptionMessage);
-
-		$expectedContext = [
-			'eventType' => get_class($event),
-			'messageAttribute_someAttribute' => 123,
-			'eventHash' => self::MESSAGE_HASH,
-		];
-
-		$expectedErrorContext = $expectedContext;
-		$expectedErrorContext['exceptionType'] = 'Exception';
-		$expectedErrorContext['exceptionMessage'] = $exceptionMessage;
-
-		// expectations
-		$logger->shouldReceive('info')->once()->with('Event handling started.', $expectedContext);
-		$logger->shouldReceive('warning')->once()->with('Event handling ended with error: some message', $expectedErrorContext);
-
-		Assert::exception(function () use ($middleware, $event, &$nextMiddlewareCallbackCalled, $exception) : void {
-			$middleware->handle($event, function (IDomainEvent $event) use (&$nextMiddlewareCallbackCalled, $exception) : void {
-				$nextMiddlewareCallbackCalled = TRUE;
-				throw $exception;
-			});
-		}, \Exception::class);
 
 		Assert::true($nextMiddlewareCallbackCalled);
 	}
@@ -240,11 +108,11 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return ICommand|MockInterface
+	 * @return IBusMessage|MockInterface
 	 */
-	private function mockCommand() : ICommand
+	private function mockBusMessage() : IBusMessage
 	{
-		$mock = Mockery::mock(ICommand::class);
+		$mock = Mockery::mock(IBusMessage::class);
 
 		return $mock;
 	}
@@ -252,24 +120,12 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IDomainEvent|MockInterface
+	 * @return MessageContextResolver|MockInterface
 	 */
-	private function mockEvent() : IDomainEvent
+	private function mockMessageContextResolver() : MessageContextResolver
 	{
-		$mock = Mockery::mock(IDomainEvent::class);
-
-		return $mock;
-	}
-
-
-
-	/**
-	 * @return MessageHashCalculator|MockInterface
-	 */
-	private function mockMessageHashCalculator() : MessageHashCalculator
-	{
-		$mock = \Mockery::mock(MessageHashCalculator::class);
-		$mock->shouldReceive('calculateHash')->withArgs([IBusMessage::class])->andReturn(self::MESSAGE_HASH);
+		$mock = \Mockery::mock(MessageContextResolver::class);
+		$mock->shouldReceive('getContext')->andReturn(self::MESSAGE_CONTEXT);
 
 		return $mock;
 	}
