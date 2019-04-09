@@ -5,12 +5,11 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\EventBus;
+namespace DamejidloTests\MessageBus;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\EventBus\EventBus;
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
@@ -21,35 +20,36 @@ use Tester\Assert;
 
 
 
-class MiddlewareSupportingEventBusTest extends DjTestCase
+class MiddlewareSupportingMessageBusTest extends DjTestCase
 {
 
 	public function testHandleWithCorrectOrder() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
 		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
-		$eventBus = new EventBus($messageBus);
 
-		$event = $this->mockEvent();
+		$message = $this->mockMessage();
 
 		$middleware = $this->mockMiddleware();
 		$messageBus->appendMiddleware($middleware);
 
 		$callbackChainCalled = FALSE;
+		$result = 'some-result';
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
 			->withArgs(function (array $actualMiddleware, \Closure $endChainWithCallback) use ($middleware) : bool {
 				Assert::same([$middleware], $actualMiddleware);
 				return TRUE;
-			})->andReturn(function (IDomainEvent $actualEvent) use ($event, &$callbackChainCalled) : void {
+			})->andReturn(function (IBusMessage $actualMessage) use ($message, &$callbackChainCalled, $result) {
 				$callbackChainCalled = TRUE;
-				Assert::same($event, $actualEvent);
+				Assert::same($message, $actualMessage);
+
+				return $result;
 			});
 
-		Assert::noError(function () use ($eventBus, $event) : void {
-			$eventBus->handle($event);
-		});
+		$actualResult = $messageBus->handle($message);
+		Assert::same($result, $actualResult);
 
 		Assert::true($callbackChainCalled);
 	}
@@ -60,20 +60,19 @@ class MiddlewareSupportingEventBusTest extends DjTestCase
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
 		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
-		$eventBus = new EventBus($messageBus);
 
 		$exception = new \Exception();
 
-		$event = $this->mockEvent();
+		$message = $this->mockMessage();
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
-			->andReturn(function (IDomainEvent $actualEvent) use ($exception) : void {
+			->andReturn(function (IBusMessage $actualMessage) use ($exception) : void {
 				throw $exception;
 			});
 
-		$actualException = Assert::exception(function () use ($eventBus, $event) : void {
-			$eventBus->handle($event);
+		$actualException = Assert::exception(function () use ($messageBus, $message) : void {
+			$messageBus->handle($message);
 		}, \Exception::class);
 		Assert::same($exception, $actualException);
 	}
@@ -93,11 +92,11 @@ class MiddlewareSupportingEventBusTest extends DjTestCase
 
 
 	/**
-	 * @return IDomainEvent|MockInterface
+	 * @return IBusMessage|MockInterface
 	 */
-	private function mockEvent() : IDomainEvent
+	private function mockMessage() : IBusMessage
 	{
-		$mock = Mockery::mock(IDomainEvent::class);
+		$mock = Mockery::mock(IBusMessage::class);
 
 		return $mock;
 	}
@@ -118,4 +117,4 @@ class MiddlewareSupportingEventBusTest extends DjTestCase
 
 
 
-(new MiddlewareSupportingEventBusTest())->run();
+(new MiddlewareSupportingMessageBusTest())->run();
