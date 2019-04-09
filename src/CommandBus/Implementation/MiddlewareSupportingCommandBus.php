@@ -28,6 +28,8 @@ final class MiddlewareSupportingCommandBus implements ICommandBus
 	 */
 	private $cachedCallback = NULL;
 
+
+
 	/**
 	 * @param MiddlewareCallbackChainCreator $middlewareCallbackChainCreator
 	 */
@@ -75,7 +77,8 @@ final class MiddlewareSupportingCommandBus implements ICommandBus
 
 	private function createMiddlewareCallback() : \Closure
 	{
-		$endChainWithCallback = function (ICommand $command) : void {};
+		$endChainWithCallback = function (ICommand $command) : void {
+		};
 
 		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
 	}

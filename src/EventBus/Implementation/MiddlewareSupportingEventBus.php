@@ -77,7 +77,8 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 	private function createMiddlewareCallback() : \Closure
 	{
-		$endChainWithCallback = function (IDomainEvent $event) : void {};
+		$endChainWithCallback = function (IDomainEvent $event) : void {
+		};
 
 		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
 	}

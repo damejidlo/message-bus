@@ -36,8 +36,7 @@ class LogMessageResolverTest extends DjTestCase
 		string $expectedHandlingStartedMessage,
 		string $expectedHandlingEndedSuccessfullyMessage,
 		string $expectedHandlingEndedWithErrorMessage
-	) : void
-	{
+	) : void {
 		$resolver = new LogMessageResolver();
 
 		/** @var IBusMessage|MockInterface $message */
