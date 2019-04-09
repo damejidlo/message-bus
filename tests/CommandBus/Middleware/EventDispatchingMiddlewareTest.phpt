@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../bootstrap.php';
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\CommandBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\IEventDispatchQueue;
+use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -31,11 +31,11 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 	public function testEventsGetDispatchedAfterSuccessfulCommandHandling() : void
 	{
 		$eventQueue = $this->mockEventQueue();
-		$eventDispatchQueue = $this->mockEventDispatchQueue();
+		$eventDispatcher = $this->mockEventDispatcher();
 
 		$middleware = new EventDispatchingMiddleware(
 			$eventQueue,
-			$eventDispatchQueue
+			$eventDispatcher
 		);
 
 		$command = $this->mockCommand();
@@ -54,7 +54,7 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 		// expectations
 		foreach ($events as $event) {
-			$eventDispatchQueue->shouldReceive('enqueue')->once()->with($event);
+			$eventDispatcher->shouldReceive('dispatch')->once()->with($event);
 		}
 
 		$result = $middleware->handle($command, function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
@@ -72,11 +72,11 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 	public function testNoEventsGetDispatchedWhenCommandHandlingFails() : void
 	{
 		$eventQueue = $this->mockEventQueue();
-		$eventDispatchQueue = $this->mockEventDispatchQueue();
+		$eventDispatcher = $this->mockEventDispatcher();
 
 		$middleware = new EventDispatchingMiddleware(
 			$eventQueue,
-			$eventDispatchQueue
+			$eventDispatcher
 		);
 
 		$command = $this->mockCommand();
@@ -92,7 +92,7 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 		];
 
 		// expectations
-		$eventDispatchQueue->shouldReceive('enqueue')->never();
+		$eventDispatcher->shouldReceive('dispatch')->never();
 		$eventQueue->shouldReceive('releaseEvents')->once()->andReturn($events);
 
 		Assert::exception(function () use ($middleware, $command, &$nextMiddlewareCallbackCalled) : void {
@@ -110,11 +110,11 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 	public function testHandleFailsWhenEventDispatchFails() : void
 	{
 		$eventQueue = $this->mockEventQueue();
-		$eventDispatchQueue = $this->mockEventDispatchQueue();
+		$eventDispatcher = $this->mockEventDispatcher();
 
 		$middleware = new EventDispatchingMiddleware(
 			$eventQueue,
-			$eventDispatchQueue
+			$eventDispatcher
 		);
 
 		$command = $this->mockCommand();
@@ -131,7 +131,7 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 		// expectations
 		$eventQueue->shouldReceive('releaseEvents')->once()->andReturn($events);
-		$eventDispatchQueue->shouldReceive('enqueue')->once()->andThrow(\Exception::class);
+		$eventDispatcher->shouldReceive('dispatch')->once()->andThrow(\Exception::class);
 		$eventQueue->shouldReceive('releaseEvents')->once()->andReturn([]);
 
 		Assert::exception(function () use ($middleware, $command, &$nextMiddlewareCallbackCalled) : void {
@@ -158,11 +158,11 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IEventDispatchQueue|MockInterface
+	 * @return IEventDispatcher|MockInterface
 	 */
-	private function mockEventDispatchQueue() : IEventDispatchQueue
+	private function mockEventDispatcher() : IEventDispatcher
 	{
-		$mock = Mockery::mock(IEventDispatchQueue::class);
+		$mock = Mockery::mock(IEventDispatcher::class);
 
 		return $mock;
 	}

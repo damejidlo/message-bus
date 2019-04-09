@@ -6,12 +6,9 @@ namespace Damejidlo\EventBus;
 /**
  * Enqueues events that are raised for later dispatch.
  */
-interface IEventDispatchQueue
+interface IEventDispatcher
 {
 
-	/**
-	 * @param IDomainEvent $event
-	 */
-	public function enqueue(IDomainEvent $event) : void;
+	public function dispatch(IDomainEvent $event) : void;
 
 }

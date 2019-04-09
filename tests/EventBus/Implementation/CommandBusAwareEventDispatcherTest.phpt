@@ -10,8 +10,8 @@ namespace DamejidloTests\EventBus\Implementation;
 require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\IEventDispatchQueue;
-use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatchQueue;
+use Damejidlo\EventBus\IEventDispatcher;
+use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use DamejidloTests\DjTestCase;
@@ -21,19 +21,19 @@ use Tester\Assert;
 
 
 
-class CommandBusAwareEventDispatchQueueTest extends DjTestCase
+class CommandBusAwareEventDispatcherTest extends DjTestCase
 {
 
 	public function testEnqueueWhenUsingCommandBus() : void
 	{
 		$isCurrentlyHandlingAwareMiddleware = $this->mockIsCurrentlyHandlingAwareMiddleware();
 		$eventQueue = $this->mockEventQueue();
-		$eventDispatchQueue = $this->mockEventDispatchQueue();
+		$delegate = $this->mockEventDispatcher();
 
-		$queue = new CommandBusAwareEventDispatchQueue(
+		$dispatcher = new CommandBusAwareEventDispatcher(
 			$isCurrentlyHandlingAwareMiddleware,
 			$eventQueue,
-			$eventDispatchQueue
+			$delegate
 		);
 
 		$event = $this->mockIDomainEvent();
@@ -44,8 +44,8 @@ class CommandBusAwareEventDispatchQueueTest extends DjTestCase
 		// expectations
 		$eventQueue->shouldReceive('enqueue')->once()->with($event);
 
-		Assert::noError(function () use ($queue, $event) : void {
-			$queue->enqueue($event);
+		Assert::noError(function () use ($dispatcher, $event) : void {
+			$dispatcher->dispatch($event);
 		});
 	}
 
@@ -55,24 +55,23 @@ class CommandBusAwareEventDispatchQueueTest extends DjTestCase
 	{
 		$isCurrentlyHandlingAwareMiddleware = $this->mockIsCurrentlyHandlingAwareMiddleware();
 		$eventQueue = $this->mockEventQueue();
-		$eventDispatchQueue = $this->mockEventDispatchQueue();
+		$delegate = $this->mockEventDispatcher();
 
-		$queue = new CommandBusAwareEventDispatchQueue(
+		$queue = new CommandBusAwareEventDispatcher(
 			$isCurrentlyHandlingAwareMiddleware,
 			$eventQueue,
-			$eventDispatchQueue
+			$delegate
 		);
 
 		$event = $this->mockIDomainEvent();
 
-
 		$isCurrentlyHandlingAwareMiddleware->shouldReceive('isHandling')->andReturn(FALSE);
 
 		// expectations
-		$eventDispatchQueue->shouldReceive('enqueue')->once()->with($event);
+		$delegate->shouldReceive('dispatch')->once()->with($event);
 
 		Assert::noError(function () use ($queue, $event) : void {
-			$queue->enqueue($event);
+			$queue->dispatch($event);
 		});
 	}
 
@@ -103,11 +102,11 @@ class CommandBusAwareEventDispatchQueueTest extends DjTestCase
 
 
 	/**
-	 * @return IEventDispatchQueue|MockInterface
+	 * @return IEventDispatcher|MockInterface
 	 */
-	private function mockEventDispatchQueue() : IEventDispatchQueue
+	private function mockEventDispatcher() : IEventDispatcher
 	{
-		$mock = Mockery::mock(IEventDispatchQueue::class);
+		$mock = Mockery::mock(IEventDispatcher::class);
 
 		return $mock;
 	}
@@ -128,4 +127,4 @@ class CommandBusAwareEventDispatchQueueTest extends DjTestCase
 
 
 
-(new CommandBusAwareEventDispatchQueueTest())->run();
+(new CommandBusAwareEventDispatcherTest())->run();

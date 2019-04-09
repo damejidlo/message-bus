@@ -15,7 +15,7 @@ interface IEventBus
 	 * @internal
 	 *
 	 * Should not be used directly!
-	 * @see IEventDispatchQueue instead for event dispatching
+	 * @see IEventDispatcher instead for event dispatching
 	 *
 	 * Should not fail, throws no exceptions.
 	 */
