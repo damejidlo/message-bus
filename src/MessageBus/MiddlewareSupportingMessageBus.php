@@ -1,16 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\EventBus\Implementation;
+namespace Damejidlo\MessageBus;
 
-use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\IEventBus;
-use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
-
-
-
-final class MiddlewareSupportingEventBus implements IEventBus
+final class MiddlewareSupportingMessageBus implements IMessageBus
 {
 
 	/**
@@ -30,9 +23,9 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 
 
-	public function __construct(MiddlewareCallbackChainCreator $middlewareCallbackChainCreator)
+	public function __construct(?MiddlewareCallbackChainCreator $middlewareCallbackChainCreator = NULL)
 	{
-		$this->middlewareCallbackChainCreator = $middlewareCallbackChainCreator;
+		$this->middlewareCallbackChainCreator = $middlewareCallbackChainCreator ?? new MiddlewareCallbackChainCreator();
 	}
 
 
@@ -46,11 +39,14 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 
 
-	public function handle(IDomainEvent $event) : void
+	/**
+	 * @inheritDoc
+	 */
+	public function handle(IBusMessage $message)
 	{
 		$callback = $this->getCachedCallback();
 
-		$callback($event);
+		return $callback($message);
 	}
 
 
@@ -68,7 +64,7 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 	private function createMiddlewareCallback() : \Closure
 	{
-		$endChainWithCallback = function (IDomainEvent $event) : void {
+		$endChainWithCallback = function (IBusMessage $message) : void {
 		};
 
 		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
