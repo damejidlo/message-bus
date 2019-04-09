@@ -14,12 +14,13 @@
     },
 
     "require-dev": {
-        "damejidlo/coding-standard": "^0.9.0",
+        "damejidlo/coding-standard": "^0.10.0",
         "jakub-onderka/php-parallel-lint": "^1.0",
         "mockery/mockery": "^1.2",
-        "nette/tester": "^2.1",
-        "phpstan/phpstan-mockery": "^0.10.2",
-        "phpstan/phpstan-shim": "^0.10.5"
+        "nette/tester": "^2.2",
+	    "phpstan/phpstan": "^0.11.5",
+	    "phpstan/phpstan-mockery": "^0.11",
+	    "phpstan/phpstan-shim": "^0.11.5"
     },
     "autoload-dev": {
         "classmap": [
