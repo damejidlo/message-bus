@@ -5,15 +5,16 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\CommandBus\Implementation;
+namespace DamejidloTests\CommandBus;
 
-require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
+use Damejidlo\CommandBus\CommandBus;
 use Damejidlo\CommandBus\ICommand;
-use Damejidlo\CommandBus\Implementation\MiddlewareSupportingCommandBus;
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
+use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -27,12 +28,13 @@ class MiddlewareSupportingCommandBusTest extends DjTestCase
 	public function testHandleWithCorrectOrder() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$commandBus = new MiddlewareSupportingCommandBus($middlewareCallbackChainCreator);
+		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
+		$commandBus = new CommandBus($messageBus);
 
 		$command = $this->mockCommand();
 
 		$middleware = $this->mockMiddleware();
-		$commandBus->appendMiddleware($middleware);
+		$messageBus->appendMiddleware($middleware);
 
 		$callbackChainCalled = FALSE;
 		$newEntityId = new NewEntityId('');
@@ -60,7 +62,8 @@ class MiddlewareSupportingCommandBusTest extends DjTestCase
 	public function testHandleFails() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$commandBus = new MiddlewareSupportingCommandBus($middlewareCallbackChainCreator);
+		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
+		$commandBus = new CommandBus($messageBus);
 
 		$exception = new \Exception();
 

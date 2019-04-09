@@ -5,14 +5,15 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\EventBus\Implementation;
+namespace DamejidloTests\EventBus;
 
-require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
+use Damejidlo\EventBus\EventBus;
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\Implementation\MiddlewareSupportingEventBus;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
+use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -26,12 +27,13 @@ class MiddlewareSupportingEventBusTest extends DjTestCase
 	public function testHandleWithCorrectOrder() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$eventBus = new MiddlewareSupportingEventBus($middlewareCallbackChainCreator);
+		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
+		$eventBus = new EventBus($messageBus);
 
 		$event = $this->mockEvent();
 
 		$middleware = $this->mockMiddleware();
-		$eventBus->appendMiddleware($middleware);
+		$messageBus->appendMiddleware($middleware);
 
 		$callbackChainCalled = FALSE;
 
@@ -57,7 +59,8 @@ class MiddlewareSupportingEventBusTest extends DjTestCase
 	public function testHandleFails() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$eventBus = new MiddlewareSupportingEventBus($middlewareCallbackChainCreator);
+		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
+		$eventBus = new EventBus($messageBus);
 
 		$exception = new \Exception();
 
