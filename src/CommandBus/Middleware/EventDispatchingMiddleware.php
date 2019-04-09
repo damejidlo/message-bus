@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\CommandBus\Middleware;
 
-use Damejidlo\EventBus\IEventDispatchQueue;
+use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
@@ -22,18 +22,18 @@ class EventDispatchingMiddleware implements IMessageBusMiddleware
 	private $eventQueue;
 
 	/**
-	 * @var IEventDispatchQueue
+	 * @var IEventDispatcher
 	 */
-	private $eventDispatchQueue;
+	private $eventDispatcher;
 
 
 
 	public function __construct(
 		InMemoryEventQueue $eventQueue,
-		IEventDispatchQueue $eventDispatchQueue
+		IEventDispatcher $eventDispatcher
 	) {
 		$this->eventQueue = $eventQueue;
-		$this->eventDispatchQueue = $eventDispatchQueue;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 
@@ -47,7 +47,7 @@ class EventDispatchingMiddleware implements IMessageBusMiddleware
 			$result = $nextMiddlewareCallback($message);
 
 			foreach ($this->eventQueue->releaseEvents() as $event) {
-				$this->eventDispatchQueue->enqueue($event);
+				$this->eventDispatcher->dispatch($event);
 			}
 
 			return $result;

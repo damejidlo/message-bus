@@ -4,12 +4,12 @@ declare(strict_types = 1);
 namespace Damejidlo\EventBus\Implementation;
 
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\IEventDispatchQueue;
+use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 
 
 
-class CommandBusAwareEventDispatchQueue implements IEventDispatchQueue
+class CommandBusAwareEventDispatcher implements IEventDispatcher
 {
 
 	/**
@@ -23,34 +23,30 @@ class CommandBusAwareEventDispatchQueue implements IEventDispatchQueue
 	private $eventQueue;
 
 	/**
-	 * @var IEventDispatchQueue
+	 * @var IEventDispatcher
 	 */
-	private $eventDispatchQueue;
+	private $delegate;
 
 
 
 	public function __construct(
 		IsCurrentlyHandlingAwareMiddleware $isCurrentlyHandlingAwareMiddleware,
 		InMemoryEventQueue $eventQueue,
-		IEventDispatchQueue $eventDispatchQueue
+		IEventDispatcher $delegate
 	) {
 		$this->isCurrentlyHandlingAwareMiddleware = $isCurrentlyHandlingAwareMiddleware;
 		$this->eventQueue = $eventQueue;
-		$this->eventDispatchQueue = $eventDispatchQueue;
+		$this->delegate = $delegate;
 	}
 
 
 
-	/**
-	 * @inheritdoc
-	 */
-	public function enqueue(IDomainEvent $event) : void
+	public function dispatch(IDomainEvent $event) : void
 	{
 		if ($this->isCurrentlyHandlingAwareMiddleware->isHandling()) {
 			$this->eventQueue->enqueue($event);
 		} else {
-			// passthru
-			$this->eventDispatchQueue->enqueue($event);
+			$this->delegate->dispatch($event);
 		}
 	}
 
