@@ -19,10 +19,6 @@ final class CommandHandlerResolver implements ICommandHandlerResolver
 
 
 
-	/**
-	 * @param string $commandType
-	 * @param string $handlerType
-	 */
 	public function registerHandler(string $commandType, string $handlerType) : void
 	{
 		$this->handlerTypesByCommandType[$commandType] = $handlerType;
