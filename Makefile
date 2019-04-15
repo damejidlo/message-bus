@@ -1,5 +1,12 @@
 build: vendor
 
+rebuild: delete-vendor build
+
+.PHONY: delete-vendor
+delete-vendor:
+	rm -rf vendor
+	rm composer.lock
+
 vendor:
 	composer update --no-interaction --optimize-autoloader --prefer-dist
 
