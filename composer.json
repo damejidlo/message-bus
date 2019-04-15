@@ -1,30 +1,30 @@
 {
-    "name": "damejidlo/message-bus",
-    "description": "",
-    "type": "library",
-    "license": "BSD-3-Clause",
-    "require": {
-        "php": ">=7.2",
-        "psr/log": "^1.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Damejidlo\\": "src/"
-        }
-    },
+	"name": "damejidlo/message-bus",
+	"description": "",
+	"type": "library",
+	"license": "BSD-3-Clause",
+	"require": {
+		"php": ">=7.2",
+		"psr/log": "^1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Damejidlo\\": "src/"
+		}
+	},
 
-    "require-dev": {
-        "damejidlo/coding-standard": "^0.10.0",
-        "jakub-onderka/php-parallel-lint": "^1.0",
-        "mockery/mockery": "^1.2",
-        "nette/tester": "^2.2",
-	    "phpstan/phpstan": "^0.11.5",
-	    "phpstan/phpstan-mockery": "^0.11",
-	    "phpstan/phpstan-shim": "^0.11.5"
-    },
-    "autoload-dev": {
-        "classmap": [
-            "tests/"
-        ]
-    }
+	"require-dev": {
+		"damejidlo/coding-standard": "^0.10.0",
+		"jakub-onderka/php-parallel-lint": "^1.0",
+		"mockery/mockery": "^1.2",
+		"nette/tester": "^2.2",
+		"phpstan/phpstan": "^0.11.5",
+		"phpstan/phpstan-mockery": "^0.11",
+		"phpstan/phpstan-shim": "^0.11.5"
+	},
+	"autoload-dev": {
+		"classmap": [
+			"tests/"
+		]
+	}
 }
