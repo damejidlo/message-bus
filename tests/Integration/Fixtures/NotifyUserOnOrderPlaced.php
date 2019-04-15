@@ -9,7 +9,7 @@ use Damejidlo\EventBus\IEventSubscriber;
 final class NotifyUserOnOrderPlaced implements IEventSubscriber
 {
 
-	public function handle(OrderCreatedEvent $event) : void
+	public function handle(OrderPlacedEvent $event) : void
 	{
 	}
 

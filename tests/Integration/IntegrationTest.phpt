@@ -32,7 +32,7 @@ use DamejidloTests\Integration\Fakes\FakeCommandHandlerProvider;
 use DamejidloTests\Integration\Fakes\FakeEventSubscriberProvider;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
-use DamejidloTests\Integration\Fixtures\OrderCreatedEvent;
+use DamejidloTests\Integration\Fixtures\OrderPlacedEvent;
 use DamejidloTests\Integration\Fixtures\PlaceOrderCommand;
 use DamejidloTests\Integration\Fixtures\PlaceOrderHandler;
 use Psr\Log\Test\TestLogger;
@@ -83,14 +83,14 @@ class IntegrationTest extends DjTestCase
 					'level' => 'info',
 					'message' => 'Event handling started.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderCreatedEvent',
+						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling in subscriber started.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderCreatedEvent',
+						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\CreateInvoiceOnOrderPlaced',
 					],
 				],
@@ -98,7 +98,7 @@ class IntegrationTest extends DjTestCase
 					'level' => 'info',
 					'message' => 'Event handling in subscriber ended successfully.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderCreatedEvent',
+						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\CreateInvoiceOnOrderPlaced',
 					],
 				],
@@ -106,7 +106,7 @@ class IntegrationTest extends DjTestCase
 					'level' => 'info',
 					'message' => 'Event handling in subscriber started.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderCreatedEvent',
+						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\NotifyUserOnOrderPlaced',
 					],
 				],
@@ -114,7 +114,7 @@ class IntegrationTest extends DjTestCase
 					'level' => 'info',
 					'message' => 'Event handling in subscriber ended successfully.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderCreatedEvent',
+						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\NotifyUserOnOrderPlaced',
 					],
 				],
@@ -122,7 +122,7 @@ class IntegrationTest extends DjTestCase
 					'level' => 'info',
 					'message' => 'Event handling ended successfully.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderCreatedEvent',
+						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 					],
 				],
 			],
@@ -147,7 +147,7 @@ class IntegrationTest extends DjTestCase
 		];
 
 		$eventSubscribersByEventType = [
-			OrderCreatedEvent::class => $eventSubscribers,
+			OrderPlacedEvent::class => $eventSubscribers,
 		];
 
 		$eventSubscribersResolver = new EventSubscribersResolver();

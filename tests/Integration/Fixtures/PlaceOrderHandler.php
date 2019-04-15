@@ -27,7 +27,7 @@ class PlaceOrderHandler implements ICommandHandler
 
 	public function handle(PlaceOrderCommand $command) : NewEntityId
 	{
-		$event = new OrderCreatedEvent();
+		$event = new OrderPlacedEvent();
 		$this->eventDispatcher->dispatch($event);
 
 		return NewEntityId::fromInteger(1);

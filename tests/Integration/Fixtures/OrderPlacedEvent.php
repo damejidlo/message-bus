@@ -6,7 +6,7 @@ use Damejidlo\EventBus\IDomainEvent;
 
 
 
-class OrderCreatedEvent implements IDomainEvent
+class OrderPlacedEvent implements IDomainEvent
 {
 
 }
