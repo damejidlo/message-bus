@@ -28,9 +28,8 @@ final class MiddlewareSupportingCommandBus implements ICommandBus
 	 */
 	private $cachedCallback = NULL;
 
-	/**
-	 * @param MiddlewareCallbackChainCreator $middlewareCallbackChainCreator
-	 */
+
+
 	public function __construct(MiddlewareCallbackChainCreator $middlewareCallbackChainCreator)
 	{
 		$this->middlewareCallbackChainCreator = $middlewareCallbackChainCreator;
@@ -38,9 +37,6 @@ final class MiddlewareSupportingCommandBus implements ICommandBus
 
 
 
-	/**
-	 * @param IMessageBusMiddleware $middleware
-	 */
 	public function appendMiddleware(IMessageBusMiddleware $middleware) : void
 	{
 		$this->middleware[] = $middleware;
@@ -50,9 +46,6 @@ final class MiddlewareSupportingCommandBus implements ICommandBus
 
 
 
-	/**
-	 * @inheritdoc
-	 */
 	public function handle(ICommand $command) : ?NewEntityId
 	{
 		$callback = $this->getCachedCallback();
@@ -75,7 +68,8 @@ final class MiddlewareSupportingCommandBus implements ICommandBus
 
 	private function createMiddlewareCallback() : \Closure
 	{
-		$endChainWithCallback = function (ICommand $command) : void {};
+		$endChainWithCallback = function (ICommand $command) : void {
+		};
 
 		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
 	}

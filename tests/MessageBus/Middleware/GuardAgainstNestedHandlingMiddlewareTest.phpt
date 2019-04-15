@@ -35,12 +35,15 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 
 		$result = 'some-result';
 
-		$actualResult = $middleware->handle($message, function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
-			Assert::same($message, $actualMessage);
-			$nextMiddlewareWasCalled = TRUE;
+		$actualResult = $middleware->handle(
+			$message,
+			function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
+				Assert::same($message, $actualMessage);
+				$nextMiddlewareWasCalled = TRUE;
 
-			return $result;
-		});
+				return $result;
+			}
+		);
 
 		Assert::true($nextMiddlewareWasCalled);
 		Assert::same($result, $actualResult);
@@ -56,9 +59,15 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 
 		$message = $this->mockBusMessage();
 
-		Assert::noError(function () use ($middleware, $message) : void {
-			$middleware->handle($message, function (IBusMessage $message) : void {});
-		});
+		Assert::noError(
+			function () use ($middleware, $message) : void {
+				$middleware->handle(
+					$message,
+					function (IBusMessage $message) : void {
+					}
+				);
+			}
+		);
 	}
 
 
@@ -71,9 +80,16 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 
 		$message = $this->mockBusMessage();
 
-		Assert::exception(function () use ($middleware, $message) : void {
-			$middleware->handle($message, function (IBusMessage $message) : void {});
-		}, AlreadyHandlingOtherMessageException::class);
+		Assert::exception(
+			function () use ($middleware, $message) : void {
+				$middleware->handle(
+					$message,
+					function (IBusMessage $message) : void {
+					}
+				);
+			},
+			AlreadyHandlingOtherMessageException::class
+		);
 	}
 
 

@@ -39,7 +39,7 @@ class MessageContextResolverTest extends DjTestCase
 	{
 		$resolver = new MessageContextResolver();
 
-		$message  = new SubscriberSpecificDomainEvent(new TestEvent(), 'someSubscriberType');
+		$message = new SubscriberSpecificDomainEvent(new TestEvent(), 'someSubscriberType');
 
 		Assert::equal(
 			[

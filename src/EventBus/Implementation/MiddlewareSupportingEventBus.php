@@ -30,9 +30,6 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 
 
-	/**
-	 * @param MiddlewareCallbackChainCreator $middlewareCallbackChainCreator
-	 */
 	public function __construct(MiddlewareCallbackChainCreator $middlewareCallbackChainCreator)
 	{
 		$this->middlewareCallbackChainCreator = $middlewareCallbackChainCreator;
@@ -40,9 +37,6 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 
 
-	/**
-	 * @param IMessageBusMiddleware $middleware
-	 */
 	public function appendMiddleware(IMessageBusMiddleware $middleware) : void
 	{
 		$this->middleware[] = $middleware;
@@ -52,9 +46,6 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 
 
-	/**
-	 * @inheritdoc
-	 */
 	public function handle(IDomainEvent $event) : void
 	{
 		$callback = $this->getCachedCallback();
@@ -77,7 +68,8 @@ final class MiddlewareSupportingEventBus implements IEventBus
 
 	private function createMiddlewareCallback() : \Closure
 	{
-		$endChainWithCallback = function (IDomainEvent $event) : void {};
+		$endChainWithCallback = function (IDomainEvent $event) : void {
+		};
 
 		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
 	}

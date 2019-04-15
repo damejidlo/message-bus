@@ -39,14 +39,18 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 
 		$subscriberSpecificDomainEventHandler = $this->mockSubscriberSpecificDomainEventHandler();
 		$subscriberSpecificDomainEventHandler->shouldReceive('handle')
-			->withArgs(function (SubscriberSpecificDomainEvent $message) use ($event) : bool {
-				return $message->getSubscriberType() === self::SUBSCRIBER_TYPE_1 && $message->getEvent() === $event;
-			})
+			->withArgs(
+				function (SubscriberSpecificDomainEvent $message) use ($event) : bool {
+					return $message->getSubscriberType() === self::SUBSCRIBER_TYPE_1 && $message->getEvent() === $event;
+				}
+			)
 			->once();
 		$subscriberSpecificDomainEventHandler->shouldReceive('handle')
-			->withArgs(function (SubscriberSpecificDomainEvent $message) use ($event) : bool {
-				return $message->getSubscriberType() === self::SUBSCRIBER_TYPE_2 && $message->getEvent() === $event;
-			})
+			->withArgs(
+				function (SubscriberSpecificDomainEvent $message) use ($event) : bool {
+					return $message->getSubscriberType() === self::SUBSCRIBER_TYPE_2 && $message->getEvent() === $event;
+				}
+			)
 			->once();
 
 		$middleware = new SubscribersResolvingMiddleware(
@@ -54,9 +58,15 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 			$subscriberSpecificDomainEventHandler
 		);
 
-		Assert::noError(function () use ($middleware, $event) : void {
-			$middleware->handle($event, function (IDomainEvent $event) : void {});
-		});
+		Assert::noError(
+			function () use ($middleware, $event) : void {
+				$middleware->handle(
+					$event,
+					function (IDomainEvent $event) : void {
+					}
+				);
+			}
+		);
 	}
 
 
@@ -70,9 +80,11 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 
 		$subscriberSpecificDomainEventHandler = $this->mockSubscriberSpecificDomainEventHandler();
 		$subscriberSpecificDomainEventHandler->shouldReceive('handle')
-			->withArgs(function (SubscriberSpecificDomainEvent $message) use ($event) : bool {
-				return $message->getSubscriberType() === self::SUBSCRIBER_TYPE_1 && $message->getEvent() === $event;
-			})
+			->withArgs(
+				function (SubscriberSpecificDomainEvent $message) use ($event) : bool {
+					return $message->getSubscriberType() === self::SUBSCRIBER_TYPE_1 && $message->getEvent() === $event;
+				}
+			)
 			->andThrow(EventSubscriberNotFoundException::class)
 			->once();
 
@@ -83,7 +95,11 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 
 		Assert::exception(
 			function () use ($middleware, $event) : void {
-				$middleware->handle($event, function (IDomainEvent $event) : void {});
+				$middleware->handle(
+					$event,
+					function (IDomainEvent $event) : void {
+					}
+				);
 			},
 			EventSubscriberNotFoundException::class
 		);
@@ -126,5 +142,7 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 	}
 
 }
+
+
 
 (new SubscribersResolvingMiddlewareTest())->run();

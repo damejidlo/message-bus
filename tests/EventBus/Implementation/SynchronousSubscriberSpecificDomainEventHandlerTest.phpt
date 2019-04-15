@@ -56,7 +56,10 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
 			->withArgs(
-				function (array $actualMiddleware, \Closure $endChainWithCallback) use (
+				function (
+					array $actualMiddleware,
+					\Closure $endChainWithCallback
+				) use (
 					$commonMiddleware,
 					$subscriberSpecificDomainEvent
 				) : bool {
@@ -66,7 +69,10 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 					return TRUE;
 				}
 			)->andReturn(
-				function (SubscriberSpecificDomainEvent $message) use ($subscriberSpecificDomainEvent, &$callbackChainCalled) : void {
+				function (SubscriberSpecificDomainEvent $message) use (
+					$subscriberSpecificDomainEvent,
+					&$callbackChainCalled
+				) : void {
 					$callbackChainCalled = TRUE;
 					Assert::same($subscriberSpecificDomainEvent, $message);
 				}
@@ -75,9 +81,11 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 		// expectations
 		$subscriber->shouldReceive('handle')->once()->with($event);
 
-		Assert::noError(function () use ($middleware, $subscriberSpecificDomainEvent) : void {
-			$middleware->handle($subscriberSpecificDomainEvent);
-		});
+		Assert::noError(
+			function () use ($middleware, $subscriberSpecificDomainEvent) : void {
+				$middleware->handle($subscriberSpecificDomainEvent);
+			}
+		);
 	}
 
 
@@ -87,7 +95,9 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 		$event = $this->mockEvent();
 
 		$subscriberProvider = $this->mockEventSubscriberProvider();
-		$subscriberProvider->shouldReceive('getByType')->with(self::SUBSCRIBER_TYPE)->andThrow(EventSubscriberNotFoundException::class);
+		$subscriberProvider->shouldReceive('getByType')->with(self::SUBSCRIBER_TYPE)->andThrow(
+			EventSubscriberNotFoundException::class
+		);
 
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
 
@@ -97,9 +107,12 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 		);
 
 		$subscriberSpecificDomainEvent = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
-		Assert::exception(function () use ($middleware, $subscriberSpecificDomainEvent) : void {
-			$middleware->handle($subscriberSpecificDomainEvent);
-		}, EventSubscriberNotFoundException::class);
+		Assert::exception(
+			function () use ($middleware, $subscriberSpecificDomainEvent) : void {
+				$middleware->handle($subscriberSpecificDomainEvent);
+			},
+			EventSubscriberNotFoundException::class
+		);
 	}
 
 
@@ -163,5 +176,7 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 	}
 
 }
+
+
 
 (new SynchronousSubscriberSpecificDomainEventHandlerTest())->run();

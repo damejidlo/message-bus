@@ -31,12 +31,15 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 
 		$result = 'some-result';
 
-		$actualResult = $middleware->handle($message, function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
-			Assert::same($message, $actualMessage);
-			$nextMiddlewareWasCalled = TRUE;
+		$actualResult = $middleware->handle(
+			$message,
+			function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
+				Assert::same($message, $actualMessage);
+				$nextMiddlewareWasCalled = TRUE;
 
-			return $result;
-		});
+				return $result;
+			}
+		);
 
 		Assert::true($nextMiddlewareWasCalled);
 		Assert::same($result, $actualResult);
@@ -72,7 +75,11 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 
 		$message = $this->mockBusMessage();
 
-		$middleware->handle($message, function (IBusMessage $actualMessage) : void {});
+		$middleware->handle(
+			$message,
+			function (IBusMessage $actualMessage) : void {
+			}
+		);
 
 		Assert::false($middleware->isHandling());
 	}
@@ -87,11 +94,17 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 
 		$exception = new \Exception();
 
-		$actualException = Assert::exception(function () use ($middleware, $message, $exception) : void {
-			$middleware->handle($message, function (IBusMessage $actualMessage) use ($exception) : void {
-				throw $exception;
-			});
-		}, \Exception::class);
+		$actualException = Assert::exception(
+			function () use ($middleware, $message, $exception) : void {
+				$middleware->handle(
+					$message,
+					function (IBusMessage $actualMessage) use ($exception) : void {
+						throw $exception;
+					}
+				);
+			},
+			\Exception::class
+		);
 
 		Assert::same($exception, $actualException);
 

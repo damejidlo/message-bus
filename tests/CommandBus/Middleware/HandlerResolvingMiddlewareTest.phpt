@@ -53,7 +53,11 @@ class HandlerResolvingMiddlewareTest extends DjTestCase
 		$handler->shouldReceive('handle')->once()->with($command)->andReturn($newEntityId);
 
 		/** @var NewEntityId $result */
-		$result = $middleware->handle($command, function () : void {});
+		$result = $middleware->handle(
+			$command,
+			function () : void {
+			}
+		);
 
 		Assert::same(self::HANDLER_RETURN_VALUE, $result->getValue());
 	}
@@ -78,9 +82,16 @@ class HandlerResolvingMiddlewareTest extends DjTestCase
 		// expectations
 		$handler->shouldReceive('handle')->never();
 
-		Assert::exception(function () use ($middleware, $command) : void {
-			$middleware->handle($command, function () : void {});
-		}, CommandHandlerNotFoundException::class);
+		Assert::exception(
+			function () use ($middleware, $command) : void {
+				$middleware->handle(
+					$command,
+					function () : void {
+					}
+				);
+			},
+			CommandHandlerNotFoundException::class
+		);
 	}
 
 
