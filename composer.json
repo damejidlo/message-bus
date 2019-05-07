@@ -23,8 +23,8 @@
 		"phpstan/phpstan-shim": "^0.11.5"
 	},
 	"autoload-dev": {
-		"classmap": [
-			"tests/"
-		]
+		"psr-4": {
+			"DamejidloTests\\": "tests/"
+		}
 	}
 }
