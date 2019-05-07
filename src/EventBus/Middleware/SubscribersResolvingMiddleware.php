@@ -10,6 +10,7 @@ use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -41,7 +42,7 @@ final class SubscribersResolvingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$event = $this->castMessageToEvent($message);
 

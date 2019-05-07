@@ -42,11 +42,12 @@ final class MiddlewareCallback
 
 	/**
 	 * @param IBusMessage $message
+	 * @param MiddlewareContext $context
 	 * @return mixed
 	 */
-	public function __invoke(IBusMessage $message)
+	public function __invoke(IBusMessage $message, MiddlewareContext $context)
 	{
-		return ($this->callback)($message);
+		return ($this->callback)($message, $context);
 	}
 
 }

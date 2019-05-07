@@ -9,6 +9,7 @@ use Damejidlo\CommandBus\ICommandHandlerResolver;
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -40,7 +41,7 @@ final class HandlerResolvingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$command = $this->castMessageToCommand($message);
 

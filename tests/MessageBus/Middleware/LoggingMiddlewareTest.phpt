@@ -13,6 +13,7 @@ use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -50,6 +51,7 @@ class LoggingMiddlewareTest extends DjTestCase
 
 		$result = $middleware->handle(
 			$message,
+			MiddlewareContext::empty(),
 			MiddlewareCallback::fromClosure(
 				function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled) {
 					$nextMiddlewareCallbackCalled = TRUE;
@@ -93,6 +95,7 @@ class LoggingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $message, &$nextMiddlewareCallbackCalled, $exception) : void {
 				$middleware->handle(
 					$message,
+					MiddlewareContext::empty(),
 					MiddlewareCallback::fromClosure(
 						function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
 							$nextMiddlewareCallbackCalled = TRUE;

@@ -15,6 +15,7 @@ use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -58,10 +59,17 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 			$eventDispatcher->shouldReceive('dispatch')->once()->with($event);
 		}
 
-		$result = $middleware->handle($command, MiddlewareCallback::fromClosure(function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
-			$nextMiddlewareCallbackCalled = TRUE;
-			return self::CALLBACK_RETURN_VALUE;
-		}));
+		$result = $middleware->handle(
+			$command,
+			MiddlewareContext::empty(),
+			MiddlewareCallback::fromClosure(
+				function (ICommand $command) use (&$nextMiddlewareCallbackCalled) {
+					$nextMiddlewareCallbackCalled = TRUE;
+
+					return self::CALLBACK_RETURN_VALUE;
+				}
+			)
+		);
 
 		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
 
@@ -96,12 +104,21 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 		$eventDispatcher->shouldReceive('dispatch')->never();
 		$eventQueue->shouldReceive('releaseEvents')->once()->andReturn($events);
 
-		Assert::exception(function () use ($middleware, $command, &$nextMiddlewareCallbackCalled) : void {
-			$middleware->handle($command, MiddlewareCallback::fromClosure(function (ICommand $command) use (&$nextMiddlewareCallbackCalled) : void {
-				$nextMiddlewareCallbackCalled = TRUE;
-				throw new \Exception();
-			}));
-		}, \Exception::class);
+		Assert::exception(
+			function () use ($middleware, $command, &$nextMiddlewareCallbackCalled) : void {
+				$middleware->handle(
+					$command,
+					MiddlewareContext::empty(),
+					MiddlewareCallback::fromClosure(
+						function (ICommand $command) use (&$nextMiddlewareCallbackCalled) : void {
+							$nextMiddlewareCallbackCalled = TRUE;
+							throw new \Exception();
+						}
+					)
+				);
+			},
+			\Exception::class
+		);
 
 		Assert::true($nextMiddlewareCallbackCalled);
 	}
@@ -135,11 +152,20 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 		$eventDispatcher->shouldReceive('dispatch')->once()->andThrow(\Exception::class);
 		$eventQueue->shouldReceive('releaseEvents')->once()->andReturn([]);
 
-		Assert::exception(function () use ($middleware, $command, &$nextMiddlewareCallbackCalled) : void {
-			$middleware->handle($command, MiddlewareCallback::fromClosure(function (ICommand $command) use (&$nextMiddlewareCallbackCalled) : void {
-				$nextMiddlewareCallbackCalled = TRUE;
-			}));
-		}, \Exception::class);
+		Assert::exception(
+			function () use ($middleware, $command, &$nextMiddlewareCallbackCalled) : void {
+				$middleware->handle(
+					$command,
+					MiddlewareContext::empty(),
+					MiddlewareCallback::fromClosure(
+						function (ICommand $command) use (&$nextMiddlewareCallbackCalled) : void {
+							$nextMiddlewareCallbackCalled = TRUE;
+						}
+					)
+				);
+			},
+			\Exception::class
+		);
 
 		Assert::true($nextMiddlewareCallbackCalled);
 	}

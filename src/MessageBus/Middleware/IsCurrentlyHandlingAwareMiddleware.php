@@ -24,12 +24,12 @@ class IsCurrentlyHandlingAwareMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$this->isHandling = TRUE;
 
 		try {
-			return $nextMiddlewareCallback($message);
+			return $nextMiddlewareCallback($message, $context);
 		} finally {
 			$this->isHandling = FALSE;
 		}

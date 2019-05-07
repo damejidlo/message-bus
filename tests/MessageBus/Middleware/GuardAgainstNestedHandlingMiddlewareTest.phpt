@@ -14,6 +14,7 @@ use Damejidlo\MessageBus\Middleware\AlreadyHandlingOtherMessageException;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -38,6 +39,7 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 
 		$actualResult = $middleware->handle(
 			$message,
+			MiddlewareContext::empty(),
 			MiddlewareCallback::fromClosure(function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
 				Assert::same($message, $actualMessage);
 				$nextMiddlewareWasCalled = TRUE;
@@ -64,6 +66,7 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $message) : void {
 				$middleware->handle(
 					$message,
+					MiddlewareContext::empty(),
 					MiddlewareCallback::empty()
 				);
 			}
@@ -84,6 +87,7 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $message) : void {
 				$middleware->handle(
 					$message,
+					MiddlewareContext::empty(),
 					MiddlewareCallback::empty()
 				);
 			},

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Damejidlo\MessageBus;
 
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -50,7 +51,7 @@ final class MiddlewareSupportingMessageBus implements IMessageBus
 	{
 		$callback = $this->getCachedCallback();
 
-		return $callback($message);
+		return $callback($message, MiddlewareContext::empty());
 	}
 
 

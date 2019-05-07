@@ -17,6 +17,7 @@ use Damejidlo\CommandBus\ICommandHandlerResolver;
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\CommandBus\Middleware\HandlerResolvingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -56,6 +57,7 @@ class HandlerResolvingMiddlewareTest extends DjTestCase
 		/** @var NewEntityId $result */
 		$result = $middleware->handle(
 			$command,
+			MiddlewareContext::empty(),
 			MiddlewareCallback::empty()
 		);
 
@@ -86,6 +88,7 @@ class HandlerResolvingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $command) : void {
 				$middleware->handle(
 					$command,
+					MiddlewareContext::empty(),
 					MiddlewareCallback::empty()
 				);
 			},

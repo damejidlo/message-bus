@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Damejidlo\MessageBus;
 
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -31,17 +32,17 @@ class MiddlewareCallbackChainCreator
 	private function createMiddlewareCallback(int $index, array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
 	{
 		if (!array_key_exists($index, $middleware)) {
-			$callback = function (IBusMessage $message) use ($endChainWithCallback) {
-				return $endChainWithCallback($message);
+			$callback = function (IBusMessage $message, MiddlewareContext $context) use ($endChainWithCallback) {
+				return $endChainWithCallback($message, $context);
 			};
 
 			return MiddlewareCallback::fromClosure($callback);
 		}
 
-		$callback = function (IBusMessage $message) use ($index, $middleware, $endChainWithCallback) {
+		$callback = function (IBusMessage $message, MiddlewareContext $context) use ($index, $middleware, $endChainWithCallback) {
 			$singleMiddleware = $middleware[$index];
 
-			return $singleMiddleware->handle($message, $this->createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));
+			return $singleMiddleware->handle($message, $context, $this->createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));
 		};
 
 		return MiddlewareCallback::fromClosure($callback);
