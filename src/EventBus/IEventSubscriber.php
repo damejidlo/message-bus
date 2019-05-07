@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\EventBus;
 
-use Damejidlo\MessageBus\IBusMessageHandler;
+use Damejidlo\MessageBus\IMessageHandler;
 
 
 
@@ -22,7 +22,7 @@ use Damejidlo\MessageBus\IBusMessageHandler;
  *      public function handle(SomethingHappenedEvent $event) : void {}
  * }
  */
-interface IEventSubscriber extends IBusMessageHandler
+interface IEventSubscriber extends IMessageHandler
 {
 
 }
