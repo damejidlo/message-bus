@@ -16,6 +16,7 @@ use Damejidlo\EventBus\IEventSubscriberProvider;
 use Damejidlo\EventBus\Implementation\SynchronousSubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -58,7 +59,7 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 			->withArgs(
 				function (
 					array $actualMiddleware,
-					\Closure $endChainWithCallback
+					MiddlewareCallback $endChainWithCallback
 				) use (
 					$commonMiddleware,
 					$subscriberSpecificDomainEvent
@@ -69,13 +70,13 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 					return TRUE;
 				}
 			)->andReturn(
-				function (SubscriberSpecificDomainEvent $message) use (
+				MiddlewareCallback::fromClosure(function (SubscriberSpecificDomainEvent $message) use (
 					$subscriberSpecificDomainEvent,
 					&$callbackChainCalled
 				) : void {
 					$callbackChainCalled = TRUE;
 					Assert::same($subscriberSpecificDomainEvent, $message);
-				}
+				})
 			);
 
 		// expectations

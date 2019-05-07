@@ -31,7 +31,7 @@ class GuardAgainstNestedHandlingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
+	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		if ($this->isCurrentlyHandlingAwareMiddleware->isHandling()) {
 			throw new AlreadyHandlingOtherMessageException('Already handling other message.');

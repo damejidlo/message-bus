@@ -3,15 +3,19 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus;
 
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+
+
+
 interface IMessageBusMiddleware
 {
 
 	/**
 	 * @param IBusMessage $message typically a command or an event
-	 * @param \Closure $nextMiddlewareCallback takes IBusMessage argument and returns mixed
+	 * @param MiddlewareCallback $nextMiddlewareCallback
 	 * @return mixed
 	 *
-	 * Implement your logic and invoke $nextMiddlewareCallback with message argument where needed.
+	 * Implement your logic and invoke $nextMiddlewareCallback where needed.
 	 * $nextMiddlewareCallback must be invoked within the method.
 	 * Return the result of callback.
 	 *
@@ -19,6 +23,6 @@ interface IMessageBusMiddleware
 	 *
 	 * return $nextMiddlewareCallback($message);
 	 */
-	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback);
+	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback);
 
 }

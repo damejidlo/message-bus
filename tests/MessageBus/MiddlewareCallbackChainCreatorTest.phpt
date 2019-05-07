@@ -11,6 +11,7 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\MessageBus\IBusMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -54,7 +55,7 @@ class MiddlewareCallbackChainCreatorTest extends DjTestCase
 		};
 
 
-		$callback = $creator->create($middleware, $endChainWithCallback);
+		$callback = $creator->create($middleware, MiddlewareCallback::fromClosure($endChainWithCallback));
 		$result = $callback($message);
 
 		Assert::same(self::RETURN_VALUE, $result);
@@ -116,7 +117,7 @@ class FirstMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
+	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$this->log->log[] = MiddlewareCallbackChainCreatorTest::FIRST_MIDDLEWARE_BEFORE;
 
@@ -151,7 +152,7 @@ class SecondMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
+	public function handle(IBusMessage $message, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$this->log->log[] = MiddlewareCallbackChainCreatorTest::SECOND_MIDDLEWARE_BEFORE;
 

@@ -15,6 +15,7 @@ use Damejidlo\EventBus\IEventSubscribersResolver;
 use Damejidlo\EventBus\ISubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\Middleware\SubscribersResolvingMiddleware;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -62,8 +63,7 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $event) : void {
 				$middleware->handle(
 					$event,
-					function (IDomainEvent $event) : void {
-					}
+					MiddlewareCallback::empty()
 				);
 			}
 		);
@@ -97,8 +97,7 @@ class SubscribersResolvingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $event) : void {
 				$middleware->handle(
 					$event,
-					function (IDomainEvent $event) : void {
-					}
+					MiddlewareCallback::empty()
 				);
 			},
 			EventSubscriberNotFoundException::class

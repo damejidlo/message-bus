@@ -3,6 +3,10 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus;
 
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+
+
+
 final class MiddlewareSupportingMessageBus implements IMessageBus
 {
 
@@ -17,7 +21,7 @@ final class MiddlewareSupportingMessageBus implements IMessageBus
 	private $middleware = [];
 
 	/**
-	 * @var \Closure|NULL
+	 * @var MiddlewareCallback|NULL
 	 */
 	private $cachedCallback = NULL;
 
@@ -51,7 +55,7 @@ final class MiddlewareSupportingMessageBus implements IMessageBus
 
 
 
-	private function getCachedCallback() : \Closure
+	private function getCachedCallback() : MiddlewareCallback
 	{
 		if ($this->cachedCallback === NULL) {
 			$this->cachedCallback = $this->createMiddlewareCallback();
@@ -62,10 +66,9 @@ final class MiddlewareSupportingMessageBus implements IMessageBus
 
 
 
-	private function createMiddlewareCallback() : \Closure
+	private function createMiddlewareCallback() : MiddlewareCallback
 	{
-		$endChainWithCallback = function (IBusMessage $message) : void {
-		};
+		$endChainWithCallback = MiddlewareCallback::empty();
 
 		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
 	}
