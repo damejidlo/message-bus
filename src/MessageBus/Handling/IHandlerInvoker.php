@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Handling;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageHandler;
 
 
@@ -12,9 +12,9 @@ interface IHandlerInvoker
 
 	/**
 	 * @param IMessageHandler $handler
-	 * @param IBusMessage $message
+	 * @param IMessage $message
 	 * @return mixed
 	 */
-	public function invoke(IMessageHandler $handler, IBusMessage $message);
+	public function invoke(IMessageHandler $handler, IMessage $message);
 
 }

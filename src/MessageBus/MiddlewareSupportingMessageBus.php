@@ -47,7 +47,7 @@ final class MiddlewareSupportingMessageBus implements IMessageBus
 	/**
 	 * @inheritDoc
 	 */
-	public function handle(IBusMessage $message)
+	public function handle(IMessage $message)
 	{
 		$callback = $this->getCachedCallback();
 

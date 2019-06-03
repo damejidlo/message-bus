@@ -3,7 +3,7 @@
 namespace Damejidlo\MessageBus\Handling\Implementation;
 
 use Damejidlo\MessageBus\Handling\IHandlerInvoker;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageHandler;
 
 
@@ -14,7 +14,7 @@ final class HandlerInvoker implements IHandlerInvoker
 	/**
 	 * @inheritDoc
 	 */
-	public function invoke(IMessageHandler $handler, IBusMessage $message)
+	public function invoke(IMessageHandler $handler, IMessage $message)
 	{
 		$handleMethod = 'handle';
 		$callback = [$handler, $handleMethod];

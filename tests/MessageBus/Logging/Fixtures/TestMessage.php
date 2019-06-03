@@ -2,11 +2,11 @@
 
 namespace DamejidloTests\MessageBus\Logging\Fixtures;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
-class TestBusMessage implements IBusMessage
+class TestMessage implements IMessage
 {
 
 }

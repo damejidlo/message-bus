@@ -9,7 +9,7 @@ namespace DamejidloTests\MessageBus;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
@@ -46,7 +46,7 @@ class MiddlewareCallbackChainCreatorTest extends DjTestCase
 			new SecondMiddleware($log),
 		];
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$endChainWithCallback = function ($actualMessage) use ($log, $message) {
 			$log->log[] = MiddlewareCallbackChainCreatorTest::END_CHAIN_CALLBACK;
@@ -73,11 +73,11 @@ class MiddlewareCallbackChainCreatorTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockBusMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}
@@ -118,7 +118,7 @@ class FirstMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$this->log->log[] = MiddlewareCallbackChainCreatorTest::FIRST_MIDDLEWARE_BEFORE;
 
@@ -153,7 +153,7 @@ class SecondMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$this->log->log[] = MiddlewareCallbackChainCreatorTest::SECOND_MIDDLEWARE_BEFORE;
 

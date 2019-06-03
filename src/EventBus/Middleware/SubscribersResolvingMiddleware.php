@@ -7,7 +7,7 @@ use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\IEventSubscribersResolver;
 use Damejidlo\EventBus\ISubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
@@ -42,7 +42,7 @@ final class SubscribersResolvingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$event = $this->castMessageToEvent($message);
 
@@ -56,7 +56,7 @@ final class SubscribersResolvingMiddleware implements IMessageBusMiddleware
 
 
 
-	private function castMessageToEvent(IBusMessage $message) : IDomainEvent
+	private function castMessageToEvent(IMessage $message) : IDomainEvent
 	{
 		if (!$message instanceof IDomainEvent) {
 			throw new \InvalidArgumentException(sprintf('IDomainEvent instance expected, %s given.', get_class($message)));

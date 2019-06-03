@@ -9,7 +9,7 @@ namespace DamejidloTests\MessageBus;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
@@ -42,7 +42,7 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 			->withArgs(function (array $actualMiddleware, MiddlewareCallback $endChainWithCallback) use ($middleware) : bool {
 				Assert::same([$middleware], $actualMiddleware);
 				return TRUE;
-			})->andReturn(MiddlewareCallback::fromClosure(function (IBusMessage $actualMessage) use ($message, &$callbackChainCalled, $result) {
+			})->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($message, &$callbackChainCalled, $result) {
 				$callbackChainCalled = TRUE;
 				Assert::same($message, $actualMessage);
 
@@ -68,7 +68,7 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
-			->andReturn(MiddlewareCallback::fromClosure(function (IBusMessage $actualMessage) use ($exception) : void {
+			->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($exception) : void {
 				throw $exception;
 			}));
 
@@ -93,11 +93,11 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}

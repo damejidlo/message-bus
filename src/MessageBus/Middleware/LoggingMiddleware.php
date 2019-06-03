@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Middleware;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Logging\LogMessageResolver;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
@@ -46,7 +46,7 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$messageContext = $this->messageContextResolver->getContext($message);
 

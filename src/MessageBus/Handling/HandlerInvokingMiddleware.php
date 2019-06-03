@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Handling;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
@@ -35,7 +35,7 @@ final class HandlerInvokingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritDoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$handlerType = HandlerType::extractFrom($context);
 

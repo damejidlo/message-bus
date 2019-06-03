@@ -32,14 +32,14 @@ class MiddlewareCallbackChainCreator
 	private function createMiddlewareCallback(int $index, array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
 	{
 		if (!array_key_exists($index, $middleware)) {
-			$callback = function (IBusMessage $message, MiddlewareContext $context) use ($endChainWithCallback) {
+			$callback = function (IMessage $message, MiddlewareContext $context) use ($endChainWithCallback) {
 				return $endChainWithCallback($message, $context);
 			};
 
 			return MiddlewareCallback::fromClosure($callback);
 		}
 
-		$callback = function (IBusMessage $message, MiddlewareContext $context) use ($index, $middleware, $endChainWithCallback) {
+		$callback = function (IMessage $message, MiddlewareContext $context) use ($index, $middleware, $endChainWithCallback) {
 			$singleMiddleware = $middleware[$index];
 
 			return $singleMiddleware->handle($message, $context, $this->createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));

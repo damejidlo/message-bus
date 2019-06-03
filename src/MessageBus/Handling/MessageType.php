@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Handling;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
@@ -23,7 +23,7 @@ final class MessageType
 
 
 
-	public static function fromMessage(IBusMessage $message) : self
+	public static function fromMessage(IMessage $message) : self
 	{
 		return new self(get_class($message));
 	}

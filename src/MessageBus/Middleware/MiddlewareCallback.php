@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Middleware;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
@@ -33,7 +33,7 @@ final class MiddlewareCallback
 	public static function empty() : self
 	{
 		return new self(
-			function (IBusMessage $message) : void {
+			function (IMessage $message) : void {
 			}
 		);
 	}
@@ -41,11 +41,11 @@ final class MiddlewareCallback
 
 
 	/**
-	 * @param IBusMessage $message
+	 * @param IMessage $message
 	 * @param MiddlewareContext $context
 	 * @return mixed
 	 */
-	public function __invoke(IBusMessage $message, MiddlewareContext $context)
+	public function __invoke(IMessage $message, MiddlewareContext $context)
 	{
 		return ($this->callback)($message, $context);
 	}

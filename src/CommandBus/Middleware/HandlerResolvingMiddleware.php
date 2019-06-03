@@ -6,7 +6,7 @@ namespace Damejidlo\CommandBus\Middleware;
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\CommandBus\ICommandHandlerProvider;
 use Damejidlo\CommandBus\ICommandHandlerResolver;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
@@ -41,7 +41,7 @@ final class HandlerResolvingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$command = $this->castMessageToCommand($message);
 
@@ -62,7 +62,7 @@ final class HandlerResolvingMiddleware implements IMessageBusMiddleware
 
 
 
-	private function castMessageToCommand(IBusMessage $message) : ICommand
+	private function castMessageToCommand(IMessage $message) : ICommand
 	{
 		if (!$message instanceof ICommand) {
 			throw new \InvalidArgumentException(sprintf('ICommand instance expected, %s given.', get_class($message)));

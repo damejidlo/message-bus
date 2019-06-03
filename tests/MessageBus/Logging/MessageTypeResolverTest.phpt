@@ -6,12 +6,12 @@ namespace DamejidloTests\MessageBus\Logging;
 require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\MessageTypeResolver;
 use DamejidloTests\DjTestCase;
-use DamejidloTests\MessageBus\Logging\Fixtures\TestBusMessage;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestCommand;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestEvent;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestMessage;
 use Tester\Assert;
 
 
@@ -27,9 +27,9 @@ class MessageTypeResolverTest extends DjTestCase
 	 *
 	 * @param string $expectedMessageType
 	 * @param string $expectedSimplifiedMessageType
-	 * @param IBusMessage $message
+	 * @param IMessage $message
 	 */
-	public function testGetMessageType(string $expectedMessageType, string $expectedSimplifiedMessageType, IBusMessage $message) : void
+	public function testGetMessageType(string $expectedMessageType, string $expectedSimplifiedMessageType, IMessage $message) : void
 	{
 		$resolver = new MessageTypeResolver();
 
@@ -61,9 +61,9 @@ class MessageTypeResolverTest extends DjTestCase
 				new SubscriberSpecificDomainEvent(new TestEvent(), 'someType'),
 			],
 			[
-				TestBusMessage::class,
+				TestMessage::class,
 				'message',
-				new TestBusMessage(),
+				new TestMessage(),
 			],
 		];
 	}

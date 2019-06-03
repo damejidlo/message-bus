@@ -9,7 +9,7 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
@@ -39,7 +39,7 @@ class LoggingMiddlewareTest extends DjTestCase
 
 		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -53,7 +53,7 @@ class LoggingMiddlewareTest extends DjTestCase
 			$message,
 			MiddlewareContext::empty(),
 			MiddlewareCallback::fromClosure(
-				function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled) {
+				function (IMessage $message) use (&$nextMiddlewareCallbackCalled) {
 					$nextMiddlewareCallbackCalled = TRUE;
 
 					return self::CALLBACK_RETURN_VALUE;
@@ -74,7 +74,7 @@ class LoggingMiddlewareTest extends DjTestCase
 
 		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -97,7 +97,7 @@ class LoggingMiddlewareTest extends DjTestCase
 					$message,
 					MiddlewareContext::empty(),
 					MiddlewareCallback::fromClosure(
-						function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
+						function (IMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
 							$nextMiddlewareCallbackCalled = TRUE;
 							throw $exception;
 						}
@@ -126,11 +126,11 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockBusMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}

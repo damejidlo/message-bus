@@ -5,14 +5,14 @@ namespace Damejidlo\MessageBus\Logging;
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
 class MessageTypeResolver
 {
 
-	public function getMessageType(IBusMessage $message) : string
+	public function getMessageType(IMessage $message) : string
 	{
 		if ($message instanceof SubscriberSpecificDomainEvent) {
 			return get_class($message->getEvent());
@@ -23,7 +23,7 @@ class MessageTypeResolver
 
 
 
-	public function getSimplifiedMessageType(IBusMessage $message) : string
+	public function getSimplifiedMessageType(IMessage $message) : string
 	{
 		if ($message instanceof ICommand) {
 			return 'command';

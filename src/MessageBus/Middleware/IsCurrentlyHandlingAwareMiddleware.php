@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Middleware;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 
 
@@ -24,7 +24,7 @@ class IsCurrentlyHandlingAwareMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		$this->isHandling = TRUE;
 
