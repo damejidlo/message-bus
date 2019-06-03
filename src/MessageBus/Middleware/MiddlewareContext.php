@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Middleware;
 
-class MiddlewareContext
+final class MiddlewareContext
 {
 
 	/**
