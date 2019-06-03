@@ -9,7 +9,7 @@ use Damejidlo\MessageBus\Handling\MessageType;
 
 
 
-final class HandlerTypesResolverFromStaticArray implements IHandlerTypesResolver
+final class ArrayMapHandlerTypesResolver implements IHandlerTypesResolver
 {
 
 	/**

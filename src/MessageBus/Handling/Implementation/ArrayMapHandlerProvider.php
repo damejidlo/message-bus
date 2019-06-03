@@ -8,7 +8,7 @@ use Damejidlo\MessageBus\IMessageHandler;
 
 
 
-final class HandlerProviderFromStaticArray implements IHandlerProvider
+final class ArrayMapHandlerProvider implements IHandlerProvider
 {
 
 	/**

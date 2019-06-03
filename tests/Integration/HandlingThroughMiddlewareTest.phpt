@@ -14,9 +14,9 @@ use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
 use Damejidlo\MessageBus\Handling\HandlerNotFoundException;
 use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
+use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
+use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
-use Damejidlo\MessageBus\Handling\Implementation\HandlerProviderFromStaticArray;
-use Damejidlo\MessageBus\Handling\Implementation\HandlerTypesResolverFromStaticArray;
 use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
@@ -37,13 +37,13 @@ class HandlingThroughMiddlewareTest extends DjTestCase
 
 		$handler = new PlaceOrderHandler($eventDispatcher);
 
-		$handlerTypesResolver = new HandlerTypesResolverFromStaticArray([
+		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([
 			PlaceOrderCommand::class => [
 				PlaceOrderHandler::class,
 			],
 		]);
 
-		$handlerProvider = new HandlerProviderFromStaticArray([
+		$handlerProvider = new ArrayMapHandlerProvider([
 			PlaceOrderHandler::class => $handler,
 		]);
 
@@ -66,8 +66,8 @@ class HandlingThroughMiddlewareTest extends DjTestCase
 
 	public function testHandleFailsWithHandlerNotFound() : void
 	{
-		$handlerTypesResolver = new HandlerTypesResolverFromStaticArray([]);
-		$handlerProvider = new HandlerProviderFromStaticArray([]);
+		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([]);
+		$handlerProvider = new ArrayMapHandlerProvider([]);
 		$handlerInvoker = new HandlerInvoker();
 
 		$bus = new MiddlewareSupportingMessageBus();
