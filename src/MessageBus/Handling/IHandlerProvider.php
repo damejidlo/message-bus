@@ -9,6 +9,11 @@ use Damejidlo\MessageBus\IMessageHandler;
 interface IHandlerProvider
 {
 
+	/**
+	 * @param HandlerType $type
+	 * @return IMessageHandler
+	 * @throws HandlerNotFoundException
+	 */
 	public function get(HandlerType $type) : IMessageHandler;
 
 }

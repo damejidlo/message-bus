@@ -12,6 +12,7 @@ require_once __DIR__ . '/../bootstrap.php';
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
+use Damejidlo\MessageBus\Handling\HandlerNotFoundException;
 use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerProviderFromStaticArray;
@@ -29,7 +30,7 @@ use Tester\Assert;
 class HandlingThroughMiddlewareTest extends DjTestCase
 {
 
-	public function testHandle() : void
+	public function testHandleSucceedsWithEvents() : void
 	{
 		$eventDispatcher = Mockery::mock(IEventDispatcher::class);
 		$eventDispatcher->shouldReceive('dispatch')->once();
@@ -59,6 +60,26 @@ class HandlingThroughMiddlewareTest extends DjTestCase
 		Assert::type(NewEntityId::class, $result);
 		/** @var NewEntityId $result */
 		Assert::same(1, $result->toInteger());
+	}
+
+
+
+	public function testHandleFailsWithHandlerNotFound() : void
+	{
+		$handlerTypesResolver = new HandlerTypesResolverFromStaticArray([]);
+		$handlerProvider = new HandlerProviderFromStaticArray([]);
+		$handlerInvoker = new HandlerInvoker();
+
+		$bus = new MiddlewareSupportingMessageBus();
+		$bus->appendMiddleware(new HandlerTypesResolvingMiddleware($handlerTypesResolver));
+		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
+		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
+
+		$command = new PlaceOrderCommand();
+
+		Assert::exception(function () use ($bus, $command) : void {
+			$bus->handle($command);
+		}, HandlerNotFoundException::class);
 	}
 
 }
