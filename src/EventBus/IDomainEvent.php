@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\EventBus;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 /**
  * Event implementation must adhere to these rules:
@@ -16,7 +16,7 @@ use Damejidlo\MessageBus\IBusMessage;
  * - OrderRejectedEvent
  * - UserCreatedEvent
  */
-interface IDomainEvent extends IBusMessage
+interface IDomainEvent extends IMessage
 {
 
 }

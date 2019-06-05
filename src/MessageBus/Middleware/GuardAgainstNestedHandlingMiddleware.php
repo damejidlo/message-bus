@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Middleware;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 
 
@@ -31,13 +31,13 @@ class GuardAgainstNestedHandlingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		if ($this->isCurrentlyHandlingAwareMiddleware->isHandling()) {
 			throw new AlreadyHandlingOtherMessageException('Already handling other message.');
 		}
 
-		return $nextMiddlewareCallback($message);
+		return $nextMiddlewareCallback($message, $context);
 	}
 
 }

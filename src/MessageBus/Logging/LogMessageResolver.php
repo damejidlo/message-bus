@@ -3,7 +3,7 @@
 namespace Damejidlo\MessageBus\Logging;
 
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
@@ -25,7 +25,7 @@ class LogMessageResolver
 
 
 
-	public function getHandlingStartedMessage(IBusMessage $message) : string
+	public function getHandlingStartedMessage(IMessage $message) : string
 	{
 		return ucfirst(
 			sprintf(
@@ -38,7 +38,7 @@ class LogMessageResolver
 
 
 
-	public function getHandlingEndedSuccessfullyMessage(IBusMessage $message) : string
+	public function getHandlingEndedSuccessfullyMessage(IMessage $message) : string
 	{
 		return ucfirst(
 			sprintf(
@@ -51,7 +51,7 @@ class LogMessageResolver
 
 
 
-	public function getHandlingEndedWithErrorMessage(IBusMessage $message, \Throwable $exception) : string
+	public function getHandlingEndedWithErrorMessage(IMessage $message, \Throwable $exception) : string
 	{
 		return ucfirst(
 			sprintf(
@@ -65,7 +65,7 @@ class LogMessageResolver
 
 
 
-	private function getWhere(IBusMessage $message) : string
+	private function getWhere(IMessage $message) : string
 	{
 		if ($message instanceof SubscriberSpecificDomainEvent) {
 			return ' in subscriber';

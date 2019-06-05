@@ -8,9 +8,9 @@ require_once __DIR__ . '/../../bootstrap.php';
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use DamejidloTests\DjTestCase;
-use DamejidloTests\MessageBus\Logging\Fixtures\TestBusMessage;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestEvent;
-use DamejidloTests\MessageBus\Logging\Fixtures\TestLoggableBusMessage;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestLoggableMessage;
+use DamejidloTests\MessageBus\Logging\Fixtures\TestMessage;
 use Tester\Assert;
 
 
@@ -27,9 +27,9 @@ class MessageContextResolverTest extends DjTestCase
 
 		Assert::equal(
 			[
-				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestBusMessage',
+				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestMessage',
 			],
-			$resolver->getContext(new TestBusMessage())
+			$resolver->getContext(new TestMessage())
 		);
 	}
 
@@ -58,14 +58,14 @@ class MessageContextResolverTest extends DjTestCase
 
 		Assert::equal(
 			[
-				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
+				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableMessage',
 				'integerAttribute' => 1,
 				'stringAttribute' => 'string',
 				'arrayAttribute' => [
 					'nestedAttribute' => 'nested',
 				],
 			],
-			$resolver->getContext(new TestLoggableBusMessage([
+			$resolver->getContext(new TestLoggableMessage([
 				'integerAttribute' => 1,
 				'stringAttribute' => 'string',
 				'arrayAttribute' => [
@@ -83,14 +83,14 @@ class MessageContextResolverTest extends DjTestCase
 
 		Assert::equal(
 			[
-				'prefix_messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
+				'prefix_messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableMessage',
 				'prefix_integerAttribute' => 1,
 				'prefix_stringAttribute' => 'string',
 				'prefix_arrayAttribute' => [
 					'nestedAttribute' => 'nested',
 				],
 			],
-			$resolver->getContext(new TestLoggableBusMessage([
+			$resolver->getContext(new TestLoggableMessage([
 				'integerAttribute' => 1,
 				'stringAttribute' => 'string',
 				'arrayAttribute' => [
@@ -109,11 +109,11 @@ class MessageContextResolverTest extends DjTestCase
 		Assert::error(function () use ($resolver) : void {
 			Assert::equal(
 				[
-					'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableBusMessage',
+					'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestLoggableMessage',
 					'disambiguated_messageType' => 1,
 					'uniqueKey' => 1,
 				],
-				$resolver->getContext(new TestLoggableBusMessage([
+				$resolver->getContext(new TestLoggableMessage([
 					'messageType' => 1,
 					'uniqueKey' => 1,
 				]))

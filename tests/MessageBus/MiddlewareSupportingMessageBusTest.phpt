@@ -9,8 +9,9 @@ namespace DamejidloTests\MessageBus;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
@@ -38,15 +39,15 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
-			->withArgs(function (array $actualMiddleware, \Closure $endChainWithCallback) use ($middleware) : bool {
+			->withArgs(function (array $actualMiddleware, MiddlewareCallback $endChainWithCallback) use ($middleware) : bool {
 				Assert::same([$middleware], $actualMiddleware);
 				return TRUE;
-			})->andReturn(function (IBusMessage $actualMessage) use ($message, &$callbackChainCalled, $result) {
+			})->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($message, &$callbackChainCalled, $result) {
 				$callbackChainCalled = TRUE;
 				Assert::same($message, $actualMessage);
 
 				return $result;
-			});
+			}));
 
 		$actualResult = $messageBus->handle($message);
 		Assert::same($result, $actualResult);
@@ -67,9 +68,9 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
-			->andReturn(function (IBusMessage $actualMessage) use ($exception) : void {
+			->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($exception) : void {
 				throw $exception;
-			});
+			}));
 
 		$actualException = Assert::exception(function () use ($messageBus, $message) : void {
 			$messageBus->handle($message);
@@ -92,11 +93,11 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}

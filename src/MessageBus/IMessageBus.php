@@ -6,9 +6,9 @@ interface IMessageBus
 {
 
 	/**
-	 * @param IBusMessage $message
+	 * @param IMessage $message
 	 * @return mixed
 	 */
-	public function handle(IBusMessage $message);
+	public function handle(IMessage $message);
 
 }

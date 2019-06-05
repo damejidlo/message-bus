@@ -16,6 +16,8 @@ use Damejidlo\EventBus\IEventSubscriberProvider;
 use Damejidlo\EventBus\Implementation\SynchronousSubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -52,30 +54,32 @@ class SynchronousSubscriberSpecificDomainEventHandlerTest extends DjTestCase
 
 		$callbackChainCalled = FALSE;
 		$subscriberSpecificDomainEvent = new SubscriberSpecificDomainEvent($event, self::SUBSCRIBER_TYPE);
+		$context = MiddlewareContext::empty();
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
 			->withArgs(
 				function (
 					array $actualMiddleware,
-					\Closure $endChainWithCallback
+					MiddlewareCallback $endChainWithCallback
 				) use (
 					$commonMiddleware,
-					$subscriberSpecificDomainEvent
+					$subscriberSpecificDomainEvent,
+					$context
 				) : bool {
-					$endChainWithCallback($subscriberSpecificDomainEvent);
+					$endChainWithCallback($subscriberSpecificDomainEvent, $context);
 					Assert::same([$commonMiddleware], $actualMiddleware);
 
 					return TRUE;
 				}
 			)->andReturn(
-				function (SubscriberSpecificDomainEvent $message) use (
+				MiddlewareCallback::fromClosure(function (SubscriberSpecificDomainEvent $message) use (
 					$subscriberSpecificDomainEvent,
 					&$callbackChainCalled
 				) : void {
 					$callbackChainCalled = TRUE;
 					Assert::same($subscriberSpecificDomainEvent, $message);
-				}
+				})
 			);
 
 		// expectations

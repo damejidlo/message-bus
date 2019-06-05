@@ -9,8 +9,10 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -25,7 +27,7 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 	{
 		$middleware = new IsCurrentlyHandlingAwareMiddleware();
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$nextMiddlewareWasCalled = FALSE;
 
@@ -33,12 +35,13 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 
 		$actualResult = $middleware->handle(
 			$message,
-			function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
+			MiddlewareContext::empty(),
+			MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
 				Assert::same($message, $actualMessage);
 				$nextMiddlewareWasCalled = TRUE;
 
 				return $result;
-			}
+			})
 		);
 
 		Assert::true($nextMiddlewareWasCalled);
@@ -60,11 +63,17 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 	{
 		$middleware = new IsCurrentlyHandlingAwareMiddleware();
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
-		$middleware->handle($message, function (IBusMessage $actualMessage) use ($middleware) : void {
-			Assert::true($middleware->isHandling());
-		});
+		$middleware->handle(
+			$message,
+			MiddlewareContext::empty(),
+			MiddlewareCallback::fromClosure(
+				function (IMessage $actualMessage) use ($middleware) : void {
+					Assert::true($middleware->isHandling());
+				}
+			)
+		);
 	}
 
 
@@ -73,12 +82,12 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 	{
 		$middleware = new IsCurrentlyHandlingAwareMiddleware();
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$middleware->handle(
 			$message,
-			function (IBusMessage $actualMessage) : void {
-			}
+			MiddlewareContext::empty(),
+			MiddlewareCallback::empty()
 		);
 
 		Assert::false($middleware->isHandling());
@@ -90,7 +99,7 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 	{
 		$middleware = new IsCurrentlyHandlingAwareMiddleware();
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$exception = new \Exception();
 
@@ -98,9 +107,10 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 			function () use ($middleware, $message, $exception) : void {
 				$middleware->handle(
 					$message,
-					function (IBusMessage $actualMessage) use ($exception) : void {
+					MiddlewareContext::empty(),
+					MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($exception) : void {
 						throw $exception;
-					}
+					})
 				);
 			},
 			\Exception::class
@@ -114,11 +124,11 @@ class IsCurrentlyHandlingAwareMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockBusMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}

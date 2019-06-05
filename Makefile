@@ -25,11 +25,7 @@ phpstan:
 	vendor/bin/phpstan analyse -l max -c tests/phpstan.src.neon src
 	IS_PHPSTAN=1 vendor/bin/phpstan analyse -l max -c tests/phpstan.tests.neon tests
 
-.PHONY: autoload
-autoload:
-	composer dump-autoload
-
 .PHONY: test
-test: autoload
+test:
 	vendor/bin/tester --info
 	vendor/bin/tester tests

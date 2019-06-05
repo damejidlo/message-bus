@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../bootstrap.php';
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\LogMessageResolver;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -39,7 +39,7 @@ class LogMessageResolverTest extends DjTestCase
 	) : void {
 		$resolver = new LogMessageResolver();
 
-		/** @var IBusMessage|MockInterface $message */
+		/** @var IMessage|MockInterface $message */
 		$message = Mockery::mock($messageType);
 
 		Assert::same($expectedHandlingStartedMessage, $resolver->getHandlingStartedMessage($message));
@@ -56,7 +56,7 @@ class LogMessageResolverTest extends DjTestCase
 	{
 		return [
 			[
-				'messageType' => IBusMessage::class,
+				'messageType' => IMessage::class,
 				'expectedHandlingStartedMessage' => 'Message handling started.',
 				'expectedHandlingEndedSuccessfullyMessage' => 'Message handling ended successfully.',
 				'expectedHandlingEndedWithErrorMessage' => 'Message handling ended with error: exception-message',
@@ -82,7 +82,7 @@ class LogMessageResolverTest extends DjTestCase
 	{
 		$resolver = new LogMessageResolver();
 
-		/** @var IBusMessage|MockInterface $message */
+		/** @var IMessage|MockInterface $message */
 		$event = Mockery::mock(IDomainEvent::class);
 
 		$message = new SubscriberSpecificDomainEvent($event, 'some-subscriber-type');

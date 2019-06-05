@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\CommandBus;
 
-use Damejidlo\MessageBus\IBusMessageHandler;
+use Damejidlo\MessageBus\IMessageHandler;
 
 
 
@@ -27,7 +27,7 @@ use Damejidlo\MessageBus\IBusMessageHandler;
  *      public function handle(CreateSomeEntityCommand $command) : NewEntityId {}
  * }
  */
-interface ICommandHandler extends IBusMessageHandler
+interface ICommandHandler extends IMessageHandler
 {
 
 }

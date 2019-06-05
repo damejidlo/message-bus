@@ -9,9 +9,11 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -37,7 +39,7 @@ class LoggingMiddlewareTest extends DjTestCase
 
 		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -47,10 +49,17 @@ class LoggingMiddlewareTest extends DjTestCase
 		$logger->shouldReceive('info')->once()->with('Message handling started.', $expectedContext);
 		$logger->shouldReceive('info')->once()->with('Message handling ended successfully.', $expectedContext);
 
-		$result = $middleware->handle($message, function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled) {
-			$nextMiddlewareCallbackCalled = TRUE;
-			return self::CALLBACK_RETURN_VALUE;
-		});
+		$result = $middleware->handle(
+			$message,
+			MiddlewareContext::empty(),
+			MiddlewareCallback::fromClosure(
+				function (IMessage $message) use (&$nextMiddlewareCallbackCalled) {
+					$nextMiddlewareCallbackCalled = TRUE;
+
+					return self::CALLBACK_RETURN_VALUE;
+				}
+			)
+		);
 
 		Assert::same(self::CALLBACK_RETURN_VALUE, $result);
 		Assert::true($nextMiddlewareCallbackCalled);
@@ -65,7 +74,7 @@ class LoggingMiddlewareTest extends DjTestCase
 
 		$middleware = new LoggingMiddleware($logger, NULL, $messageContextResolver);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
@@ -82,12 +91,21 @@ class LoggingMiddlewareTest extends DjTestCase
 		$logger->shouldReceive('info')->once()->with('Message handling started.', $expectedContext);
 		$logger->shouldReceive('warning')->once()->with('Message handling ended with error: some message', $expectedErrorContext);
 
-		$actualException = Assert::exception(function () use ($middleware, $message, &$nextMiddlewareCallbackCalled, $exception) : void {
-			$middleware->handle($message, function (IBusMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
-				$nextMiddlewareCallbackCalled = TRUE;
-				throw $exception;
-			});
-		}, \Exception::class);
+		$actualException = Assert::exception(
+			function () use ($middleware, $message, &$nextMiddlewareCallbackCalled, $exception) : void {
+				$middleware->handle(
+					$message,
+					MiddlewareContext::empty(),
+					MiddlewareCallback::fromClosure(
+						function (IMessage $message) use (&$nextMiddlewareCallbackCalled, $exception) : void {
+							$nextMiddlewareCallbackCalled = TRUE;
+							throw $exception;
+						}
+					)
+				);
+			},
+			\Exception::class
+		);
 		Assert::same($exception, $actualException);
 
 		Assert::true($nextMiddlewareCallbackCalled);
@@ -108,11 +126,11 @@ class LoggingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockBusMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}

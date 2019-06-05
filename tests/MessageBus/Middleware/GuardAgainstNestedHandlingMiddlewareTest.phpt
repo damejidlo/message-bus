@@ -9,10 +9,12 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Middleware\AlreadyHandlingOtherMessageException;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -29,7 +31,7 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 			$this->mockIsCurrentlyHandlingAwareMiddleware(FALSE)
 		);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		$nextMiddlewareWasCalled = FALSE;
 
@@ -37,12 +39,13 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 
 		$actualResult = $middleware->handle(
 			$message,
-			function (IBusMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
+			MiddlewareContext::empty(),
+			MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($message, &$nextMiddlewareWasCalled, $result) {
 				Assert::same($message, $actualMessage);
 				$nextMiddlewareWasCalled = TRUE;
 
 				return $result;
-			}
+			})
 		);
 
 		Assert::true($nextMiddlewareWasCalled);
@@ -57,14 +60,14 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 			$this->mockIsCurrentlyHandlingAwareMiddleware(FALSE)
 		);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		Assert::noError(
 			function () use ($middleware, $message) : void {
 				$middleware->handle(
 					$message,
-					function (IBusMessage $message) : void {
-					}
+					MiddlewareContext::empty(),
+					MiddlewareCallback::empty()
 				);
 			}
 		);
@@ -78,14 +81,14 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 			$this->mockIsCurrentlyHandlingAwareMiddleware(TRUE)
 		);
 
-		$message = $this->mockBusMessage();
+		$message = $this->mockMessage();
 
 		Assert::exception(
 			function () use ($middleware, $message) : void {
 				$middleware->handle(
 					$message,
-					function (IBusMessage $message) : void {
-					}
+					MiddlewareContext::empty(),
+					MiddlewareCallback::empty()
 				);
 			},
 			AlreadyHandlingOtherMessageException::class
@@ -109,11 +112,11 @@ class GuardAgainstNestedHandlingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IBusMessage|MockInterface
+	 * @return IMessage|MockInterface
 	 */
-	private function mockBusMessage() : IBusMessage
+	private function mockMessage() : IMessage
 	{
-		$mock = Mockery::mock(IBusMessage::class);
+		$mock = Mockery::mock(IMessage::class);
 
 		return $mock;
 	}

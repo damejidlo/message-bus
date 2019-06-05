@@ -3,11 +3,11 @@ declare(strict_types = 1);
 
 namespace Damejidlo\EventBus;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
-final class SubscriberSpecificDomainEvent implements IBusMessage
+final class SubscriberSpecificDomainEvent implements IMessage
 {
 
 	/**

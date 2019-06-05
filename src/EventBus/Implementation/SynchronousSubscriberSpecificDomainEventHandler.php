@@ -7,6 +7,8 @@ use Damejidlo\EventBus\IEventSubscriberProvider;
 use Damejidlo\EventBus\ISubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 
 
@@ -52,7 +54,7 @@ class SynchronousSubscriberSpecificDomainEventHandler implements ISubscriberSpec
 	{
 		$subscriber = $this->eventSubscriberProvider->getByType($message->getSubscriberType());
 
-		$endChainWithCallback = function (SubscriberSpecificDomainEvent $message) use ($subscriber) : void {
+		$endChainWithCallback = MiddlewareCallback::fromClosure(function (SubscriberSpecificDomainEvent $message) use ($subscriber) : void {
 			$handleMethod = 'handle';
 			$callback = [$subscriber, $handleMethod];
 
@@ -63,11 +65,11 @@ class SynchronousSubscriberSpecificDomainEventHandler implements ISubscriberSpec
 			}
 
 			call_user_func($callback, $message->getEvent());
-		};
+		});
 
 		$callback = $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
 
-		$callback($message);
+		$callback($message, MiddlewareContext::empty());
 	}
 
 }

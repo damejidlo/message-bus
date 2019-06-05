@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Damejidlo\CommandBus;
 
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
@@ -19,7 +19,7 @@ use Damejidlo\MessageBus\IBusMessage;
  * - RejectOrderCommand
  * - CreateUserCommand
  */
-interface ICommand extends IBusMessage
+interface ICommand extends IMessage
 {
 
 }

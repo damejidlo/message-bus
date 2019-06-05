@@ -3,7 +3,7 @@
 namespace Damejidlo\MessageBus\Logging;
 
 use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 
 
 
@@ -40,10 +40,10 @@ class MessageContextResolver
 
 
 	/**
-	 * @param IBusMessage $message
+	 * @param IMessage $message
 	 * @return mixed[]
 	 */
-	public function getContext(IBusMessage $message) : array
+	public function getContext(IMessage $message) : array
 	{
 		$simplifiedMessageType = $this->messageTypeResolver->getSimplifiedMessageType($message);
 		$messageType = $this->messageTypeResolver->getMessageType($message);

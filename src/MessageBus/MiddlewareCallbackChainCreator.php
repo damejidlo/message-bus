@@ -3,15 +3,20 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus;
 
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
+
+
+
 class MiddlewareCallbackChainCreator
 {
 
 	/**
 	 * @param IMessageBusMiddleware[] $middleware
-	 * @param \Closure $endChainWithCallback
-	 * @return \Closure
+	 * @param MiddlewareCallback $endChainWithCallback
+	 * @return MiddlewareCallback
 	 */
-	public function create(array $middleware, \Closure $endChainWithCallback) : \Closure
+	public function create(array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
 	{
 		return $this->createMiddlewareCallback(0, $middleware, $endChainWithCallback);
 	}
@@ -21,22 +26,26 @@ class MiddlewareCallbackChainCreator
 	/**
 	 * @param int $index
 	 * @param IMessageBusMiddleware[] $middleware
-	 * @param \Closure $endChainWithCallback
-	 * @return \Closure
+	 * @param MiddlewareCallback $endChainWithCallback
+	 * @return MiddlewareCallback
 	 */
-	private function createMiddlewareCallback(int $index, array $middleware, \Closure $endChainWithCallback) : \Closure
+	private function createMiddlewareCallback(int $index, array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
 	{
 		if (!array_key_exists($index, $middleware)) {
-			return function (IBusMessage $message) use ($endChainWithCallback) {
-				return $endChainWithCallback($message);
+			$callback = function (IMessage $message, MiddlewareContext $context) use ($endChainWithCallback) {
+				return $endChainWithCallback($message, $context);
 			};
+
+			return MiddlewareCallback::fromClosure($callback);
 		}
 
-		return function (IBusMessage $message) use ($index, $middleware, $endChainWithCallback) {
+		$callback = function (IMessage $message, MiddlewareContext $context) use ($index, $middleware, $endChainWithCallback) {
 			$singleMiddleware = $middleware[$index];
 
-			return $singleMiddleware->handle($message, $this->createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));
+			return $singleMiddleware->handle($message, $context, $this->createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));
 		};
+
+		return MiddlewareCallback::fromClosure($callback);
 	}
 
 }

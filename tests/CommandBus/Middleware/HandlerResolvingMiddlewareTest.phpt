@@ -16,6 +16,8 @@ use Damejidlo\CommandBus\ICommandHandlerProvider;
 use Damejidlo\CommandBus\ICommandHandlerResolver;
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\CommandBus\Middleware\HandlerResolvingMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -55,8 +57,8 @@ class HandlerResolvingMiddlewareTest extends DjTestCase
 		/** @var NewEntityId $result */
 		$result = $middleware->handle(
 			$command,
-			function () : void {
-			}
+			MiddlewareContext::empty(),
+			MiddlewareCallback::empty()
 		);
 
 		Assert::same(self::HANDLER_RETURN_VALUE, $result->getValue());
@@ -86,8 +88,8 @@ class HandlerResolvingMiddlewareTest extends DjTestCase
 			function () use ($middleware, $command) : void {
 				$middleware->handle(
 					$command,
-					function () : void {
-					}
+					MiddlewareContext::empty(),
+					MiddlewareCallback::empty()
 				);
 			},
 			CommandHandlerNotFoundException::class

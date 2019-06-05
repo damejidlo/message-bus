@@ -5,8 +5,10 @@ namespace Damejidlo\CommandBus\Middleware;
 
 use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
-use Damejidlo\MessageBus\IBusMessage;
+use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -41,10 +43,10 @@ class EventDispatchingMiddleware implements IMessageBusMiddleware
 	/**
 	 * @inheritdoc
 	 */
-	public function handle(IBusMessage $message, \Closure $nextMiddlewareCallback)
+	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		try {
-			$result = $nextMiddlewareCallback($message);
+			$result = $nextMiddlewareCallback($message, $context);
 
 			foreach ($this->eventQueue->releaseEvents() as $event) {
 				$this->eventDispatcher->dispatch($event);
