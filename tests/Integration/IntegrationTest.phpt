@@ -11,10 +11,8 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\CommandBus\CommandBus;
 use Damejidlo\CommandBus\ICommandBus;
-use Damejidlo\CommandBus\Implementation\CommandHandlerResolver;
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\CommandBus\Middleware\EventDispatchingMiddleware;
-use Damejidlo\CommandBus\Middleware\HandlerResolvingMiddleware;
 use Damejidlo\EventBus\EventBus;
 use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatcher;
 use Damejidlo\EventBus\Implementation\EventSubscribersResolver;
@@ -22,13 +20,18 @@ use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\EventBus\Implementation\SynchronousSubscriberSpecificDomainEventHandler;
 use Damejidlo\EventBus\Middleware\SubscribersResolvingMiddleware;
 use Damejidlo\EventBus\SynchronousEventDispatcher;
+use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
+use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
+use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
+use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
+use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
+use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
-use DamejidloTests\Integration\Fakes\FakeCommandHandlerProvider;
 use DamejidloTests\Integration\Fakes\FakeEventSubscriberProvider;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
@@ -187,23 +190,27 @@ class IntegrationTest extends DjTestCase
 		// command bus
 
 		$commandHandler = new PlaceOrderHandler($commandBusAwareEventDispatcher);
-		$commandHandlersByCommandType = [
-			PlaceOrderCommand::class => $commandHandler,
-		];
 
-		$commandHandlerResolver = new CommandHandlerResolver();
-		foreach ($commandHandlersByCommandType as $commandType => $commandHandler) {
-			$commandHandlerResolver->registerHandler($commandType, get_class($commandHandler));
-		}
+		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([
+			PlaceOrderCommand::class => [
+				PlaceOrderHandler::class,
+			],
+		]);
 
-		$commandHandlerProvider = new FakeCommandHandlerProvider($commandHandlersByCommandType);
+		$handlerProvider = new ArrayMapHandlerProvider([
+			PlaceOrderHandler::class => $commandHandler,
+		]);
+
+		$handlerInvoker = new HandlerInvoker();
 
 		$middleware = [
 			new EventDispatchingMiddleware($eventQueue, $commandBusAwareEventDispatcher),
 			new LoggingMiddleware($logger),
 			new GuardAgainstNestedHandlingMiddleware($isCurrentlyHandlingAwareMiddleware),
 			$isCurrentlyHandlingAwareMiddleware,
-			new HandlerResolvingMiddleware($commandHandlerResolver, $commandHandlerProvider),
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
 		];
 
 		$messageBus = new MiddlewareSupportingMessageBus();
