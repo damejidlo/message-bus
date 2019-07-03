@@ -27,7 +27,7 @@ use Tester\Assert;
 
 
 
-class HandlingThroughMiddlewareTest extends DjTestCase
+class CommandHandlingTest extends DjTestCase
 {
 
 	public function testHandleSucceedsWithEvents() : void
@@ -86,4 +86,4 @@ class HandlingThroughMiddlewareTest extends DjTestCase
 
 
 
-(new HandlingThroughMiddlewareTest())->run();
+(new CommandHandlingTest())->run();
