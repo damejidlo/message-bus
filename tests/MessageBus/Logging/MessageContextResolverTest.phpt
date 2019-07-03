@@ -5,8 +5,9 @@ namespace DamejidloTests\MessageBus\Logging;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
+use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\Logging\MessageContextResolver;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestEvent;
 use DamejidloTests\MessageBus\Logging\Fixtures\TestLoggableMessage;
@@ -29,24 +30,27 @@ class MessageContextResolverTest extends DjTestCase
 			[
 				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestMessage',
 			],
-			$resolver->getContext(new TestMessage())
+			$resolver->getContext(new TestMessage(), MiddlewareContext::empty())
 		);
 	}
 
 
 
-	public function testSubscriberSpecificDomainEvent() : void
+	public function testEventWithResolvedHandler() : void
 	{
 		$resolver = new MessageContextResolver();
 
-		$message = new SubscriberSpecificDomainEvent(new TestEvent(), 'someSubscriberType');
+		$message = new TestEvent();
+
+		$context = MiddlewareContext::empty();
+		$context = HandlerType::fromString('SomeHandlerType')->saveTo($context);
 
 		Assert::equal(
 			[
-				'eventType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestEvent',
-				'subscriberType' => 'someSubscriberType',
+				'messageType' => 'DamejidloTests\\MessageBus\\Logging\\Fixtures\\TestEvent',
+				'handlerType' => 'SomeHandlerType',
 			],
-			$resolver->getContext($message)
+			$resolver->getContext($message, $context)
 		);
 	}
 
@@ -71,7 +75,7 @@ class MessageContextResolverTest extends DjTestCase
 				'arrayAttribute' => [
 					'nestedAttribute' => 'nested',
 				],
-			]))
+			]), MiddlewareContext::empty())
 		);
 	}
 
@@ -79,7 +83,7 @@ class MessageContextResolverTest extends DjTestCase
 
 	public function testPrefixing() : void
 	{
-		$resolver = new MessageContextResolver(NULL, NULL, 'prefix_');
+		$resolver = new MessageContextResolver(NULL, 'prefix_');
 
 		Assert::equal(
 			[
@@ -96,7 +100,7 @@ class MessageContextResolverTest extends DjTestCase
 				'arrayAttribute' => [
 					'nestedAttribute' => 'nested',
 				],
-			]))
+			]), MiddlewareContext::empty())
 		);
 	}
 
@@ -116,7 +120,7 @@ class MessageContextResolverTest extends DjTestCase
 				$resolver->getContext(new TestLoggableMessage([
 					'messageType' => 1,
 					'uniqueKey' => 1,
-				]))
+				]), MiddlewareContext::empty())
 			);
 		}, E_USER_WARNING, 'Message context merge failed with following duplicate keys: "messageType"');
 	}

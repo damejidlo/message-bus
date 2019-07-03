@@ -2,72 +2,56 @@
 
 namespace Damejidlo\MessageBus\Logging;
 
-use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
+use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\MessageBus\Handling\HandlerType;
+use Damejidlo\MessageBus\Handling\MessageType;
 use Damejidlo\MessageBus\IMessage;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
 class LogMessageResolver
 {
 
-	/**
-	 * @var MessageTypeResolver
-	 */
-	private $messageTypeResolver;
-
-
-
-	public function __construct(
-		?MessageTypeResolver $messageTypeResolver = NULL
-	) {
-		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
-	}
-
-
-
-	public function getHandlingStartedMessage(IMessage $message) : string
+	public function getHandlingStartedMessage(IMessage $message, MiddlewareContext $context) : string
 	{
-		return ucfirst(
-			sprintf(
-				'%s handling%s started.',
-				$this->messageTypeResolver->getSimplifiedMessageType($message),
-				$this->getWhere($message)
-			)
+		return sprintf(
+			'%s handling%s started.',
+			MessageType::fromMessage($message)->toGeneralType(),
+			$this->getWhere($message, $context)
 		);
 	}
 
 
 
-	public function getHandlingEndedSuccessfullyMessage(IMessage $message) : string
+	public function getHandlingEndedSuccessfullyMessage(IMessage $message, MiddlewareContext $context) : string
 	{
-		return ucfirst(
-			sprintf(
-				'%s handling%s ended successfully.',
-				$this->messageTypeResolver->getSimplifiedMessageType($message),
-				$this->getWhere($message)
-			)
+		return sprintf(
+			'%s handling%s ended successfully.',
+			MessageType::fromMessage($message)->toGeneralType(),
+			$this->getWhere($message, $context)
 		);
 	}
 
 
 
-	public function getHandlingEndedWithErrorMessage(IMessage $message, \Throwable $exception) : string
+	public function getHandlingEndedWithErrorMessage(IMessage $message, MiddlewareContext $context, \Throwable $exception) : string
 	{
-		return ucfirst(
-			sprintf(
-				'%s handling%s ended with error: %s',
-				$this->messageTypeResolver->getSimplifiedMessageType($message),
-				$this->getWhere($message),
-				$exception->getMessage()
-			)
+		return sprintf(
+			'%s handling%s ended with error: %s',
+			MessageType::fromMessage($message)->toGeneralType(),
+			$this->getWhere($message, $context),
+			$exception->getMessage()
 		);
 	}
 
 
 
-	private function getWhere(IMessage $message) : string
+	private function getWhere(IMessage $message, MiddlewareContext $context) : string
 	{
-		if ($message instanceof SubscriberSpecificDomainEvent) {
+		$handlerIsResolved = $context->has(HandlerType::CONTEXT_KEY);
+
+		if ($handlerIsResolved && $message instanceof IDomainEvent) {
 			return ' in subscriber';
 		}
 
