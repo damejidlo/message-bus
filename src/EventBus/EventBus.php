@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Damejidlo\EventBus;
 
 use Damejidlo\MessageBus\IMessageBus;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -26,7 +27,7 @@ final class EventBus implements IEventBus
 
 	public function handle(IDomainEvent $event) : void
 	{
-		$this->delegate->handle($event);
+		$this->delegate->handle($event, MiddlewareContext::empty());
 	}
 
 }

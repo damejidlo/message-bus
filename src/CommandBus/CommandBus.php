@@ -4,6 +4,7 @@ namespace Damejidlo\CommandBus;
 
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\MessageBus\IMessageBus;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
@@ -26,7 +27,7 @@ class CommandBus implements ICommandBus
 
 	public function handle(ICommand $command) : ?NewEntityId
 	{
-		return $this->delegate->handle($command);
+		return $this->delegate->handle($command, MiddlewareContext::empty());
 	}
 
 }

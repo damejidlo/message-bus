@@ -12,6 +12,7 @@ require_once __DIR__ . '/../bootstrap.php';
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
@@ -49,7 +50,7 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 				return $result;
 			}));
 
-		$actualResult = $messageBus->handle($message);
+		$actualResult = $messageBus->handle($message, MiddlewareContext::empty());
 		Assert::same($result, $actualResult);
 
 		Assert::true($callbackChainCalled);
@@ -73,7 +74,7 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 			}));
 
 		$actualException = Assert::exception(function () use ($messageBus, $message) : void {
-			$messageBus->handle($message);
+			$messageBus->handle($message, MiddlewareContext::empty());
 		}, \Exception::class);
 		Assert::same($exception, $actualException);
 	}
