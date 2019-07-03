@@ -18,6 +18,7 @@ use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
 use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\PlaceOrderCommand;
@@ -55,7 +56,7 @@ class CommandHandlingTest extends DjTestCase
 		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
 
 		$command = new PlaceOrderCommand();
-		$result = $bus->handle($command);
+		$result = $bus->handle($command, MiddlewareContext::empty());
 
 		Assert::type(NewEntityId::class, $result);
 		/** @var NewEntityId $result */
@@ -78,7 +79,7 @@ class CommandHandlingTest extends DjTestCase
 		$command = new PlaceOrderCommand();
 
 		Assert::exception(function () use ($bus, $command) : void {
-			$bus->handle($command);
+			$bus->handle($command, MiddlewareContext::empty());
 		}, HandlerNotFoundException::class);
 	}
 
