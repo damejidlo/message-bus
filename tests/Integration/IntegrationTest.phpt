@@ -15,10 +15,7 @@ use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\CommandBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\EventBus\EventBus;
 use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatcher;
-use Damejidlo\EventBus\Implementation\EventSubscribersResolver;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
-use Damejidlo\EventBus\Implementation\SynchronousSubscriberSpecificDomainEventHandler;
-use Damejidlo\EventBus\Middleware\SubscribersResolvingMiddleware;
 use Damejidlo\EventBus\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
 use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
@@ -29,10 +26,8 @@ use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
-use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
-use DamejidloTests\Integration\Fakes\FakeEventSubscriberProvider;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\OrderPlacedEvent;
@@ -72,60 +67,60 @@ class IntegrationTest extends DjTestCase
 					'level' => 'info',
 					'message' => 'Command handling started.',
 					'context' => [
-						'commandType' => 'DamejidloTests\\Integration\\Fixtures\\PlaceOrderCommand',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\PlaceOrderCommand',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Command handling ended successfully.',
 					'context' => [
-						'commandType' => 'DamejidloTests\\Integration\\Fixtures\\PlaceOrderCommand',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\PlaceOrderCommand',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling started.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling in subscriber started.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
-						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\CreateInvoiceOnOrderPlaced',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
+						'handlerType' => 'DamejidloTests\\Integration\\Fixtures\\CreateInvoiceOnOrderPlaced',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling in subscriber ended successfully.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
-						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\CreateInvoiceOnOrderPlaced',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
+						'handlerType' => 'DamejidloTests\\Integration\\Fixtures\\CreateInvoiceOnOrderPlaced',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling in subscriber started.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
-						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\NotifyUserOnOrderPlaced',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
+						'handlerType' => 'DamejidloTests\\Integration\\Fixtures\\NotifyUserOnOrderPlaced',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling in subscriber ended successfully.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
-						'subscriberType' => 'DamejidloTests\\Integration\\Fixtures\\NotifyUserOnOrderPlaced',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
+						'handlerType' => 'DamejidloTests\\Integration\\Fixtures\\NotifyUserOnOrderPlaced',
 					],
 				],
 				[
 					'level' => 'info',
 					'message' => 'Event handling ended successfully.',
 					'context' => [
-						'eventType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
+						'messageType' => 'DamejidloTests\\Integration\\Fixtures\\OrderPlacedEvent',
 					],
 				],
 			],
@@ -144,34 +139,33 @@ class IntegrationTest extends DjTestCase
 
 		// event bus
 
-		$eventSubscribers = [
-			new CreateInvoiceOnOrderPlaced(),
-			new NotifyUserOnOrderPlaced(),
+		$subscriberTypesResolver = new ArrayMapHandlerTypesResolver([
+			OrderPlacedEvent::class => [
+				CreateInvoiceOnOrderPlaced::class,
+				NotifyUserOnOrderPlaced::class,
+			],
+		]);
+
+		$subscriberProvider = new ArrayMapHandlerProvider([
+			CreateInvoiceOnOrderPlaced::class => new CreateInvoiceOnOrderPlaced(),
+			NotifyUserOnOrderPlaced::class => new NotifyUserOnOrderPlaced(),
+		]);
+
+		$subscriberInvoker = new HandlerInvoker();
+
+		$middleware = [
+			new HandlerTypesResolvingMiddleware($subscriberTypesResolver),
+			new LoggingMiddleware($logger),
+			new SplitByHandlerTypeMiddleware(),
+			new LoggingMiddleware($logger),
+			new HandlerInvokingMiddleware($subscriberProvider, $subscriberInvoker),
 		];
-
-		$eventSubscribersByEventType = [
-			OrderPlacedEvent::class => $eventSubscribers,
-		];
-
-		$eventSubscribersResolver = new EventSubscribersResolver();
-		foreach ($eventSubscribersByEventType as $eventType => $subscribers) {
-			foreach ($subscribers as $subscriber) {
-				$eventSubscribersResolver->registerSubscriber($eventType, get_class($subscriber));
-			}
-		}
-
-		$eventSubscriberProvider = new FakeEventSubscriberProvider($eventSubscribers);
-
-		$subscriberSpecificDomainEventHandler = new SynchronousSubscriberSpecificDomainEventHandler(
-			$eventSubscriberProvider, new MiddlewareCallbackChainCreator()
-		);
-		$subscriberSpecificDomainEventHandler->appendMiddleware(new LoggingMiddleware($logger));
 
 		$messageBus = new MiddlewareSupportingMessageBus();
-		$messageBus->appendMiddleware(new LoggingMiddleware($logger));
-		$messageBus->appendMiddleware(
-			new SubscribersResolvingMiddleware($eventSubscribersResolver, $subscriberSpecificDomainEventHandler)
-		);
+		foreach ($middleware as $oneMiddleware) {
+			$messageBus->appendMiddleware($oneMiddleware);
+		}
+
 
 		$eventBus = new EventBus($messageBus);
 

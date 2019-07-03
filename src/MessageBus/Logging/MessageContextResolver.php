@@ -2,18 +2,15 @@
 
 namespace Damejidlo\MessageBus\Logging;
 
-use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
+use Damejidlo\MessageBus\Handling\HandlerType;
+use Damejidlo\MessageBus\Handling\MessageType;
 use Damejidlo\MessageBus\IMessage;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
 class MessageContextResolver
 {
-
-	/**
-	 * @var MessageTypeResolver
-	 */
-	private $messageTypeResolver;
 
 	/**
 	 * @var string
@@ -28,11 +25,9 @@ class MessageContextResolver
 
 
 	public function __construct(
-		?MessageTypeResolver $messageTypeResolver = NULL,
 		?PrivateClassPropertiesExtractor $privateClassPropertiesExtractor = NULL,
 		string $keyPrefix = ''
 	) {
-		$this->messageTypeResolver = $messageTypeResolver ?? new MessageTypeResolver();
 		$this->privateClassPropertiesExtractor = $privateClassPropertiesExtractor ?? new PrivateClassPropertiesExtractor();
 		$this->keyPrefix = $keyPrefix;
 	}
@@ -41,24 +36,22 @@ class MessageContextResolver
 
 	/**
 	 * @param IMessage $message
+	 * @param MiddlewareContext $context
 	 * @return mixed[]
 	 */
-	public function getContext(IMessage $message) : array
+	public function getContext(IMessage $message, MiddlewareContext $context) : array
 	{
-		$simplifiedMessageType = $this->messageTypeResolver->getSimplifiedMessageType($message);
-		$messageType = $this->messageTypeResolver->getMessageType($message);
+		$messageType = MessageType::fromMessage($message);
 
 		$result = [
-			sprintf('%sType', $simplifiedMessageType) => $messageType,
+			'messageType' => $messageType->toString(),
 		];
 
-		if ($message instanceof SubscriberSpecificDomainEvent) {
-			$result['subscriberType'] = $message->getSubscriberType();
-			$castProperties = $this->privateClassPropertiesExtractor->extract($message->getEvent());
-
-		} else {
-			$castProperties = $this->privateClassPropertiesExtractor->extract($message);
+		if ($context->has(HandlerType::CONTEXT_KEY)) {
+			$result['handlerType'] = HandlerType::extractFrom($context)->toString();
 		}
+
+		$castProperties = $this->privateClassPropertiesExtractor->extract($message);
 
 		$result = $this->mergeSafely($result, $castProperties);
 

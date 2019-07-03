@@ -7,14 +7,14 @@ require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\SubscriberSpecificDomainEvent;
+use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\LogMessageResolver;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
 use Tester\Assert;
-
 
 
 /**
@@ -42,9 +42,14 @@ class LogMessageResolverTest extends DjTestCase
 		/** @var IMessage|MockInterface $message */
 		$message = Mockery::mock($messageType);
 
-		Assert::same($expectedHandlingStartedMessage, $resolver->getHandlingStartedMessage($message));
-		Assert::same($expectedHandlingEndedSuccessfullyMessage, $resolver->getHandlingEndedSuccessfullyMessage($message));
-		Assert::same($expectedHandlingEndedWithErrorMessage, $resolver->getHandlingEndedWithErrorMessage($message, new \Exception('exception-message')));
+		$context = MiddlewareContext::empty();
+
+		Assert::same($expectedHandlingStartedMessage, $resolver->getHandlingStartedMessage($message, $context));
+		Assert::same($expectedHandlingEndedSuccessfullyMessage, $resolver->getHandlingEndedSuccessfullyMessage($message, $context));
+		Assert::same(
+			$expectedHandlingEndedWithErrorMessage,
+			$resolver->getHandlingEndedWithErrorMessage($message, $context, new \Exception('exception-message'))
+		);
 	}
 
 
@@ -78,20 +83,21 @@ class LogMessageResolverTest extends DjTestCase
 
 
 
-	public function testSubscriberSpecificDomainEvent() : void
+	public function testEventWithResolvedHandler() : void
 	{
 		$resolver = new LogMessageResolver();
 
 		/** @var IMessage|MockInterface $message */
-		$event = Mockery::mock(IDomainEvent::class);
+		$message = Mockery::mock(IDomainEvent::class);
 
-		$message = new SubscriberSpecificDomainEvent($event, 'some-subscriber-type');
+		$context = MiddlewareContext::empty();
+		$context = HandlerType::fromString('SomeHandlerType')->saveTo($context);
 
-		Assert::same('Event handling in subscriber started.', $resolver->getHandlingStartedMessage($message));
-		Assert::same('Event handling in subscriber ended successfully.', $resolver->getHandlingEndedSuccessfullyMessage($message));
+		Assert::same('Event handling in subscriber started.', $resolver->getHandlingStartedMessage($message, $context));
+		Assert::same('Event handling in subscriber ended successfully.', $resolver->getHandlingEndedSuccessfullyMessage($message, $context));
 		Assert::same(
 			'Event handling in subscriber ended with error: exception-message',
-			$resolver->getHandlingEndedWithErrorMessage($message, new \Exception('exception-message'))
+			$resolver->getHandlingEndedWithErrorMessage($message, $context, new \Exception('exception-message'))
 		);
 	}
 

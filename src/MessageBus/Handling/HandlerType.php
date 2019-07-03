@@ -10,7 +10,7 @@ use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 final class HandlerType implements ITransferableInContext
 {
 
-	private const CONTEXT_KEY = 'handlerType';
+	public const CONTEXT_KEY = 'handlerType';
 
 	/**
 	 * @var string

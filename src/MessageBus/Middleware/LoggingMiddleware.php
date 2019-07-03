@@ -48,24 +48,24 @@ class LoggingMiddleware implements IMessageBusMiddleware
 	 */
 	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
-		$messageContext = $this->messageContextResolver->getContext($message);
+		$messageContext = $this->messageContextResolver->getContext($message, $context);
 
 		$this->logger->info(
-			$this->logMessageResolver->getHandlingStartedMessage($message),
+			$this->logMessageResolver->getHandlingStartedMessage($message, $context),
 			$messageContext
 		);
 
 		try {
 			$result = $nextMiddlewareCallback($message, $context);
 			$this->logger->info(
-				$this->logMessageResolver->getHandlingEndedSuccessfullyMessage($message),
+				$this->logMessageResolver->getHandlingEndedSuccessfullyMessage($message, $context),
 				$messageContext
 			);
 
 			return $result;
 
 		} catch (\Throwable $exception) {
-			$logMessage = $this->logMessageResolver->getHandlingEndedWithErrorMessage($message, $exception);
+			$logMessage = $this->logMessageResolver->getHandlingEndedWithErrorMessage($message, $context, $exception);
 
 			$messageContext['exceptionType'] = get_class($exception);
 			$messageContext['exceptionMessage'] = $exception->getMessage();

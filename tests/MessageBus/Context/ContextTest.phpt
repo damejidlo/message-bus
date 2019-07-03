@@ -18,7 +18,7 @@ use Tester\Assert;
 class ContextTest extends DjTestCase
 {
 
-	public function testWithAndGet() : void
+	public function testWithAndGetAndHas() : void
 	{
 		$context = MiddlewareContext::empty();
 
@@ -27,6 +27,7 @@ class ContextTest extends DjTestCase
 
 		$context = $context->with($key, $value);
 
+		Assert::true($context->has($key));
 		Assert::same($value, $context->get($key));
 	}
 

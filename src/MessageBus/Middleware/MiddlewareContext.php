@@ -44,6 +44,13 @@ final class MiddlewareContext
 
 
 
+	public function has(string $key) : bool
+	{
+		return array_key_exists($key, $this->context);
+	}
+
+
+
 	/**
 	 * @param string $key
 	 * @return mixed
