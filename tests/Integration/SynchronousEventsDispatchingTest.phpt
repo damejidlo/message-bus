@@ -38,7 +38,7 @@ use Tester\Assert;
 
 
 
-class IntegrationTest extends DjTestCase
+class SynchronousEventsDispatchingTest extends DjTestCase
 {
 
 	/**
@@ -219,4 +219,4 @@ class IntegrationTest extends DjTestCase
 
 
 
-(new IntegrationTest())->run();
+(new SynchronousEventsDispatchingTest())->run();
