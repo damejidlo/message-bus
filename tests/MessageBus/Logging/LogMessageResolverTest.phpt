@@ -90,8 +90,8 @@ class LogMessageResolverTest extends DjTestCase
 		/** @var IMessage|MockInterface $message */
 		$message = Mockery::mock(IDomainEvent::class);
 
-		$context = MiddlewareContext::empty();
-		$context = HandlerType::fromString('SomeHandlerType')->saveTo($context);
+		$context = MiddlewareContext::empty()
+			->withValueStoredByType(HandlerType::fromString('SomeHandlerType'));
 
 		Assert::same('Event handling in subscriber started.', $resolver->getHandlingStartedMessage($message, $context));
 		Assert::same('Event handling in subscriber ended successfully.', $resolver->getHandlingEndedSuccessfullyMessage($message, $context));

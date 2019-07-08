@@ -37,7 +37,8 @@ final class HandlerInvokingMiddleware implements IMessageBusMiddleware
 	 */
 	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
-		$handlerType = HandlerType::extractFrom($context);
+		/** @var HandlerType $handlerType */
+		$handlerType = $context->get(HandlerType::class);
 
 		$handler = $this->handlerProvider->get($handlerType);
 

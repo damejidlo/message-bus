@@ -42,8 +42,8 @@ class MessageContextResolverTest extends DjTestCase
 
 		$message = new TestEvent();
 
-		$context = MiddlewareContext::empty();
-		$context = HandlerType::fromString('SomeHandlerType')->saveTo($context);
+		$context = MiddlewareContext::empty()
+			->withValueStoredByType(HandlerType::fromString('SomeHandlerType'));
 
 		Assert::equal(
 			[

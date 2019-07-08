@@ -2,14 +2,8 @@
 
 namespace Damejidlo\MessageBus\Handling;
 
-use Damejidlo\MessageBus\Middleware\MiddlewareContext;
-
-
-
-final class HandlerTypes implements ITransferableInContext
+final class HandlerTypes
 {
-
-	private const CONTEXT_KEY = 'handlerTypes';
 
 	/**
 	 * @var HandlerType[]
@@ -60,20 +54,6 @@ final class HandlerTypes implements ITransferableInContext
 	public function toArray() : array
 	{
 		return $this->types;
-	}
-
-
-
-	public function saveTo(MiddlewareContext $context) : MiddlewareContext
-	{
-		return $context->with(self::CONTEXT_KEY, $this);
-	}
-
-
-
-	public static function extractFrom(MiddlewareContext $context) : self
-	{
-		return $context->get(self::CONTEXT_KEY);
 	}
 
 }

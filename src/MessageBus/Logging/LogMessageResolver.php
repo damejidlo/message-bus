@@ -49,7 +49,7 @@ class LogMessageResolver
 
 	private function getWhere(IMessage $message, MiddlewareContext $context) : string
 	{
-		$handlerIsResolved = $context->has(HandlerType::CONTEXT_KEY);
+		$handlerIsResolved = $context->has(HandlerType::class);
 
 		if ($handlerIsResolved && $message instanceof IDomainEvent) {
 			return ' in subscriber';
