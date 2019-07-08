@@ -34,7 +34,7 @@ final class HandlerTypesResolvingMiddleware implements IMessageBusMiddleware
 		$messageType = MessageType::fromMessage($message);
 		$handlerTypes = $this->resolver->resolve($messageType);
 
-		$context = $handlerTypes->saveTo($context);
+		$context = $context->withValueStoredByType($handlerTypes);
 
 		return $nextMiddlewareCallback($message, $context);
 	}

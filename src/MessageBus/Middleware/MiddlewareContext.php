@@ -44,6 +44,19 @@ final class MiddlewareContext
 
 
 
+	/**
+	 * Only one instance of given type can be stored.
+	 *
+	 * @param object $value
+	 * @return MiddlewareContext
+	 */
+	public function withValueStoredByType(object $value) : self
+	{
+		return $this->with(get_class($value), $value);
+	}
+
+
+
 	public function has(string $key) : bool
 	{
 		return array_key_exists($key, $this->context);

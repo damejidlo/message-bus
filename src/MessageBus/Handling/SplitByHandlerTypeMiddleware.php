@@ -17,15 +17,20 @@ final class SplitByHandlerTypeMiddleware implements IMessageBusMiddleware
 	 */
 	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
-		$handlerTypes = HandlerTypes::extractFrom($context);
+		/** @var HandlerTypes $handlerTypes */
+		$handlerTypes = $context->get(HandlerTypes::class);
 
 		if ($handlerTypes->count() === 1) {
 			$handlerType = $handlerTypes->getOne();
-			return $nextMiddlewareCallback($message, $handlerType->saveTo($context));
+			$context = $context->withValueStoredByType($handlerType);
+
+			return $nextMiddlewareCallback($message, $context);
 		}
 
 		foreach ($handlerTypes->toArray() as $handlerType) {
-			$nextMiddlewareCallback($message, $handlerType->saveTo($context));
+			$context = $context->withValueStoredByType($handlerType);
+
+			$nextMiddlewareCallback($message, $context);
 		}
 	}
 

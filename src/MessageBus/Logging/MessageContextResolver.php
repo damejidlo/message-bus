@@ -47,8 +47,10 @@ class MessageContextResolver
 			'messageType' => $messageType->toString(),
 		];
 
-		if ($context->has(HandlerType::CONTEXT_KEY)) {
-			$result['handlerType'] = HandlerType::extractFrom($context)->toString();
+		if ($context->has(HandlerType::class)) {
+			/** @var HandlerType $handlerType */
+			$handlerType = $context->get(HandlerType::class);
+			$result['handlerType'] = $handlerType->toString();
 		}
 
 		$castProperties = $this->privateClassPropertiesExtractor->extract($message);

@@ -18,7 +18,7 @@ use Tester\Assert;
 class ContextTest extends DjTestCase
 {
 
-	public function testWithAndGetAndHas() : void
+	public function testStoreValue() : void
 	{
 		$context = MiddlewareContext::empty();
 
@@ -29,6 +29,24 @@ class ContextTest extends DjTestCase
 
 		Assert::true($context->has($key));
 		Assert::same($value, $context->get($key));
+	}
+
+
+
+	public function testStoreValueByType() : void
+	{
+		$context = MiddlewareContext::empty();
+
+		$firstObject = new \stdClass();
+		$secondObject = new \stdClass();
+
+		Assert::notSame($firstObject, $secondObject);
+
+		$context = $context->withValueStoredByType($firstObject);
+		$context = $context->withValueStoredByType($secondObject);
+
+		Assert::true($context->has(\stdClass::class));
+		Assert::same($secondObject, $context->get(\stdClass::class));
 	}
 
 
