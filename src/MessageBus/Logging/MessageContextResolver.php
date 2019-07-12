@@ -49,7 +49,7 @@ class MessageContextResolver
 
 		if ($context->has(HandlerType::class)) {
 			/** @var HandlerType $handlerType */
-			$handlerType = $context->get(HandlerType::class);
+			$handlerType = $context->getByType(HandlerType::class);
 			$result['handlerType'] = $handlerType->toString();
 		}
 

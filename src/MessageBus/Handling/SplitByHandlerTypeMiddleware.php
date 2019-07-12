@@ -18,7 +18,7 @@ final class SplitByHandlerTypeMiddleware implements IMessageBusMiddleware
 	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
 		/** @var HandlerTypes $handlerTypes */
-		$handlerTypes = $context->get(HandlerTypes::class);
+		$handlerTypes = $context->getByType(HandlerTypes::class);
 
 		if ($handlerTypes->count() === 1) {
 			$handlerType = $handlerTypes->getOne();
