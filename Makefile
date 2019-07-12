@@ -27,5 +27,5 @@ phpstan:
 
 .PHONY: test
 test:
-	vendor/bin/tester -C --info
-	vendor/bin/tester -C tests
+	vendor/bin/tester --info
+	vendor/bin/tester -c tests/php.ini tests
