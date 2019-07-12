@@ -39,7 +39,7 @@ final class MessageType
 
 
 
-	public function toGeneralType() : string
+	public function getGeneralType() : string
 	{
 		if (is_subclass_of($this->type, ICommand::class)) {
 			return 'Command';
