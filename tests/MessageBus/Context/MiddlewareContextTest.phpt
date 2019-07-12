@@ -46,7 +46,23 @@ class MiddlewareContextTest extends DjTestCase
 		$context = $context->withValueStoredByType($secondObject);
 
 		Assert::true($context->has(\stdClass::class));
-		Assert::same($secondObject, $context->get(\stdClass::class));
+		Assert::same($secondObject, $context->getByType(\stdClass::class));
+	}
+
+
+
+	public function testGetObjectByTypeFailsOnUnexpectedValueType() : void
+	{
+		$context = MiddlewareContext::empty();
+
+		$context = $context->with(\stdClass::class, 'string-value');
+
+		Assert::exception(
+			function () use ($context) : void {
+				$context->getByType(\stdClass::class);
+			},
+			\LogicException::class
+		);
 	}
 
 

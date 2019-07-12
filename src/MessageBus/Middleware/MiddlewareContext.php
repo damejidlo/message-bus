@@ -30,6 +30,9 @@ final class MiddlewareContext
 
 
 	/**
+	 * Use only for scalar values or when more instances of the same type need to be stored.
+	 * @see withValueStoredByType() for more type-safe method of storing values
+	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @return MiddlewareContext
@@ -65,6 +68,9 @@ final class MiddlewareContext
 
 
 	/**
+	 * Use only for scalar values or when more instances of the same type need to be stored.
+	 * @see getByType() for more type-safe method of retrieving values
+	 *
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -75,6 +81,25 @@ final class MiddlewareContext
 		}
 
 		return $this->context[$key];
+	}
+
+
+
+	public function getByType(string $type) : object
+	{
+		$value = $this->get($type);
+
+		if (! $value instanceof $type) {
+			throw new \LogicException(
+				sprintf(
+					'Context value has unexpected type "%s", "%s" expected.',
+					gettype($value),
+					$type
+				)
+			);
+		}
+
+		return $value;
 	}
 
 }
