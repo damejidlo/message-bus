@@ -17,7 +17,7 @@ class LogMessageResolver
 	{
 		return sprintf(
 			'%s handling%s started.',
-			MessageType::fromMessage($message)->toGeneralType(),
+			MessageType::fromMessage($message)->getGeneralType(),
 			$this->getWhere($message, $context)
 		);
 	}
@@ -28,7 +28,7 @@ class LogMessageResolver
 	{
 		return sprintf(
 			'%s handling%s ended successfully.',
-			MessageType::fromMessage($message)->toGeneralType(),
+			MessageType::fromMessage($message)->getGeneralType(),
 			$this->getWhere($message, $context)
 		);
 	}
@@ -39,7 +39,7 @@ class LogMessageResolver
 	{
 		return sprintf(
 			'%s handling%s ended with error: %s',
-			MessageType::fromMessage($message)->toGeneralType(),
+			MessageType::fromMessage($message)->getGeneralType(),
 			$this->getWhere($message, $context),
 			$exception->getMessage()
 		);
