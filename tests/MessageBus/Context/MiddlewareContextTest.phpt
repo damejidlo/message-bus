@@ -15,7 +15,7 @@ use Tester\Assert;
 
 
 
-class ContextTest extends DjTestCase
+class MiddlewareContextTest extends DjTestCase
 {
 
 	public function testStoreValue() : void
@@ -69,4 +69,4 @@ class ContextTest extends DjTestCase
 
 
 
-(new ContextTest())->run();
+(new MiddlewareContextTest())->run();
