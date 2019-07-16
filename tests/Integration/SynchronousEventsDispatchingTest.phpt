@@ -161,11 +161,7 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($subscriberProvider, $subscriberInvoker),
 		];
 
-		$messageBus = new MessageBus();
-		foreach ($middleware as $oneMiddleware) {
-			$messageBus->appendMiddleware($oneMiddleware);
-		}
-
+		$messageBus = new MessageBus($middleware);
 
 		$eventBus = new EventBus($messageBus);
 
@@ -207,10 +203,7 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
 		];
 
-		$messageBus = new MessageBus();
-		foreach ($middleware as $oneMiddleware) {
-			$messageBus->appendMiddleware($oneMiddleware);
-		}
+		$messageBus = new MessageBus($middleware);
 
 		$this->commandBus = new CommandBus($messageBus);
 	}

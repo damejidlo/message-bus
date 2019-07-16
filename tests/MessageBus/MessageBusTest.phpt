@@ -27,13 +27,11 @@ class MessageBusTest extends DjTestCase
 
 	public function testHandleWithCorrectOrder() : void
 	{
+		$middleware = $this->mockMiddleware();
+
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$messageBus = new MessageBus($middlewareCallbackChainCreator);
 
 		$message = $this->mockMessage();
-
-		$middleware = $this->mockMiddleware();
-		$messageBus->appendMiddleware($middleware);
 
 		$callbackChainCalled = FALSE;
 		$result = 'some-result';
@@ -50,6 +48,8 @@ class MessageBusTest extends DjTestCase
 				return $result;
 			}));
 
+		$messageBus = new MessageBus([$middleware], $middlewareCallbackChainCreator);
+
 		$actualResult = $messageBus->handle($message, MiddlewareContext::empty());
 		Assert::same($result, $actualResult);
 
@@ -61,17 +61,18 @@ class MessageBusTest extends DjTestCase
 	public function testHandleFails() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$messageBus = new MessageBus($middlewareCallbackChainCreator);
 
 		$exception = new \Exception();
-
-		$message = $this->mockMessage();
 
 		// expectations
 		$middlewareCallbackChainCreator->shouldReceive('create')->once()
 			->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($exception) : void {
 				throw $exception;
 			}));
+
+		$messageBus = new MessageBus([], $middlewareCallbackChainCreator);
+
+		$message = $this->mockMessage();
 
 		$actualException = Assert::exception(function () use ($messageBus, $message) : void {
 			$messageBus->handle($message, MiddlewareContext::empty());

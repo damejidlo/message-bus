@@ -22,24 +22,22 @@ final class MessageBus implements IMessageBus
 	private $middleware = [];
 
 	/**
-	 * @var MiddlewareCallback|NULL
+	 * @var MiddlewareCallback
 	 */
-	private $cachedCallback = NULL;
+	private $cachedCallback;
 
 
 
-	public function __construct(?MiddlewareCallbackChainCreator $middlewareCallbackChainCreator = NULL)
+	/**
+	 * @param IMessageBusMiddleware[] $middleware
+	 * @param MiddlewareCallbackChainCreator|null $middlewareCallbackChainCreator
+	 */
+	public function __construct(array $middleware, ?MiddlewareCallbackChainCreator $middlewareCallbackChainCreator = NULL)
 	{
+		$this->middleware = $middleware;
 		$this->middlewareCallbackChainCreator = $middlewareCallbackChainCreator ?? new MiddlewareCallbackChainCreator();
-	}
 
-
-
-	public function appendMiddleware(IMessageBusMiddleware $middleware) : void
-	{
-		$this->middleware[] = $middleware;
-
-		$this->cachedCallback = NULL;
+		$this->cachedCallback = $this->createMiddlewareCallback();
 	}
 
 
@@ -49,20 +47,9 @@ final class MessageBus implements IMessageBus
 	 */
 	public function handle(IMessage $message, MiddlewareContext $context)
 	{
-		$callback = $this->getCachedCallback();
+		$callback = $this->cachedCallback;
 
 		return $callback($message, $context);
-	}
-
-
-
-	private function getCachedCallback() : MiddlewareCallback
-	{
-		if ($this->cachedCallback === NULL) {
-			$this->cachedCallback = $this->createMiddlewareCallback();
-		}
-
-		return $this->cachedCallback;
 	}
 
 
