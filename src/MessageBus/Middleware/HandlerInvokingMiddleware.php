@@ -1,11 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace Damejidlo\MessageBus\Handling;
+namespace Damejidlo\MessageBus\Middleware;
 
+use Damejidlo\MessageBus\Handling\HandlerType;
+use Damejidlo\MessageBus\Handling\IHandlerInvoker;
+use Damejidlo\MessageBus\Handling\IHandlerProvider;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
-use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
