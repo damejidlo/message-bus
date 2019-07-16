@@ -5,11 +5,11 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\CommandBus\Implementation;
+namespace DamejidloTests\CommandBus;
 
-require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\CommandBus\Implementation\NewEntityId;
+use Damejidlo\CommandBus\NewEntityId;
 use DamejidloTests\DjTestCase;
 use Tester\Assert;
 

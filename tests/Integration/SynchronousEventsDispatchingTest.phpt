@@ -11,7 +11,7 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\CommandBus\CommandBus;
 use Damejidlo\CommandBus\ICommandBus;
-use Damejidlo\CommandBus\Implementation\NewEntityId;
+use Damejidlo\CommandBus\NewEntityId;
 use Damejidlo\EventBus\EventBus;
 use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;

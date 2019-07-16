@@ -2,7 +2,6 @@
 
 namespace Damejidlo\CommandBus;
 
-use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\MessageBus\IMessageBus;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 

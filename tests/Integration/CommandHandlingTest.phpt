@@ -9,7 +9,7 @@ namespace DamejidloTests\Integration;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\CommandBus\Implementation\NewEntityId;
+use Damejidlo\CommandBus\NewEntityId;
 use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\MessageBus\Handling\HandlerCannotBeProvidedException;
 use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;

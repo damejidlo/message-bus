@@ -3,7 +3,7 @@
 namespace DamejidloTests\Integration\Fixtures;
 
 use Damejidlo\CommandBus\ICommandHandler;
-use Damejidlo\CommandBus\Implementation\NewEntityId;
+use Damejidlo\CommandBus\NewEntityId;
 use Damejidlo\EventBus\IEventDispatcher;
 
 
