@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Damejidlo\EventBus;
 
-use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 
 

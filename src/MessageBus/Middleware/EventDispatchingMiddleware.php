@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Damejidlo\MessageBus\Middleware;
 
 use Damejidlo\EventBus\IEventDispatcher;
-use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
+use Damejidlo\EventBus\InMemoryEventQueue;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 

@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../bootstrap.php';
 use Damejidlo\CommandBus\ICommand;
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\IEventDispatcher;
-use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
+use Damejidlo\EventBus\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;

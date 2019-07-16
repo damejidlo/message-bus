@@ -1,11 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\EventBus\Implementation;
-
-use Damejidlo\EventBus\IDomainEvent;
-
-
+namespace Damejidlo\EventBus;
 
 class InMemoryEventQueue
 {
