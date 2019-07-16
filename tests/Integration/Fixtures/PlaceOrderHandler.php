@@ -2,8 +2,8 @@
 
 namespace DamejidloTests\Integration\Fixtures;
 
-use Damejidlo\CommandBus\ICommandHandler;
-use Damejidlo\CommandBus\NewEntityId;
+use Damejidlo\Commands\ICommandHandler;
+use Damejidlo\Commands\NewEntityId;
 use Damejidlo\Events\IEventDispatcher;
 
 

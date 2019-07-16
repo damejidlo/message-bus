@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Damejidlo\CommandBus;
+namespace Damejidlo\Commands;
 
 use Damejidlo\MessageBus\IMessageBus;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;

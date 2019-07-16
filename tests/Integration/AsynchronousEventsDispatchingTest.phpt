@@ -9,8 +9,8 @@ namespace DamejidloTests\Integration;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\CommandBus\CommandBus;
-use Damejidlo\CommandBus\ICommandBus;
+use Damejidlo\Commands\CommandBus;
+use Damejidlo\Commands\ICommandBus;
 use Damejidlo\Events\CommandBusAwareEventDispatcher;
 use Damejidlo\Events\EventBus;
 use Damejidlo\Events\IDomainEvent;

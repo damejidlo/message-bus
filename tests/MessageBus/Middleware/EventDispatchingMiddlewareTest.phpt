@@ -9,7 +9,7 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\CommandBus\ICommand;
+use Damejidlo\Commands\ICommand;
 use Damejidlo\Events\IDomainEvent;
 use Damejidlo\Events\IEventDispatcher;
 use Damejidlo\Events\InMemoryEventQueue;

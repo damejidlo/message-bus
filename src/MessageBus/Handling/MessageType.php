@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Handling;
 
-use Damejidlo\CommandBus\ICommand;
+use Damejidlo\Commands\ICommand;
 use Damejidlo\Events\IDomainEvent;
 use Damejidlo\MessageBus\IMessage;
 
