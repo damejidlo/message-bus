@@ -20,6 +20,10 @@ lint:
 code-style:
 	vendor/bin/phpcs --standard=vendor/damejidlo/coding-standard/DameJidloCodingStandard/ruleset.xml --extensions=php,phpt -s src tests
 
+.PHONY: fix-code-style
+fix-code-style:
+	vendor/bin/phpcbf --standard=vendor/damejidlo/coding-standard/DameJidloCodingStandard/ruleset.xml --extensions=php,phpt -s src tests
+
 .PHONY: phpstan
 phpstan:
 	vendor/bin/phpstan analyse -l max -c tests/phpstan.src.neon src
