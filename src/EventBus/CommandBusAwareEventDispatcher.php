@@ -1,10 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\EventBus\Implementation;
+namespace Damejidlo\EventBus;
 
-use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\IEventDispatcher;
+use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 
 
