@@ -3,7 +3,7 @@
 namespace Damejidlo\MessageBus\Handling;
 
 use Damejidlo\CommandBus\ICommand;
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\Events\IDomainEvent;
 use Damejidlo\MessageBus\IMessage;
 
 

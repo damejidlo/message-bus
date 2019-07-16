@@ -5,12 +5,12 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\EventBus;
+namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\InMemoryEventQueue;
+use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\InMemoryEventQueue;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;

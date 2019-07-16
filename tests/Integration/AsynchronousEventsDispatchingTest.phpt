@@ -11,11 +11,11 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\CommandBus\CommandBus;
 use Damejidlo\CommandBus\ICommandBus;
-use Damejidlo\EventBus\CommandBusAwareEventDispatcher;
-use Damejidlo\EventBus\EventBus;
-use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\InMemoryEventQueue;
-use Damejidlo\EventBus\SynchronousEventDispatcher;
+use Damejidlo\Events\CommandBusAwareEventDispatcher;
+use Damejidlo\Events\EventBus;
+use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\InMemoryEventQueue;
+use Damejidlo\Events\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;

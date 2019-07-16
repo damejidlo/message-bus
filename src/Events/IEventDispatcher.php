@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\EventBus;
+namespace Damejidlo\Events;
 
 /**
  * Enqueues events that are raised for later dispatch.

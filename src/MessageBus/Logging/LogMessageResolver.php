@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Logging;
 
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\Events\IDomainEvent;
 use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\Handling\MessageType;
 use Damejidlo\MessageBus\IMessage;

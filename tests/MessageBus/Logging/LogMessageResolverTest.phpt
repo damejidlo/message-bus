@@ -6,7 +6,7 @@ namespace DamejidloTests\MessageBus\Logging;
 require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\CommandBus\ICommand;
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\Events\IDomainEvent;
 use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\LogMessageResolver;

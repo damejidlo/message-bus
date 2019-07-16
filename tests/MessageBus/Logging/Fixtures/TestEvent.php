@@ -2,7 +2,7 @@
 
 namespace DamejidloTests\MessageBus\Logging\Fixtures;
 
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\Events\IDomainEvent;
 
 
 

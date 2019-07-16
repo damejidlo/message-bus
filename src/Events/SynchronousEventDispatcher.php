@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Damejidlo\EventBus;
+namespace Damejidlo\Events;
 
 final class SynchronousEventDispatcher implements IEventDispatcher
 {

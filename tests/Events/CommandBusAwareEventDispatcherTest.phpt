@@ -5,14 +5,14 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\EventBus;
+namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\EventBus\CommandBusAwareEventDispatcher;
-use Damejidlo\EventBus\IDomainEvent;
-use Damejidlo\EventBus\IEventDispatcher;
-use Damejidlo\EventBus\InMemoryEventQueue;
+use Damejidlo\Events\CommandBusAwareEventDispatcher;
+use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEventDispatcher;
+use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use DamejidloTests\DjTestCase;
 use Mockery;

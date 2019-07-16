@@ -10,7 +10,7 @@ namespace DamejidloTests\Integration;
 require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\CommandBus\NewEntityId;
-use Damejidlo\EventBus\IEventDispatcher;
+use Damejidlo\Events\IEventDispatcher;
 use Damejidlo\MessageBus\Handling\HandlerCannotBeProvidedException;
 use Damejidlo\MessageBus\Handling\HandlerRequiredAndNotConfiguredException;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
