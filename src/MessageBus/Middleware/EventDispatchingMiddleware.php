@@ -1,20 +1,15 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\CommandBus\Middleware;
+namespace Damejidlo\MessageBus\Middleware;
 
 use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
-use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
-use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
-/**
- * If an event is raised during handling of a command, the event is dispatched only after the handler ended it's work.
- */
 class EventDispatchingMiddleware implements IMessageBusMiddleware
 {
 

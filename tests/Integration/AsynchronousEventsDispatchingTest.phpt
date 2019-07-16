@@ -11,7 +11,6 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\CommandBus\CommandBus;
 use Damejidlo\CommandBus\ICommandBus;
-use Damejidlo\CommandBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\EventBus\EventBus;
 use Damejidlo\EventBus\IDomainEvent;
 use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatcher;
@@ -23,6 +22,7 @@ use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
 use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
+use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
