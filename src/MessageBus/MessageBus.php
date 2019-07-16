@@ -8,7 +8,7 @@ use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 
 
 
-final class MiddlewareSupportingMessageBus implements IMessageBus
+final class MessageBus implements IMessageBus
 {
 
 	/**

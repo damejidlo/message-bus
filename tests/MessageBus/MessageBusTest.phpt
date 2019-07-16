@@ -11,10 +11,10 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
+use Damejidlo\MessageBus\MessageBus;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
-use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -22,13 +22,13 @@ use Tester\Assert;
 
 
 
-class MiddlewareSupportingMessageBusTest extends DjTestCase
+class MessageBusTest extends DjTestCase
 {
 
 	public function testHandleWithCorrectOrder() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
+		$messageBus = new MessageBus($middlewareCallbackChainCreator);
 
 		$message = $this->mockMessage();
 
@@ -61,7 +61,7 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 	public function testHandleFails() : void
 	{
 		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-		$messageBus = new MiddlewareSupportingMessageBus($middlewareCallbackChainCreator);
+		$messageBus = new MessageBus($middlewareCallbackChainCreator);
 
 		$exception = new \Exception();
 
@@ -119,4 +119,4 @@ class MiddlewareSupportingMessageBusTest extends DjTestCase
 
 
 
-(new MiddlewareSupportingMessageBusTest())->run();
+(new MessageBusTest())->run();

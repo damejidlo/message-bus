@@ -13,11 +13,11 @@ use Damejidlo\MessageBus\Handling\HandlerCannotBeProvidedException;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
+use Damejidlo\MessageBus\MessageBus;
 use Damejidlo\MessageBus\Middleware\HandlerInvokingMiddleware;
 use Damejidlo\MessageBus\Middleware\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
-use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
@@ -48,7 +48,7 @@ class EventHandlingTest extends DjTestCase
 
 		$handlerInvoker = new HandlerInvoker();
 
-		$bus = new MiddlewareSupportingMessageBus();
+		$bus = new MessageBus();
 		$bus->appendMiddleware(new HandlerTypesResolvingMiddleware($handlerTypesResolver));
 		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
 		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));

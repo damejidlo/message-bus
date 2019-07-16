@@ -19,6 +19,7 @@ use Damejidlo\EventBus\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
+use Damejidlo\MessageBus\MessageBus;
 use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\HandlerInvokingMiddleware;
@@ -27,7 +28,6 @@ use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
-use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\MessageWithContextRecordingMiddleware;
@@ -59,7 +59,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 	private $messageRecordingMiddleware;
 
 	/**
-	 * @var MiddlewareSupportingMessageBus
+	 * @var MessageBus
 	 */
 	private $handlerInvokingEventBus;
 
@@ -181,7 +181,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 			$this->messageRecordingMiddleware,
 		];
 
-		$messageBus = new MiddlewareSupportingMessageBus();
+		$messageBus = new MessageBus();
 		foreach ($middleware as $oneMiddleware) {
 			$messageBus->appendMiddleware($oneMiddleware);
 		}
@@ -202,7 +202,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($subscriberProvider, $subscriberInvoker),
 		];
 
-		$this->handlerInvokingEventBus = new MiddlewareSupportingMessageBus();
+		$this->handlerInvokingEventBus = new MessageBus();
 		foreach ($middleware as $oneMiddleware) {
 			$this->handlerInvokingEventBus->appendMiddleware($oneMiddleware);
 		}
@@ -245,7 +245,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
 		];
 
-		$messageBus = new MiddlewareSupportingMessageBus();
+		$messageBus = new MessageBus();
 		foreach ($middleware as $oneMiddleware) {
 			$messageBus->appendMiddleware($oneMiddleware);
 		}

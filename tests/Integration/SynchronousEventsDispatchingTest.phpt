@@ -19,6 +19,7 @@ use Damejidlo\EventBus\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
+use Damejidlo\MessageBus\MessageBus;
 use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
 use Damejidlo\MessageBus\Middleware\HandlerInvokingMiddleware;
@@ -26,7 +27,6 @@ use Damejidlo\MessageBus\Middleware\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
 use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
-use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
@@ -161,7 +161,7 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($subscriberProvider, $subscriberInvoker),
 		];
 
-		$messageBus = new MiddlewareSupportingMessageBus();
+		$messageBus = new MessageBus();
 		foreach ($middleware as $oneMiddleware) {
 			$messageBus->appendMiddleware($oneMiddleware);
 		}
@@ -207,7 +207,7 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
 		];
 
-		$messageBus = new MiddlewareSupportingMessageBus();
+		$messageBus = new MessageBus();
 		foreach ($middleware as $oneMiddleware) {
 			$messageBus->appendMiddleware($oneMiddleware);
 		}
