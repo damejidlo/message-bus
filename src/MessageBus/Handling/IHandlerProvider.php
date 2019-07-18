@@ -12,7 +12,7 @@ interface IHandlerProvider
 	/**
 	 * @param HandlerType $type
 	 * @return IMessageHandler
-	 * @throws HandlerNotFoundException
+	 * @throws HandlerCannotBeProvidedException
 	 */
 	public function get(HandlerType $type) : IMessageHandler;
 
