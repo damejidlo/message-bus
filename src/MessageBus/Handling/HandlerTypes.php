@@ -30,6 +30,13 @@ final class HandlerTypes
 
 
 
+	public static function empty() : self
+	{
+		return new self(...[]);
+	}
+
+
+
 	public function count() : int
 	{
 		return count($this->types);
@@ -54,6 +61,13 @@ final class HandlerTypes
 	public function toArray() : array
 	{
 		return $this->types;
+	}
+
+
+
+	public function isEmpty() : bool
+	{
+		return $this->types === [];
 	}
 
 }
