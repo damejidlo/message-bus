@@ -11,6 +11,7 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\CommandBus\Implementation\NewEntityId;
 use Damejidlo\EventBus\IEventDispatcher;
+use Damejidlo\MessageBus\Handling\HandlerCannotBeProvidedException;
 use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
 use Damejidlo\MessageBus\Handling\HandlerNotFoundException;
 use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
@@ -67,7 +68,11 @@ class CommandHandlingTest extends DjTestCase
 
 	public function testHandleFailsWithHandlerNotFound() : void
 	{
-		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([]);
+		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([
+			PlaceOrderCommand::class => [
+				PlaceOrderHandler::class,
+			],
+		]);
 		$handlerProvider = new ArrayMapHandlerProvider([]);
 		$handlerInvoker = new HandlerInvoker();
 
@@ -80,7 +85,7 @@ class CommandHandlingTest extends DjTestCase
 
 		Assert::exception(function () use ($bus, $command) : void {
 			$bus->handle($command, MiddlewareContext::empty());
-		}, HandlerNotFoundException::class);
+		}, HandlerCannotBeProvidedException::class);
 	}
 
 }
