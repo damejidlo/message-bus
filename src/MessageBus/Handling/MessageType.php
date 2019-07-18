@@ -52,4 +52,11 @@ final class MessageType
 		}
 	}
 
+
+
+	public function isHandlerRequired() : bool
+	{
+		return ! is_subclass_of($this->type, IDomainEvent::class);
+	}
+
 }
