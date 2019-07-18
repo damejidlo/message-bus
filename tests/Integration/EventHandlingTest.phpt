@@ -9,11 +9,8 @@ namespace DamejidloTests\Integration;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\CommandBus\Implementation\NewEntityId;
-use Damejidlo\EventBus\IEventDispatcher;
 use Damejidlo\MessageBus\Handling\HandlerCannotBeProvidedException;
 use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
-use Damejidlo\MessageBus\Handling\HandlerRequiredAndNotConfiguredException;
 use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
@@ -22,31 +19,31 @@ use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
 use DamejidloTests\DjTestCase;
-use DamejidloTests\Integration\Fixtures\PlaceOrderCommand;
-use DamejidloTests\Integration\Fixtures\PlaceOrderHandler;
-use Mockery;
+use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
+use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
+use DamejidloTests\Integration\Fixtures\OrderPlacedEvent;
 use Tester\Assert;
 
 
 
-class CommandHandlingTest extends DjTestCase
+class EventHandlingTest extends DjTestCase
 {
 
-	public function testHandleSucceedsWithEvents() : void
+	public function testHandleSucceeds() : void
 	{
-		$eventDispatcher = Mockery::mock(IEventDispatcher::class);
-		$eventDispatcher->shouldReceive('dispatch')->once();
-
-		$handler = new PlaceOrderHandler($eventDispatcher);
-
 		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([
-			PlaceOrderCommand::class => [
-				PlaceOrderHandler::class,
+			OrderPlacedEvent::class => [
+				CreateInvoiceOnOrderPlaced::class,
+				NotifyUserOnOrderPlaced::class,
 			],
 		]);
 
+		$firstSubscriber = new CreateInvoiceOnOrderPlaced();
+		$secondSubscriber = new NotifyUserOnOrderPlaced();
+
 		$handlerProvider = new ArrayMapHandlerProvider([
-			PlaceOrderHandler::class => $handler,
+			CreateInvoiceOnOrderPlaced::class => $firstSubscriber,
+			NotifyUserOnOrderPlaced::class => $secondSubscriber,
 		]);
 
 		$handlerInvoker = new HandlerInvoker();
@@ -56,17 +53,20 @@ class CommandHandlingTest extends DjTestCase
 		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
 		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
 
-		$command = new PlaceOrderCommand();
-		$result = $bus->handle($command, MiddlewareContext::empty());
+		$event = new OrderPlacedEvent();
 
-		Assert::type(NewEntityId::class, $result);
-		/** @var NewEntityId $result */
-		Assert::same(1, $result->toInteger());
+		Assert::noError(function () use ($bus, $event) : void {
+			$result = $bus->handle($event, MiddlewareContext::empty());
+			Assert::null($result);
+		});
+
+		Assert::true($firstSubscriber->wasInvoked());
+		Assert::true($secondSubscriber->wasInvoked());
 	}
 
 
 
-	public function testHandleFailsWithHandlerNotConfigured() : void
+	public function testHandleSucceedsWithNoSubscribersConfigured() : void
 	{
 		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([]);
 		$handlerProvider = new ArrayMapHandlerProvider([]);
@@ -77,11 +77,12 @@ class CommandHandlingTest extends DjTestCase
 		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
 		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
 
-		$command = new PlaceOrderCommand();
+		$event = new OrderPlacedEvent();
 
-		Assert::exception(function () use ($bus, $command) : void {
-			$bus->handle($command, MiddlewareContext::empty());
-		}, HandlerRequiredAndNotConfiguredException::class);
+		Assert::noError(function () use ($bus, $event) : void {
+			$result = $bus->handle($event, MiddlewareContext::empty());
+			Assert::null($result);
+		});
 	}
 
 
@@ -89,8 +90,8 @@ class CommandHandlingTest extends DjTestCase
 	public function testHandleFailsWithHandlerNotProvided() : void
 	{
 		$handlerTypesResolver = new ArrayMapHandlerTypesResolver([
-			PlaceOrderCommand::class => [
-				PlaceOrderHandler::class,
+			OrderPlacedEvent::class => [
+				CreateInvoiceOnOrderPlaced::class,
 			],
 		]);
 		$handlerProvider = new ArrayMapHandlerProvider([]);
@@ -101,10 +102,10 @@ class CommandHandlingTest extends DjTestCase
 		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
 		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
 
-		$command = new PlaceOrderCommand();
+		$event = new OrderPlacedEvent();
 
-		Assert::exception(function () use ($bus, $command) : void {
-			$bus->handle($command, MiddlewareContext::empty());
+		Assert::exception(function () use ($bus, $event) : void {
+			$bus->handle($event, MiddlewareContext::empty());
 		}, HandlerCannotBeProvidedException::class);
 	}
 
@@ -112,4 +113,4 @@ class CommandHandlingTest extends DjTestCase
 
 
 
-(new CommandHandlingTest())->run();
+(new EventHandlingTest())->run();

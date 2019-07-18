@@ -14,6 +14,8 @@ final class SplitByHandlerTypeMiddleware implements IMessageBusMiddleware
 
 	/**
 	 * @inheritDoc
+	 *
+	 * @throws HandlerRequiredAndNotConfiguredException
 	 */
 	public function handle(IMessage $message, MiddlewareContext $context, MiddlewareCallback $nextMiddlewareCallback)
 	{
@@ -31,6 +33,13 @@ final class SplitByHandlerTypeMiddleware implements IMessageBusMiddleware
 			$context = $context->withValueStoredByType($handlerType);
 
 			$nextMiddlewareCallback($message, $context);
+		}
+
+		if ($handlerTypes->isEmpty()) {
+			$messageType = MessageType::fromMessage($message);
+			if ($messageType->isHandlerRequired()) {
+				throw HandlerRequiredAndNotConfiguredException::fromMessageType($messageType);
+			}
 		}
 	}
 

@@ -9,8 +9,23 @@ use Damejidlo\EventBus\IEventSubscriber;
 final class NotifyUserOnOrderPlaced implements IEventSubscriber
 {
 
+	/**
+	 * @var bool
+	 */
+	private $invoked = FALSE;
+
+
+
 	public function handle(OrderPlacedEvent $event) : void
 	{
+		$this->invoked = TRUE;
+	}
+
+
+
+	public function wasInvoked() : bool
+	{
+		return $this->invoked;
 	}
 
 }
