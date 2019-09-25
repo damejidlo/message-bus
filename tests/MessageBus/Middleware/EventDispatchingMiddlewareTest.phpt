@@ -10,7 +10,7 @@ namespace DamejidloTests\MessageBus\Middleware;
 require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\Commands\ICommand;
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\Events\IEventDispatcher;
 use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
@@ -44,8 +44,8 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$event1 = $this->mockIDomainEvent();
-		$event2 = $this->mockIDomainEvent();
+		$event1 = $this->mockEvent();
+		$event2 = $this->mockEvent();
 
 		$events = [
 			$event1,
@@ -92,8 +92,8 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$event1 = $this->mockIDomainEvent();
-		$event2 = $this->mockIDomainEvent();
+		$event1 = $this->mockEvent();
+		$event2 = $this->mockEvent();
 
 		$events = [
 			$event1,
@@ -139,8 +139,8 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 		$nextMiddlewareCallbackCalled = FALSE;
 
-		$event1 = $this->mockIDomainEvent();
-		$event2 = $this->mockIDomainEvent();
+		$event1 = $this->mockEvent();
+		$event2 = $this->mockEvent();
 
 		$events = [
 			$event1,
@@ -209,11 +209,11 @@ class EventDispatchingMiddlewareTest extends DjTestCase
 
 
 	/**
-	 * @return IDomainEvent|MockInterface
+	 * @return IEvent|MockInterface
 	 */
-	private function mockIDomainEvent() : IDomainEvent
+	private function mockEvent() : IEvent
 	{
-		$mock = Mockery::mock(IDomainEvent::class);
+		$mock = Mockery::mock(IEvent::class);
 
 		return $mock;
 	}

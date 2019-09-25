@@ -7,13 +7,13 @@ class InMemoryEventQueue
 {
 
 	/**
-	 * @var IDomainEvent[]
+	 * @var IEvent[]
 	 */
 	private $queue = [];
 
 
 
-	public function enqueue(IDomainEvent $event) : void
+	public function enqueue(IEvent $event) : void
 	{
 		$this->queue[] = $event;
 	}
@@ -21,7 +21,7 @@ class InMemoryEventQueue
 
 
 	/**
-	 * @return IDomainEvent[]
+	 * @return IEvent[]
 	 */
 	public function releaseEvents() : array
 	{

@@ -6,7 +6,7 @@ namespace DamejidloTests\MessageBus\Logging;
 require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\Commands\ICommand;
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\Logging\LogMessageResolver;
@@ -73,7 +73,7 @@ class LogMessageResolverTest extends DjTestCase
 				'expectedHandlingEndedWithErrorMessage' => 'Command handling ended with error: exception-message',
 			],
 			[
-				'messageType' => IDomainEvent::class,
+				'messageType' => IEvent::class,
 				'expectedHandlingStartedMessage' => 'Event handling started.',
 				'expectedHandlingEndedSuccessfullyMessage' => 'Event handling ended successfully.',
 				'expectedHandlingEndedWithErrorMessage' => 'Event handling ended with error: exception-message',
@@ -88,7 +88,7 @@ class LogMessageResolverTest extends DjTestCase
 		$resolver = new LogMessageResolver();
 
 		/** @var IMessage|MockInterface $message */
-		$message = Mockery::mock(IDomainEvent::class);
+		$message = Mockery::mock(IEvent::class);
 
 		$context = MiddlewareContext::empty()
 			->withValueStoredByType(HandlerType::fromString('SomeHandlerType'));

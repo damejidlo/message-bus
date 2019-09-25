@@ -10,7 +10,7 @@ namespace DamejidloTests\Events;
 require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\Events\CommandBusAwareEventDispatcher;
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\Events\IEventDispatcher;
 use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
@@ -36,7 +36,7 @@ class CommandBusAwareEventDispatcherTest extends DjTestCase
 			$delegate
 		);
 
-		$event = $this->mockIDomainEvent();
+		$event = $this->mockEvent();
 
 
 		$isCurrentlyHandlingAwareMiddleware->shouldReceive('isHandling')->andReturn(TRUE);
@@ -63,7 +63,7 @@ class CommandBusAwareEventDispatcherTest extends DjTestCase
 			$delegate
 		);
 
-		$event = $this->mockIDomainEvent();
+		$event = $this->mockEvent();
 
 		$isCurrentlyHandlingAwareMiddleware->shouldReceive('isHandling')->andReturn(FALSE);
 
@@ -114,11 +114,11 @@ class CommandBusAwareEventDispatcherTest extends DjTestCase
 
 
 	/**
-	 * @return IDomainEvent|MockInterface
+	 * @return IEvent|MockInterface
 	 */
-	private function mockIDomainEvent() : IDomainEvent
+	private function mockEvent() : IEvent
 	{
-		$mock = Mockery::mock(IDomainEvent::class);
+		$mock = Mockery::mock(IEvent::class);
 
 		return $mock;
 	}

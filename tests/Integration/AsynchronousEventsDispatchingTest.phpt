@@ -13,7 +13,7 @@ use Damejidlo\Commands\CommandBus;
 use Damejidlo\Commands\ICommandBus;
 use Damejidlo\Events\CommandBusAwareEventDispatcher;
 use Damejidlo\Events\EventBus;
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\Events\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
@@ -107,7 +107,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 		$this->logger->reset();
 
 		foreach ($this->messageRecordingMiddleware->release() as $item) {
-			/** @var IDomainEvent $event */
+			/** @var IEvent $event */
 			$event = $item['message'];
 			/** @var MiddlewareContext $context */
 			$context = $item['context'];

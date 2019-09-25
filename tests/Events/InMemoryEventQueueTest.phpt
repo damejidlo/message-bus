@@ -9,7 +9,7 @@ namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\Events\InMemoryEventQueue;
 use DamejidloTests\DjTestCase;
 use Mockery;
@@ -25,8 +25,8 @@ class InMemoryEventQueueTest extends DjTestCase
 	{
 		$queue = new InMemoryEventQueue();
 
-		$event1 = $this->mockIDomainEvent();
-		$event2 = $this->mockIDomainEvent();
+		$event1 = $this->mockEvent();
+		$event2 = $this->mockEvent();
 
 		$queue->enqueue($event1);
 		$queue->enqueue($event2);
@@ -42,11 +42,11 @@ class InMemoryEventQueueTest extends DjTestCase
 
 
 	/**
-	 * @return IDomainEvent|MockInterface
+	 * @return IEvent|MockInterface
 	 */
-	private function mockIDomainEvent() : IDomainEvent
+	private function mockEvent() : IEvent
 	{
-		$mock = Mockery::mock(IDomainEvent::class);
+		$mock = Mockery::mock(IEvent::class);
 
 		return $mock;
 	}

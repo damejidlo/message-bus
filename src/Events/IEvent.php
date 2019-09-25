@@ -16,7 +16,7 @@ use Damejidlo\MessageBus\IMessage;
  * - OrderRejectedEvent
  * - UserCreatedEvent
  */
-interface IDomainEvent extends IMessage
+interface IEvent extends IMessage
 {
 
 }

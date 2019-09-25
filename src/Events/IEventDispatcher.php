@@ -9,6 +9,6 @@ namespace Damejidlo\Events;
 interface IEventDispatcher
 {
 
-	public function dispatch(IDomainEvent $event) : void;
+	public function dispatch(IEvent $event) : void;
 
 }

@@ -3,7 +3,7 @@
 namespace Damejidlo\MessageBus\Handling;
 
 use Damejidlo\Commands\ICommand;
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\MessageBus\IMessage;
 
 
@@ -44,7 +44,7 @@ final class MessageType
 		if (is_subclass_of($this->type, ICommand::class)) {
 			return 'Command';
 
-		} elseif (is_subclass_of($this->type, IDomainEvent::class)) {
+		} elseif (is_subclass_of($this->type, IEvent::class)) {
 			return 'Event';
 
 		} else {
@@ -56,7 +56,7 @@ final class MessageType
 
 	public function isHandlerRequired() : bool
 	{
-		return ! is_subclass_of($this->type, IDomainEvent::class);
+		return ! is_subclass_of($this->type, IEvent::class);
 	}
 
 }

@@ -9,7 +9,7 @@ namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\Events\IEventBus;
 use Damejidlo\Events\SynchronousEventDispatcher;
 use DamejidloTests\DjTestCase;
@@ -27,7 +27,7 @@ class SynchronousEventDispatcherTest extends DjTestCase
 		$eventBus = $this->mockEventBus();
 		$dispatcher = new SynchronousEventDispatcher($eventBus);
 
-		$event = new class() implements IDomainEvent
+		$event = new class() implements IEvent
 		{
 
 		};

@@ -10,7 +10,7 @@ interface IEventBus
 {
 
 	/**
-	 * @param IDomainEvent $event
+	 * @param IEvent $event
 	 *
 	 * @internal
 	 *
@@ -19,6 +19,6 @@ interface IEventBus
 	 *
 	 * Should not fail, throws no exceptions.
 	 */
-	public function handle(IDomainEvent $event) : void;
+	public function handle(IEvent $event) : void;
 
 }

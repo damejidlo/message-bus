@@ -2,7 +2,7 @@
 
 namespace Damejidlo\MessageBus\Logging;
 
-use Damejidlo\Events\IDomainEvent;
+use Damejidlo\Events\IEvent;
 use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\Handling\MessageType;
 use Damejidlo\MessageBus\IMessage;
@@ -51,7 +51,7 @@ class LogMessageResolver
 	{
 		$handlerIsResolved = $context->has(HandlerType::class);
 
-		if ($handlerIsResolved && $message instanceof IDomainEvent) {
+		if ($handlerIsResolved && $message instanceof IEvent) {
 			return ' in subscriber';
 		}
 

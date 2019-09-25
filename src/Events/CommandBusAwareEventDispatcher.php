@@ -39,7 +39,7 @@ class CommandBusAwareEventDispatcher implements IEventDispatcher
 
 
 
-	public function dispatch(IDomainEvent $event) : void
+	public function dispatch(IEvent $event) : void
 	{
 		if ($this->isCurrentlyHandlingAwareMiddleware->isHandling()) {
 			$this->eventQueue->enqueue($event);

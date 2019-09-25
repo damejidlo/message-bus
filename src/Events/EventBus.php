@@ -25,7 +25,7 @@ final class EventBus implements IEventBus
 
 
 
-	public function handle(IDomainEvent $event) : void
+	public function handle(IEvent $event) : void
 	{
 		$this->delegate->handle($event, MiddlewareContext::empty());
 	}

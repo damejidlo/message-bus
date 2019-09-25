@@ -19,7 +19,7 @@ final class SynchronousEventDispatcher implements IEventDispatcher
 
 
 
-	public function dispatch(IDomainEvent $event) : void
+	public function dispatch(IEvent $event) : void
 	{
 		$this->eventBus->handle($event);
 	}

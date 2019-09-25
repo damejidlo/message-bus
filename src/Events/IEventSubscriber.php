@@ -13,7 +13,7 @@ use Damejidlo\MessageBus\IMessageHandler;
  * - class must be final
  * - class must implement method named "handle"
  * - handle method must have exactly one parameter named "event"
- * - handle method parameter must be of type IDomainEvent
+ * - handle method parameter must be of type IEvent
  * - handle method return type must be "void"
  * - handle method must be annotated with "@throws" tags if specific exceptions can be thrown
  *
