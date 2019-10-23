@@ -7,6 +7,7 @@ use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Commands\NewEntityId;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
 
 
@@ -38,41 +39,15 @@ class CommandHandlerValidator
 	{
 		(new ClassExistsRule())->validate($handlerClass);
 		(new ClassIsFinalRule())->validate($handlerClass);
+		(new ClassHasPublicMethodRule('handle'))->validate($handlerClass);
 
 		$handlerClassReflection = new \ReflectionClass($handlerClass);
-		$this->validateHandleMethod($handlerClassReflection);
 		$this->validateHandleMethodParameter($handlerClassReflection);
 
 		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
 		$commandName = $this->validateCommandAndExtractName($commandClass, $handlerClass);
 
 		$this->validateHandlerClassName($handlerClassReflection, $commandName);
-	}
-
-
-
-	/**
-	 * @param \ReflectionClass $handlerClassReflection
-	 */
-	private function validateHandleMethod(\ReflectionClass $handlerClassReflection) : void
-	{
-		$handlerClass = $handlerClassReflection->getName();
-
-		if (!$handlerClassReflection->hasMethod('handle')) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" must implement method "handle".',
-				$handlerClass
-			));
-		}
-
-		$handleMethod = $handlerClassReflection->getMethod('handle');
-
-		if (!$handleMethod->isPublic()) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" method "handle" must be public.',
-				$handlerClass
-			));
-		}
 	}
 
 

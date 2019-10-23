@@ -6,6 +6,7 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 use Damejidlo\MessageBus\Events\IEvent;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
 
 
@@ -37,41 +38,15 @@ class EventSubscriberValidator
 	{
 		(new ClassExistsRule())->validate($subscriberClass);
 		(new ClassIsFinalRule())->validate($subscriberClass);
+		(new ClassHasPublicMethodRule('handle'))->validate($subscriberClass);
 
 		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
-		$this->validateHandleMethod($subscriberClassReflection);
 		$this->validateHandleMethodParameter($subscriberClassReflection);
 
 		$eventClass = $this->messageTypeExtractor->extract($subscriberClass);
 		$eventName = $this->validateEventAndExtractName($eventClass);
 
 		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);
-	}
-
-
-
-	/**
-	 * @param \ReflectionClass $subscriberClassReflection
-	 */
-	private function validateHandleMethod(\ReflectionClass $subscriberClassReflection) : void
-	{
-		$subscriberClass = $subscriberClassReflection->getName();
-
-		if (!$subscriberClassReflection->hasMethod('handle')) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" must implement method "handle".',
-				$subscriberClass
-			));
-		}
-
-		$handleMethod = $subscriberClassReflection->getMethod('handle');
-
-		if (!$handleMethod->isPublic()) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" method "handle" must be public.',
-				$subscriberClass
-			));
-		}
 	}
 
 

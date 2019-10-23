@@ -3,6 +3,7 @@
 namespace Damejidlo\MessageBus\StaticAnalysis;
 
 use ReflectionClass;
+use ReflectionMethod;
 
 
 
@@ -21,6 +22,24 @@ final class ReflectionHelper
 
 		} catch (\ReflectionException $exception) {
 			throw StaticAnalysisFailedException::with('Class does not exist', $type);
+		}
+	}
+
+
+
+	/**
+	 * @param string $class
+	 * @param string $methodName
+	 * @return ReflectionMethod
+	 * @throws StaticAnalysisFailedException
+	 */
+	public static function requireMethodReflection(string $class, string $methodName) : ReflectionMethod
+	{
+		try {
+			return self::requireClassReflection($class)->getMethod($methodName);
+
+		} catch (\ReflectionException $exception) {
+			throw StaticAnalysisFailedException::with(sprintf('Method "%s" does not exist', $methodName), $class);
 		}
 	}
 
