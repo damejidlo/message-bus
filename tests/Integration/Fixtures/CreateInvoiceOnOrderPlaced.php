@@ -2,7 +2,7 @@
 
 namespace DamejidloTests\Integration\Fixtures;
 
-use Damejidlo\Events\IEventSubscriber;
+use Damejidlo\MessageBus\Events\IEventSubscriber;
 
 
 

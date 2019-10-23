@@ -9,8 +9,8 @@ namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Events\IEvent;
-use Damejidlo\Events\SynchronousEventDispatcher;
+use Damejidlo\MessageBus\Events\IEvent;
+use Damejidlo\MessageBus\Events\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\IMessageBus;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;

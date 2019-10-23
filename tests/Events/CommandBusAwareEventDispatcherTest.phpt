@@ -9,10 +9,10 @@ namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Events\CommandBusAwareEventDispatcher;
-use Damejidlo\Events\IEvent;
-use Damejidlo\Events\IEventDispatcher;
-use Damejidlo\Events\InMemoryEventQueue;
+use Damejidlo\MessageBus\Events\CommandBusAwareEventDispatcher;
+use Damejidlo\MessageBus\Events\IEvent;
+use Damejidlo\MessageBus\Events\IEventDispatcher;
+use Damejidlo\MessageBus\Events\InMemoryEventQueue;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use DamejidloTests\DjTestCase;
 use Mockery;

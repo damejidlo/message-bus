@@ -9,8 +9,8 @@ namespace DamejidloTests\Events;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Events\IEvent;
-use Damejidlo\Events\InMemoryEventQueue;
+use Damejidlo\MessageBus\Events\IEvent;
+use Damejidlo\MessageBus\Events\InMemoryEventQueue;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;

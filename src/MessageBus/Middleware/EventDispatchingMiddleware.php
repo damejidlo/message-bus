@@ -3,8 +3,8 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\Middleware;
 
-use Damejidlo\Events\IEventDispatcher;
-use Damejidlo\Events\InMemoryEventQueue;
+use Damejidlo\MessageBus\Events\IEventDispatcher;
+use Damejidlo\MessageBus\Events\InMemoryEventQueue;
 use Damejidlo\MessageBus\IMessage;
 use Damejidlo\MessageBus\IMessageBusMiddleware;
 
