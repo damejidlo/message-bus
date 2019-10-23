@@ -67,14 +67,15 @@ class CommandHandlerValidatorTest extends DjTestCase
 	 * @dataProvider getDataForValidateFails
 	 *
 	 * @param string $handlerClassName
+	 * @param string|NULL $expectedExceptionMessage
 	 */
-	public function testValidateFails(string $handlerClassName) : void
+	public function testValidateFails(string $handlerClassName, ?string $expectedExceptionMessage = NULL) : void
 	{
 		$validator = new CommandHandlerValidator();
 
 		Assert::exception(function () use ($validator, $handlerClassName) : void {
 			$validator->validate($handlerClassName);
-		}, StaticAnalysisFailedException::class);
+		}, StaticAnalysisFailedException::class, $expectedExceptionMessage);
 	}
 
 
@@ -85,10 +86,26 @@ class CommandHandlerValidatorTest extends DjTestCase
 	public function getDataForValidateFails() : array
 	{
 		return [
-			['NonexistentClass'],
-			[NotFinalHandler::class],
-			[MissingHandleMethodHandler::class],
-			[HandleMethodNotPublicHandler::class],
+			[
+				'NonexistentClass',
+				'Static analysis failed for class "NonexistentClass": '
+				. 'Class does not exist',
+			],
+			[
+				NotFinalHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\NotFinalHandler": '
+				. 'Class must be final.',
+			],
+			[
+				MissingHandleMethodHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\MissingHandleMethodHandler": '
+				. 'Method "handle" does not exist',
+			],
+			[
+				HandleMethodNotPublicHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodNotPublicHandler": '
+				. 'Method "handle" is not public',
+			],
 			[HandleMethodHasNoParameterHandler::class],
 			[HandleMethodHasMoreParametersHandler::class],
 			[HandleMethodHasIncorrectlyNamedParameterHandler::class],

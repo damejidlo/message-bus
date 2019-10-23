@@ -47,14 +47,15 @@ class EventSubscriberValidatorTest extends DjTestCase
 	 * @dataProvider getDataForValidateFails
 	 *
 	 * @param string $subscriberClassName
+	 * @param string|NULL $expectedExceptionMessage
 	 */
-	public function testValidateFails(string $subscriberClassName) : void
+	public function testValidateFails(string $subscriberClassName, ?string $expectedExceptionMessage = NULL) : void
 	{
 		$validator = new EventSubscriberValidator();
 
 		Assert::exception(function () use ($validator, $subscriberClassName) : void {
 			$validator->validate($subscriberClassName);
-		}, StaticAnalysisFailedException::class);
+		}, StaticAnalysisFailedException::class, $expectedExceptionMessage);
 	}
 
 
@@ -65,10 +66,26 @@ class EventSubscriberValidatorTest extends DjTestCase
 	public function getDataForValidateFails() : array
 	{
 		return [
-			['NonexistentClass'],
-			[NotFinalOnSomethingValidHappened::class],
-			[MissingHandleOnSomethingValidHappened::class],
-			[HandleMethodNotPublicOnSomethingValidHappened::class],
+			[
+				'NonexistentClass',
+				'Static analysis failed for class "NonexistentClass": '
+				. 'Class does not exist',
+			],
+			[
+				NotFinalOnSomethingValidHappened::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\NotFinalOnSomethingValidHappened": '
+				. 'Class must be final.',
+			],
+			[
+				MissingHandleOnSomethingValidHappened::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\MissingHandleOnSomethingValidHappened": '
+				. 'Method "handle" does not exist',
+			],
+			[
+				HandleMethodNotPublicOnSomethingValidHappened::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodNotPublicOnSomethingValidHappened": '
+				. 'Method "handle" is not public',
+			],
 			[HandleMethodHasNoParameterOnSomethingValidHappened::class],
 			[HandleMethodHasMoreParametersOnSomethingValidHappened::class],
 			[HandleMethodHasIncorrectlyNamedParameterOnSomethingValidHappened::class],
