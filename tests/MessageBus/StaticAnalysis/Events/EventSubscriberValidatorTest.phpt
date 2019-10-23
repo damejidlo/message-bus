@@ -9,11 +9,22 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Events;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Damejidlo\MessageBus\Events\IEvent;
-use Damejidlo\MessageBus\Events\IEventSubscriber;
 use Damejidlo\MessageBus\StaticAnalysis\Events\EventSubscriberValidator;
 use Damejidlo\MessageBus\StaticAnalysis\Events\InvalidSubscriberException;
 use DamejidloTests\DjTestCase;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\DoSomethingOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\EventHasIncorrectNameOnIncorrectName;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\EventNameDoesNotMatchSubscriber;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasIncorrectlyNamedParameterOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasMoreParametersOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasNoParameterOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasNullReturnTypeOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasParameterWithIncorrectTypeOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodNotPublicOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\MissingHandleOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\NotFinalEventOnSomethingInvalidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\NotFinalOnSomethingValidHappened;
 use Tester\Assert;
 
 
@@ -72,203 +83,5 @@ class EventSubscriberValidatorTest extends DjTestCase
 }
 
 
-
-/**
- * @see ValidSubscriber
- */
-final class SomethingValidHappenedEvent implements IEvent
-{
-
-}
-
-
-
-final class DoSomethingOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingValidHappenedEvent $event
-	 */
-	public function handle(SomethingValidHappenedEvent $event) : void
-	{
-	}
-
-}
-
-
-
-class NotFinalOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingValidHappenedEvent $event
-	 */
-	public function handle(SomethingValidHappenedEvent $event) : void
-	{
-	}
-
-}
-
-
-
-final class MissingHandleOnSomethingValidHappened implements IEventSubscriber
-{
-
-}
-
-
-
-final class HandleMethodNotPublicOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingValidHappenedEvent $event
-	 */
-	protected function handle(SomethingValidHappenedEvent $event) : void
-	{
-	}
-
-}
-
-
-
-final class HandleMethodHasNoParameterOnSomethingValidHappened implements IEventSubscriber
-{
-
-	public function handle() : void
-	{
-	}
-
-}
-
-
-
-final class HandleMethodHasMoreParametersOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param mixed $foo
-	 * @param mixed $bar
-	 */
-	public function handle($foo, $bar) : void
-	{
-	}
-
-}
-
-
-
-final class HandleMethodHasIncorrectlyNamedParameterOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingValidHappenedEvent $foo
-	 */
-	public function handle(SomethingValidHappenedEvent $foo) : void
-	{
-	}
-
-}
-
-
-
-final class HandleMethodHasParameterWithIncorrectTypeOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param string $event
-	 */
-	public function handle(string $event) : void
-	{
-	}
-
-}
-
-
-
-final class HandleMethodHasNullReturnTypeOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
-	 * @param SomethingValidHappenedEvent $event
-	 */
-	public function handle(SomethingValidHappenedEvent $event)
-	{
-	}
-
-}
-
-
-
-final class HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingValidHappenedEvent $event
-	 * @return string
-	 */
-	public function handle(SomethingValidHappenedEvent $event) : string
-	{
-		return '';
-	}
-
-}
-
-
-
-class SomethingInvalidHappenedEvent implements IEvent
-{
-
-}
-
-
-
-final class NotFinalEventOnSomethingInvalidHappened implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingInvalidHappenedEvent $event
-	 */
-	public function handle(SomethingInvalidHappenedEvent $event) : void
-	{
-	}
-
-}
-
-
-
-final class IncorrectName implements IEvent
-{
-
-}
-
-
-
-final class EventHasIncorrectNameOnIncorrectName implements IEventSubscriber
-{
-
-	/**
-	 * @param IncorrectName $event
-	 */
-	public function handle(IncorrectName $event) : void
-	{
-	}
-
-}
-
-
-
-final class EventNameDoesNotMatchSubscriber implements IEventSubscriber
-{
-
-	/**
-	 * @param SomethingValidHappenedEvent $event
-	 */
-	public function handle(SomethingValidHappenedEvent $event) : void
-	{
-	}
-
-}
 
 (new EventSubscriberValidatorTest())->run();

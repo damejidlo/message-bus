@@ -9,10 +9,10 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Events;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Damejidlo\MessageBus\Events\IEvent;
-use Damejidlo\MessageBus\Events\IEventSubscriber;
 use Damejidlo\MessageBus\StaticAnalysis\Events\EventTypeExtractor;
 use DamejidloTests\DjTestCase;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\DoSomethingOnSomethingValidHappened;
+use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\SomethingValidHappenedEvent;
 use Tester\Assert;
 
 
@@ -24,28 +24,7 @@ class EventTypeExtractorTest extends DjTestCase
 	{
 		$extractor = new EventTypeExtractor();
 
-		Assert::same(SomeEvent::class, $extractor->extract(SomeSubscriber::class));
-	}
-
-}
-
-
-
-class SomeEvent implements IEvent
-{
-
-}
-
-
-
-class SomeSubscriber implements IEventSubscriber
-{
-
-	/**
-	 * @param SomeEvent $event
-	 */
-	public function handle(SomeEvent $event) : void
-	{
+		Assert::same(SomethingValidHappenedEvent::class, $extractor->extract(DoSomethingOnSomethingValidHappened::class));
 	}
 
 }
