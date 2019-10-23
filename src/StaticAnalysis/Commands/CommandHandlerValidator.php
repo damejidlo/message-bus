@@ -5,6 +5,7 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
 
 use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Commands\NewEntityId;
+use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 
 
 
@@ -15,18 +16,15 @@ class CommandHandlerValidator
 	private const HANDLER_CLASS_NAME_SUFFIX = 'Handler';
 
 	/**
-	 * @var CommandTypeExtractor
+	 * @var MessageTypeExtractor
 	 */
-	private $commandTypeExtractor;
+	private $messageTypeExtractor;
 
 
 
-	/**
-	 * @param CommandTypeExtractor $commandTypeExtractor
-	 */
-	public function __construct(?CommandTypeExtractor $commandTypeExtractor = NULL)
+	public function __construct(?MessageTypeExtractor $messageTypeExtractor = NULL)
 	{
-		$this->commandTypeExtractor = $commandTypeExtractor ?? new CommandTypeExtractor();
+		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
 	}
 
 
@@ -42,7 +40,7 @@ class CommandHandlerValidator
 		$this->validateHandleMethod($handlerClassReflection);
 		$this->validateHandleMethodParameter($handlerClassReflection);
 
-		$commandClass = $this->commandTypeExtractor->extract($handlerClass);
+		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
 		$commandName = $this->validateCommandAndExtractName($commandClass, $handlerClass);
 
 		$this->validateHandlerClassName($handlerClassReflection, $commandName);

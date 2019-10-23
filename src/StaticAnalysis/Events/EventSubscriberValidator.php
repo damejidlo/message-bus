@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 
 use Damejidlo\MessageBus\Events\IEvent;
+use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 
 
 
@@ -14,18 +15,15 @@ class EventSubscriberValidator
 	private const SUBSCRIBER_CLASS_NAME_EVENT_PREFIX = 'On';
 
 	/**
-	 * @var EventTypeExtractor
+	 * @var MessageTypeExtractor
 	 */
-	private $eventTypeExtractor;
+	private $messageTypeExtractor;
 
 
 
-	/**
-	 * @param EventTypeExtractor $eventTypeExtractor
-	 */
-	public function __construct(?EventTypeExtractor $eventTypeExtractor = NULL)
+	public function __construct(?MessageTypeExtractor $messageTypeExtractor = NULL)
 	{
-		$this->eventTypeExtractor = $eventTypeExtractor ?? new EventTypeExtractor();
+		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
 	}
 
 
@@ -41,7 +39,7 @@ class EventSubscriberValidator
 		$this->validateHandleMethod($subscriberClassReflection);
 		$this->validateHandleMethodParameter($subscriberClassReflection);
 
-		$eventClass = $this->eventTypeExtractor->extract($subscriberClass);
+		$eventClass = $this->messageTypeExtractor->extract($subscriberClass);
 		$eventName = $this->validateEventAndExtractName($eventClass);
 
 		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);

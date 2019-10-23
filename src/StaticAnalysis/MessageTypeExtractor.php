@@ -1,15 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
+namespace Damejidlo\MessageBus\StaticAnalysis;
 
-class CommandTypeExtractor
+class MessageTypeExtractor
 {
 
-	/**
-	 * @param string $handlerServiceClass
-	 * @return string command type
-	 */
 	public function extract(string $handlerServiceClass) : string
 	{
 		$reflection = new \ReflectionClass($handlerServiceClass);
