@@ -9,12 +9,12 @@ namespace DamejidloTests\Integration;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Commands\CommandBus;
-use Damejidlo\Commands\ICommandBus;
-use Damejidlo\Commands\NewEntityId;
 use Damejidlo\Events\CommandBusAwareEventDispatcher;
 use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\Events\SynchronousEventDispatcher;
+use Damejidlo\MessageBus\Commands\CommandBus;
+use Damejidlo\MessageBus\Commands\ICommandBus;
+use Damejidlo\MessageBus\Commands\NewEntityId;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;

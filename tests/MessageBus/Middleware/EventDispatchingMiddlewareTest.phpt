@@ -9,10 +9,10 @@ namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
-use Damejidlo\Commands\ICommand;
 use Damejidlo\Events\IEvent;
 use Damejidlo\Events\IEventDispatcher;
 use Damejidlo\Events\InMemoryEventQueue;
+use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;

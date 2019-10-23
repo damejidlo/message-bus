@@ -9,7 +9,7 @@ namespace DamejidloTests\Commands;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\Commands\NewEntityId;
+use Damejidlo\MessageBus\Commands\NewEntityId;
 use DamejidloTests\DjTestCase;
 use Tester\Assert;
 
