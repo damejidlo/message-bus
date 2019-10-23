@@ -7,6 +7,7 @@ use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Commands\NewEntityId;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
 
 
 
@@ -36,9 +37,9 @@ class CommandHandlerValidator
 	public function validate(string $handlerClass) : void
 	{
 		(new ClassExistsRule())->validate($handlerClass);
-		$handlerClassReflection = new \ReflectionClass($handlerClass);
+		(new ClassIsFinalRule())->validate($handlerClass);
 
-		$this->validateClass($handlerClassReflection);
+		$handlerClassReflection = new \ReflectionClass($handlerClass);
 		$this->validateHandleMethod($handlerClassReflection);
 		$this->validateHandleMethodParameter($handlerClassReflection);
 
@@ -46,23 +47,6 @@ class CommandHandlerValidator
 		$commandName = $this->validateCommandAndExtractName($commandClass, $handlerClass);
 
 		$this->validateHandlerClassName($handlerClassReflection, $commandName);
-	}
-
-
-
-	/**
-	 * @param \ReflectionClass $handlerClassReflection
-	 */
-	private function validateClass(\ReflectionClass $handlerClassReflection) : void
-	{
-		$handlerClass = $handlerClassReflection->getName();
-
-		if (!$handlerClassReflection->isFinal()) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" must be final.',
-				$handlerClass
-			));
-		}
 	}
 
 
@@ -184,12 +168,7 @@ class CommandHandlerValidator
 		$commandClassReflection = new \ReflectionClass($commandClass);
 		$commandShortName = $commandClassReflection->getShortName();
 
-		if (!$commandClassReflection->isFinal()) {
-			throw new InvalidHandlerException(sprintf(
-				'Command "%s" must be final.',
-				$commandClass
-			));
-		}
+		(new ClassIsFinalRule())->validate($commandClass);
 
 		$pattern = sprintf('#^(.*)%s$#', self::COMMAND_CLASS_NAME_SUFFIX);
 		if (!preg_match($pattern, $commandShortName, $matches)) {

@@ -6,6 +6,7 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 use Damejidlo\MessageBus\Events\IEvent;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
 
 
 
@@ -35,10 +36,9 @@ class EventSubscriberValidator
 	public function validate(string $subscriberClass) : void
 	{
 		(new ClassExistsRule())->validate($subscriberClass);
+		(new ClassIsFinalRule())->validate($subscriberClass);
 
 		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
-
-		$this->validateClass($subscriberClassReflection);
 		$this->validateHandleMethod($subscriberClassReflection);
 		$this->validateHandleMethodParameter($subscriberClassReflection);
 
@@ -46,21 +46,6 @@ class EventSubscriberValidator
 		$eventName = $this->validateEventAndExtractName($eventClass);
 
 		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);
-	}
-
-
-
-	/**
-	 * @param \ReflectionClass $subscriberClassReflection
-	 */
-	private function validateClass(\ReflectionClass $subscriberClassReflection) : void
-	{
-		if (!$subscriberClassReflection->isFinal()) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" must be final.',
-				$subscriberClassReflection->getName()
-			));
-		}
 	}
 
 
@@ -158,12 +143,7 @@ class EventSubscriberValidator
 		$eventClassReflection = new \ReflectionClass($eventClass);
 		$eventShortName = $eventClassReflection->getShortName();
 
-		if (!$eventClassReflection->isFinal()) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event "%s" must be final.',
-				$eventClass
-			));
-		}
+		(new ClassIsFinalRule())->validate($eventClass);
 
 		$pattern = sprintf('#^(.+)%s$#', self::EVENT_CLASS_NAME_SUFFIX);
 		if (!preg_match($pattern, $eventShortName, $matches)) {
