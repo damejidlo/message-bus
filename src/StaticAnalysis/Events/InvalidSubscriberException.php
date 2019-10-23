@@ -3,7 +3,11 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 
-class InvalidSubscriberException extends \LogicException
+use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
+
+
+
+class InvalidSubscriberException extends StaticAnalysisFailedException
 {
 
 }

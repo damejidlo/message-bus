@@ -10,7 +10,7 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Events;
 require_once __DIR__ . '/../../../bootstrap.php';
 
 use Damejidlo\MessageBus\StaticAnalysis\Events\EventSubscriberValidator;
-use Damejidlo\MessageBus\StaticAnalysis\Events\InvalidSubscriberException;
+use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\DoSomethingOnSomethingValidHappened;
 use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\EventHasIncorrectNameOnIncorrectName;
@@ -54,7 +54,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 
 		Assert::exception(function () use ($validator, $subscriberClassName) : void {
 			$validator->validate($subscriberClassName);
-		}, InvalidSubscriberException::class);
+		}, StaticAnalysisFailedException::class);
 	}
 
 
@@ -65,6 +65,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 	public function getDataForValidateFails() : array
 	{
 		return [
+			['NonexistentClass'],
 			[NotFinalOnSomethingValidHappened::class],
 			[MissingHandleOnSomethingValidHappened::class],
 			[HandleMethodNotPublicOnSomethingValidHappened::class],

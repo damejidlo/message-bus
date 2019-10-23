@@ -6,6 +6,7 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
 use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Commands\NewEntityId;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 
 
 
@@ -34,6 +35,7 @@ class CommandHandlerValidator
 	 */
 	public function validate(string $handlerClass) : void
 	{
+		(new ClassExistsRule())->validate($handlerClass);
 		$handlerClassReflection = new \ReflectionClass($handlerClass);
 
 		$this->validateClass($handlerClassReflection);

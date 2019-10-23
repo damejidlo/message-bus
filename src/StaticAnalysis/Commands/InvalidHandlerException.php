@@ -3,7 +3,11 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
 
-class InvalidHandlerException extends \LogicException
+use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
+
+
+
+class InvalidHandlerException extends StaticAnalysisFailedException
 {
 
 }

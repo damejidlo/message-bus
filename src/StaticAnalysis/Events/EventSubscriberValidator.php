@@ -5,6 +5,7 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 
 use Damejidlo\MessageBus\Events\IEvent;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 
 
 
@@ -33,6 +34,8 @@ class EventSubscriberValidator
 	 */
 	public function validate(string $subscriberClass) : void
 	{
+		(new ClassExistsRule())->validate($subscriberClass);
+
 		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
 
 		$this->validateClass($subscriberClassReflection);
