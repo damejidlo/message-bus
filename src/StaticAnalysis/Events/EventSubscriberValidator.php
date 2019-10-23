@@ -5,9 +5,13 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 
 use Damejidlo\MessageBus\Events\IEvent;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
+use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodHasOneParameterRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterNameMatchesRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
 
 
 
@@ -38,7 +42,18 @@ class EventSubscriberValidator
 	{
 		(new ClassExistsRule())->validate($subscriberClass);
 		(new ClassIsFinalRule())->validate($subscriberClass);
-		(new ClassHasPublicMethodRule('handle'))->validate($subscriberClass);
+
+		$handleMethodName = 'handle';
+		(new ClassHasPublicMethodRule($handleMethodName))->validate($subscriberClass);
+
+		$handleMethod = ReflectionHelper::requireMethodReflection($subscriberClass, $handleMethodName);
+		(new MethodHasOneParameterRule())->validate($handleMethod);
+
+		$parameter = $handleMethod->getParameters()[0];
+		$parameterName = 'event';
+		(new MethodParameterNameMatchesRule($parameterName))->validate($parameter);
+		$parameterType = IEvent::class;
+		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
 		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
 		$this->validateHandleMethodParameter($subscriberClassReflection);
@@ -59,35 +74,6 @@ class EventSubscriberValidator
 		$subscriberClass = $subscriberClassReflection->getName();
 
 		$handleMethod = $subscriberClassReflection->getMethod('handle');
-
-		$handleMethodParameters = $handleMethod->getParameters();
-
-		if (count($handleMethodParameters) !== 1) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" must have method "handle" with exactly one parameter.',
-				$subscriberClass
-			));
-		}
-
-		$handleMethodParameter = $handleMethodParameters[0];
-
-		if ($handleMethodParameter->getName() !== 'event') {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" method "handle" must have parameter named "event".',
-				$subscriberClass
-			));
-		}
-
-		$expectedHandleMethodParameterType = IEvent::class;
-
-		if ($handleMethodParameter->getType() === NULL
-			|| !is_subclass_of($handleMethodParameter->getType()->__toString(), $expectedHandleMethodParameterType)) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" method "handle" must have parameter of type "%s".',
-				$subscriberClass,
-				$expectedHandleMethodParameterType
-			));
-		}
 
 		$handleMethodReturnType = $handleMethod->getReturnType();
 

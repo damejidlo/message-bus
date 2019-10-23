@@ -106,10 +106,28 @@ class CommandHandlerValidatorTest extends DjTestCase
 				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodNotPublicHandler": '
 				. 'Method "handle" is not public',
 			],
-			[HandleMethodHasNoParameterHandler::class],
-			[HandleMethodHasMoreParametersHandler::class],
-			[HandleMethodHasIncorrectlyNamedParameterHandler::class],
-			[HandleMethodHasParameterWithIncorrectTypeHandler::class],
+			[
+				HandleMethodHasNoParameterHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasNoParameterHandler": '
+				. 'Method "handle" must have exactly one parameter',
+			],
+			[
+				HandleMethodHasMoreParametersHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasMoreParametersHandler": '
+				. 'Method "handle" must have exactly one parameter',
+			],
+			[
+				HandleMethodHasIncorrectlyNamedParameterHandler::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasIncorrectlyNamedParameterHandler": '
+				. 'Method parameter name must be "command"',
+			],
+			[
+				HandleMethodHasParameterWithIncorrectTypeHandler::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasParameterWithIncorrectTypeHandler": '
+				. 'Method parameter "command" must be of type "Damejidlo\MessageBus\Commands\ICommand"',
+			],
 			[HandleMethodHasNoReturnTypeHandler::class],
 			[HandleMethodHasIncorrectReturnTypeHandler::class],
 			[HandleMethodHasNullableNewEntityIdReturnTypeHandler::class],

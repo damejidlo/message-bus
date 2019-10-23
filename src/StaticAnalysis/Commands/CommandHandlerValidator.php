@@ -6,9 +6,14 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
 use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Commands\NewEntityId;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
+use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodHasOneParameterRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterNameMatchesRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
+use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
 
@@ -34,63 +39,32 @@ class CommandHandlerValidator
 
 	/**
 	 * @param string $handlerClass
+	 * @throws StaticAnalysisFailedException
 	 */
 	public function validate(string $handlerClass) : void
 	{
 		(new ClassExistsRule())->validate($handlerClass);
 		(new ClassIsFinalRule())->validate($handlerClass);
-		(new ClassHasPublicMethodRule('handle'))->validate($handlerClass);
+
+		$handleMethodName = 'handle';
+		(new ClassHasPublicMethodRule($handleMethodName))->validate($handlerClass);
+
+		$handleMethod = ReflectionHelper::requireMethodReflection($handlerClass, $handleMethodName);
+		(new MethodHasOneParameterRule())->validate($handleMethod);
+
+		$parameter = $handleMethod->getParameters()[0];
+		$parameterName = 'command';
+		(new MethodParameterNameMatchesRule($parameterName))->validate($parameter);
+		$parameterType = ICommand::class;
+		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
 		$handlerClassReflection = new \ReflectionClass($handlerClass);
-		$this->validateHandleMethodParameter($handlerClassReflection);
+		$this->validateHandleMethodReturnType($handleMethod->getReturnType(), $handlerClass);
 
 		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
 		$commandName = $this->validateCommandAndExtractName($commandClass, $handlerClass);
 
 		$this->validateHandlerClassName($handlerClassReflection, $commandName);
-	}
-
-
-
-	/**
-	 * @param \ReflectionClass $handlerClassReflection
-	 */
-	private function validateHandleMethodParameter(\ReflectionClass $handlerClassReflection) : void
-	{
-		$handlerClass = $handlerClassReflection->getName();
-
-		$handleMethod = $handlerClassReflection->getMethod('handle');
-
-		$handleMethodParameters = $handleMethod->getParameters();
-
-		if (count($handleMethodParameters) !== 1) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" must have method "handle" with exactly one parameter.',
-				$handlerClass
-			));
-		}
-
-		$handleMethodParameter = $handleMethodParameters[0];
-
-		if ($handleMethodParameter->getName() !== 'command') {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" method "handle" must have parameter named "command".',
-				$handlerClass
-			));
-		}
-
-		$expectedHandleMethodParameterType = ICommand::class;
-
-		if ($handleMethodParameter->getType() === NULL
-			|| !is_subclass_of($handleMethodParameter->getType()->getName(), $expectedHandleMethodParameterType)) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" method "handle" must have parameter of type "%s".',
-				$handlerClass,
-				$expectedHandleMethodParameterType
-			));
-		}
-
-		$this->validateHandleMethodReturnType($handleMethod->getReturnType(), $handlerClass);
 	}
 
 

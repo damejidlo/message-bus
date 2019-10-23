@@ -86,10 +86,30 @@ class EventSubscriberValidatorTest extends DjTestCase
 				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodNotPublicOnSomethingValidHappened": '
 				. 'Method "handle" is not public',
 			],
-			[HandleMethodHasNoParameterOnSomethingValidHappened::class],
-			[HandleMethodHasMoreParametersOnSomethingValidHappened::class],
-			[HandleMethodHasIncorrectlyNamedParameterOnSomethingValidHappened::class],
-			[HandleMethodHasParameterWithIncorrectTypeOnSomethingValidHappened::class],
+			[
+				HandleMethodHasNoParameterOnSomethingValidHappened::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasNoParameterOnSomethingValidHappened": '
+				. 'Method "handle" must have exactly one parameter',
+			],
+			[
+				HandleMethodHasMoreParametersOnSomethingValidHappened::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasMoreParametersOnSomethingValidHappened": '
+				. 'Method "handle" must have exactly one parameter',
+			],
+			[
+				HandleMethodHasIncorrectlyNamedParameterOnSomethingValidHappened::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasIncorrectlyNamedParameterOnSomethingValidHappened": '
+				. 'Method parameter name must be "event"',
+			],
+			[
+				HandleMethodHasParameterWithIncorrectTypeOnSomethingValidHappened::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasParameterWithIncorrectTypeOnSomethingValidHappened": '
+				. 'Method parameter "event" must be of type "Damejidlo\MessageBus\Events\IEvent"',
+			],
 			[HandleMethodHasNullReturnTypeOnSomethingValidHappened::class],
 			[HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened::class],
 			[NotFinalEventOnSomethingInvalidHappened::class],
