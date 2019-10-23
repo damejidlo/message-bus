@@ -5,9 +5,9 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\Events;
+namespace DamejidloTests\MessageBus\Events;
 
-require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\MessageBus\Events\IEvent;
 use Damejidlo\MessageBus\Events\SynchronousEventDispatcher;

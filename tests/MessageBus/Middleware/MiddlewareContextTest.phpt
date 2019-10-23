@@ -5,7 +5,7 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\MessageBus\Context;
+namespace DamejidloTests\MessageBus\Middleware;
 
 require_once __DIR__ . '/../../bootstrap.php';
 

@@ -5,9 +5,9 @@ declare(strict_types = 1);
  * @testCase
  */
 
-namespace DamejidloTests\Commands;
+namespace DamejidloTests\MessageBus\Commands;
 
-require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 use Damejidlo\MessageBus\Commands\NewEntityId;
 use DamejidloTests\DjTestCase;
