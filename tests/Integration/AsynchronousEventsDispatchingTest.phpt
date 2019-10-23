@@ -12,7 +12,6 @@ require_once __DIR__ . '/../bootstrap.php';
 use Damejidlo\Commands\CommandBus;
 use Damejidlo\Commands\ICommandBus;
 use Damejidlo\Events\CommandBusAwareEventDispatcher;
-use Damejidlo\Events\EventBus;
 use Damejidlo\Events\IEvent;
 use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\Events\SynchronousEventDispatcher;
@@ -183,8 +182,6 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 
 		$messageBus = new MessageBus($middleware);
 
-		$messagePublishingAsynchronousEventBus = new EventBus($messageBus);
-
 		// handler-invoking event bus
 
 		$subscriberProvider = new ArrayMapHandlerProvider([
@@ -206,7 +203,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 		$isCurrentlyHandlingAwareMiddleware = new IsCurrentlyHandlingAwareMiddleware();
 		$eventQueue = new InMemoryEventQueue();
 
-		$synchronousEventDispatcher = new SynchronousEventDispatcher($messagePublishingAsynchronousEventBus);
+		$synchronousEventDispatcher = new SynchronousEventDispatcher($messageBus);
 		$commandBusAwareEventDispatcher = new CommandBusAwareEventDispatcher(
 			$isCurrentlyHandlingAwareMiddleware,
 			$eventQueue,

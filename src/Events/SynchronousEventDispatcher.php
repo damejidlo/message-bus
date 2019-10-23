@@ -2,26 +2,31 @@
 
 namespace Damejidlo\Events;
 
+use Damejidlo\MessageBus\IMessageBus;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
+
+
+
 final class SynchronousEventDispatcher implements IEventDispatcher
 {
 
 	/**
-	 * @var IEventBus
+	 * @var IMessageBus
 	 */
-	private $eventBus;
+	private $messageBus;
 
 
 
-	public function __construct(IEventBus $eventBus)
+	public function __construct(IMessageBus $messageBus)
 	{
-		$this->eventBus = $eventBus;
+		$this->messageBus = $messageBus;
 	}
 
 
 
 	public function dispatch(IEvent $event) : void
 	{
-		$this->eventBus->handle($event);
+		$this->messageBus->handle($event, MiddlewareContext::empty());
 	}
 
 }

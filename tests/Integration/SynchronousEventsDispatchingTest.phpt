@@ -13,7 +13,6 @@ use Damejidlo\Commands\CommandBus;
 use Damejidlo\Commands\ICommandBus;
 use Damejidlo\Commands\NewEntityId;
 use Damejidlo\Events\CommandBusAwareEventDispatcher;
-use Damejidlo\Events\EventBus;
 use Damejidlo\Events\InMemoryEventQueue;
 use Damejidlo\Events\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
@@ -163,14 +162,12 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 
 		$messageBus = new MessageBus($middleware);
 
-		$eventBus = new EventBus($messageBus);
-
 		// event dispatcher
 
 		$isCurrentlyHandlingAwareMiddleware = new IsCurrentlyHandlingAwareMiddleware();
 		$eventQueue = new InMemoryEventQueue();
 
-		$synchronousEventDispatcher = new SynchronousEventDispatcher($eventBus);
+		$synchronousEventDispatcher = new SynchronousEventDispatcher($messageBus);
 		$commandBusAwareEventDispatcher = new CommandBusAwareEventDispatcher(
 			$isCurrentlyHandlingAwareMiddleware,
 			$eventQueue,

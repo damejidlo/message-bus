@@ -10,8 +10,9 @@ namespace DamejidloTests\Events;
 require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\Events\IEvent;
-use Damejidlo\Events\IEventBus;
 use Damejidlo\Events\SynchronousEventDispatcher;
+use Damejidlo\MessageBus\IMessageBus;
+use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use DamejidloTests\DjTestCase;
 use Mockery;
 use Mockery\MockInterface;
@@ -24,8 +25,8 @@ class SynchronousEventDispatcherTest extends DjTestCase
 
 	public function testThatDispatchDelegates() : void
 	{
-		$eventBus = $this->mockEventBus();
-		$dispatcher = new SynchronousEventDispatcher($eventBus);
+		$messageBus = $this->mockMessageBus();
+		$dispatcher = new SynchronousEventDispatcher($messageBus);
 
 		$event = new class() implements IEvent
 		{
@@ -33,7 +34,13 @@ class SynchronousEventDispatcherTest extends DjTestCase
 		};
 
 		// expectations
-		$eventBus->shouldReceive('handle')->once()->with($event);
+		$messageBus->shouldReceive('handle')->once()->withArgs(
+			function (IEvent $actualEvent, MiddlewareContext $context) use ($event) : bool {
+				Assert::equal($event, $actualEvent);
+				Assert::equal(MiddlewareContext::empty(), $context);
+				return TRUE;
+			}
+		);
 
 		Assert::noError(function () use ($dispatcher, $event) : void {
 			$dispatcher->dispatch($event);
@@ -43,11 +50,11 @@ class SynchronousEventDispatcherTest extends DjTestCase
 
 
 	/**
-	 * @return IEventBus|MockInterface
+	 * @return IMessageBus|MockInterface
 	 */
-	private function mockEventBus() : IEventBus
+	private function mockMessageBus() : IMessageBus
 	{
-		$mock = Mockery::mock(IEventBus::class);
+		$mock = Mockery::mock(IMessageBus::class);
 
 		return $mock;
 	}
