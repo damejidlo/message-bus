@@ -12,7 +12,7 @@ final class HandleMethodHasNoReturnTypeHandler implements ICommandHandler
 	/**
 	 * @param ValidCommand $command
 	 */
-	public function handle(ValidCommand $command) : void
+	public function handle(ValidCommand $command)
 	{
 	}
 

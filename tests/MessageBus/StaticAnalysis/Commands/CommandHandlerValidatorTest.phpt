@@ -128,9 +128,24 @@ class CommandHandlerValidatorTest extends DjTestCase
 				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasParameterWithIncorrectTypeHandler": '
 				. 'Method parameter "command" must be of type "Damejidlo\MessageBus\Commands\ICommand"',
 			],
-			[HandleMethodHasNoReturnTypeHandler::class],
-			[HandleMethodHasIncorrectReturnTypeHandler::class],
-			[HandleMethodHasNullableNewEntityIdReturnTypeHandler::class],
+			[
+				HandleMethodHasNoReturnTypeHandler::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasNoReturnTypeHandler": '
+				. 'Method "handle" must have an explicit return type',
+			],
+			[
+				HandleMethodHasIncorrectReturnTypeHandler::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasIncorrectReturnTypeHandler": '
+				. 'Method "handle" return type must be in [void, Damejidlo\MessageBus\Commands\NewEntityId]',
+			],
+			[
+				HandleMethodHasNullableNewEntityIdReturnTypeHandler::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasNullableNewEntityIdReturnTypeHandler": '
+				. 'Method "handle" return type must not be nullable',
+			],
 			[NotFinalCommandHandler::class],
 			[CommandHasIncorrectNameHandler::class],
 			[CommandNameDoesNotMatchHandler::class],

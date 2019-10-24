@@ -110,8 +110,18 @@ class EventSubscriberValidatorTest extends DjTestCase
 				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasParameterWithIncorrectTypeOnSomethingValidHappened": '
 				. 'Method parameter "event" must be of type "Damejidlo\MessageBus\Events\IEvent"',
 			],
-			[HandleMethodHasNullReturnTypeOnSomethingValidHappened::class],
-			[HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened::class],
+			[
+				HandleMethodHasNullReturnTypeOnSomethingValidHappened::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasNullReturnTypeOnSomethingValidHappened": '
+				. 'Method "handle" must have an explicit return type',
+			],
+			[
+				HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened::class,
+				'Static analysis failed for class '
+				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened": '
+				. 'Method "handle" return type must be in [void]',
+			],
 			[NotFinalEventOnSomethingInvalidHappened::class],
 			[EventHasIncorrectNameOnIncorrectName::class],
 			[EventNameDoesNotMatchSubscriber::class],

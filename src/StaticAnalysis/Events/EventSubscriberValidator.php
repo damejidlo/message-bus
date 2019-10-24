@@ -12,6 +12,10 @@ use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodHasOneParameterRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterNameMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsInRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsNotNullableRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsSetRule;
+use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
 
@@ -37,6 +41,7 @@ class EventSubscriberValidator
 
 	/**
 	 * @param string $subscriberClass
+	 * @throws StaticAnalysisFailedException
 	 */
 	public function validate(string $subscriberClass) : void
 	{
@@ -55,42 +60,15 @@ class EventSubscriberValidator
 		$parameterType = IEvent::class;
 		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
-		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
-		$this->validateHandleMethodParameter($subscriberClassReflection);
+		(new MethodReturnTypeIsSetRule())->validate($handleMethod);
+		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
+		(new MethodReturnTypeIsInRule('void'))->validate($handleMethod);
 
+		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
 		$eventClass = $this->messageTypeExtractor->extract($subscriberClass);
 		$eventName = $this->validateEventAndExtractName($eventClass);
 
 		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);
-	}
-
-
-
-	/**
-	 * @param \ReflectionClass $subscriberClassReflection
-	 */
-	private function validateHandleMethodParameter(\ReflectionClass $subscriberClassReflection) : void
-	{
-		$subscriberClass = $subscriberClassReflection->getName();
-
-		$handleMethod = $subscriberClassReflection->getMethod('handle');
-
-		$handleMethodReturnType = $handleMethod->getReturnType();
-
-		if ($handleMethodReturnType === NULL) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" method "handle" must have return type "void", NULL found.',
-				$subscriberClass
-			));
-		}
-
-		if ($handleMethodReturnType->getName() !== 'void') {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" method "handle" must have return type "void", type "%s" found.',
-				$subscriberClass,
-				$handleMethodReturnType->getName()
-			));
-		}
 	}
 
 

@@ -13,6 +13,9 @@ use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodHasOneParameterRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterNameMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsInRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsNotNullableRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsSetRule;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
@@ -58,51 +61,15 @@ class CommandHandlerValidator
 		$parameterType = ICommand::class;
 		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
-		$handlerClassReflection = new \ReflectionClass($handlerClass);
-		$this->validateHandleMethodReturnType($handleMethod->getReturnType(), $handlerClass);
+		(new MethodReturnTypeIsSetRule())->validate($handleMethod);
+		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
+		(new MethodReturnTypeIsInRule('void', NewEntityId::class))->validate($handleMethod);
 
+		$handlerClassReflection = new \ReflectionClass($handlerClass);
 		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
 		$commandName = $this->validateCommandAndExtractName($commandClass, $handlerClass);
 
 		$this->validateHandlerClassName($handlerClassReflection, $commandName);
-	}
-
-
-
-	private function validateHandleMethodReturnType(?\ReflectionType $handleMethodReturnType, string $handlerClass) : void
-	{
-		if ($handleMethodReturnType === NULL) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" method "handle" must have return type "void" or "%s", NULL found.',
-				$handlerClass,
-				NewEntityId::class
-			));
-		}
-
-		$handleMethodReturnTypeName = (string) $handleMethodReturnType;
-
-		if ($handleMethodReturnTypeName === 'void') {
-			return;
-		}
-
-		if ($handleMethodReturnTypeName === NewEntityId::class) {
-			if ($handleMethodReturnType->allowsNull()) {
-				throw new InvalidHandlerException(sprintf(
-					'Command handler "%s" method "handle" return type "%s" must not be nullable.',
-					$handlerClass,
-					NewEntityId::class
-				));
-			}
-
-			return;
-		}
-
-		throw new InvalidHandlerException(sprintf(
-			'Command handler "%s" method "handle" must have return type "void" or non-nullable "%s", type "%s" found.',
-			$handlerClass,
-			NewEntityId::class,
-			$handleMethodReturnTypeName
-		));
 	}
 
 
