@@ -146,8 +146,16 @@ class CommandHandlerValidatorTest extends DjTestCase
 				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasNullableNewEntityIdReturnTypeHandler": '
 				. 'Method "handle" return type must not be nullable',
 			],
-			[NotFinalCommandHandler::class],
-			[CommandHasIncorrectNameHandler::class],
+			[
+				NotFinalCommandHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\NotFinalCommand": '
+				. 'Class must be final.',
+			],
+			[
+				CommandHasIncorrectNameHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\IncorrectName": '
+				. 'Class must have suffix "Command"',
+			],
 			[CommandNameDoesNotMatchHandler::class],
 		];
 	}

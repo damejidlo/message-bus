@@ -4,11 +4,13 @@ declare(strict_types = 1);
 namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 
 use Damejidlo\MessageBus\Events\IEvent;
+use Damejidlo\MessageBus\StaticAnalysis\MessageNameExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassNameHasSuffixRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodHasOneParameterRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterNameMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
@@ -30,11 +32,19 @@ class EventSubscriberValidator
 	 */
 	private $messageTypeExtractor;
 
+	/**
+	 * @var MessageNameExtractor
+	 */
+	private $messageNameExtractor;
 
 
-	public function __construct(?MessageTypeExtractor $messageTypeExtractor = NULL)
-	{
+
+	public function __construct(
+		?MessageTypeExtractor $messageTypeExtractor = NULL,
+		?MessageNameExtractor $messageNameExtractor = NULL
+	) {
 		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
+		$this->messageNameExtractor = $messageNameExtractor ?? new MessageNameExtractor();
 	}
 
 
@@ -66,34 +76,12 @@ class EventSubscriberValidator
 
 		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
 		$eventClass = $this->messageTypeExtractor->extract($subscriberClass);
-		$eventName = $this->validateEventAndExtractName($eventClass);
-
-		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);
-	}
-
-
-
-	/**
-	 * @param string $eventClass
-	 * @return string
-	 */
-	private function validateEventAndExtractName(string $eventClass) : string
-	{
-		$eventClassReflection = new \ReflectionClass($eventClass);
-		$eventShortName = $eventClassReflection->getShortName();
 
 		(new ClassIsFinalRule())->validate($eventClass);
+		(new ClassNameHasSuffixRule(self::EVENT_CLASS_NAME_SUFFIX))->validate($eventClass);
+		$eventName = $this->messageNameExtractor->extract($eventClass, self::EVENT_CLASS_NAME_SUFFIX);
 
-		$pattern = sprintf('#^(.+)%s$#', self::EVENT_CLASS_NAME_SUFFIX);
-		if (!preg_match($pattern, $eventShortName, $matches)) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event "%s" class must be named "<event-name>%s".',
-				$eventClass,
-				self::EVENT_CLASS_NAME_SUFFIX
-			));
-		}
-
-		return $matches[1];
+		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);
 	}
 
 

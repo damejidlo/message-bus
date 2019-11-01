@@ -5,11 +5,13 @@ namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
 
 use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Commands\NewEntityId;
+use Damejidlo\MessageBus\StaticAnalysis\MessageNameExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassNameHasSuffixRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodHasOneParameterRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterNameMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
@@ -31,11 +33,19 @@ class CommandHandlerValidator
 	 */
 	private $messageTypeExtractor;
 
+	/**
+	 * @var MessageNameExtractor
+	 */
+	private $messageNameExtractor;
 
 
-	public function __construct(?MessageTypeExtractor $messageTypeExtractor = NULL)
-	{
+
+	public function __construct(
+		?MessageTypeExtractor $messageTypeExtractor = NULL,
+		?MessageNameExtractor $messageNameExtractor = NULL
+	) {
 		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
+		$this->messageNameExtractor = $messageNameExtractor ?? new MessageNameExtractor();
 	}
 
 
@@ -67,35 +77,12 @@ class CommandHandlerValidator
 
 		$handlerClassReflection = new \ReflectionClass($handlerClass);
 		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
-		$commandName = $this->validateCommandAndExtractName($commandClass, $handlerClass);
-
-		$this->validateHandlerClassName($handlerClassReflection, $commandName);
-	}
-
-
-
-	/**
-	 * @param string $commandClass
-	 * @param string $handlerClass
-	 * @return string
-	 */
-	private function validateCommandAndExtractName(string $commandClass, string $handlerClass) : string
-	{
-		$commandClassReflection = new \ReflectionClass($commandClass);
-		$commandShortName = $commandClassReflection->getShortName();
 
 		(new ClassIsFinalRule())->validate($commandClass);
+		(new ClassNameHasSuffixRule(self::COMMAND_CLASS_NAME_SUFFIX))->validate($commandClass);
+		$commandName = $this->messageNameExtractor->extract($commandClass, self::COMMAND_CLASS_NAME_SUFFIX);
 
-		$pattern = sprintf('#^(.*)%s$#', self::COMMAND_CLASS_NAME_SUFFIX);
-		if (!preg_match($pattern, $commandShortName, $matches)) {
-			throw new InvalidHandlerException(sprintf(
-				'Command "%s" class must be named "<command-name>%s".',
-				$commandClass,
-				self::COMMAND_CLASS_NAME_SUFFIX
-			));
-		}
-
-		return $matches[1];
+		$this->validateHandlerClassName($handlerClassReflection, $commandName);
 	}
 
 
