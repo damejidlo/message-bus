@@ -132,7 +132,11 @@ class EventSubscriberValidatorTest extends DjTestCase
 				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\IncorrectName": '
 				. 'Class must have suffix "Event"',
 			],
-			[EventNameDoesNotMatchSubscriber::class],
+			[
+				EventNameDoesNotMatchSubscriber::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\EventNameDoesNotMatchSubscriber": '
+				. 'Message handler must match command name. Expected name: "#^(.+)OnSomethingValidHappened$#"',
+			],
 		];
 	}
 

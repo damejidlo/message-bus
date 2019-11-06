@@ -156,7 +156,11 @@ class CommandHandlerValidatorTest extends DjTestCase
 				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\IncorrectName": '
 				. 'Class must have suffix "Command"',
 			],
-			[CommandNameDoesNotMatchHandler::class],
+			[
+				CommandNameDoesNotMatchHandler::class,
+				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\CommandNameDoesNotMatchHandler": '
+				. 'Message handler must match command name. Expected name: "#^ValidHandler$#"',
+			],
 		];
 	}
 

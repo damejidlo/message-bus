@@ -18,6 +18,7 @@ use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsInRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsNotNullableRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsSetRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ShortClassNameMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
@@ -75,36 +76,40 @@ class CommandHandlerValidator
 		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
 		(new MethodReturnTypeIsInRule('void', NewEntityId::class))->validate($handleMethod);
 
-		$handlerClassReflection = new \ReflectionClass($handlerClass);
 		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
 
 		(new ClassIsFinalRule())->validate($commandClass);
 		(new ClassNameHasSuffixRule(self::COMMAND_CLASS_NAME_SUFFIX))->validate($commandClass);
 		$commandName = $this->messageNameExtractor->extract($commandClass, self::COMMAND_CLASS_NAME_SUFFIX);
 
-		$this->validateHandlerClassName($handlerClassReflection, $commandName);
+		$this->validateHandlerClassName($handlerClass, $commandName);
 	}
 
 
 
 	/**
-	 * @param \ReflectionClass $handlerClassReflection
-	 * @param string $commandName
+	 * @param string $handlerClass
+	 * @param string $messageName
+	 * @throws StaticAnalysisFailedException
 	 */
-	private function validateHandlerClassName(\ReflectionClass $handlerClassReflection, string $commandName) : void
+	private function validateHandlerClassName(string $handlerClass, string $messageName) : void
 	{
-		$handlerClass = $handlerClassReflection->getName();
+		$expectedHandlerClassShort = sprintf(
+			'#^%s%s$#',
+			$messageName,
+			self::HANDLER_CLASS_NAME_SUFFIX
+		);
 
-		$handlerClassShort = $handlerClassReflection->getShortName();
-
-		$expectedHandlerClassShort = $commandName . self::HANDLER_CLASS_NAME_SUFFIX;
-
-		if ($expectedHandlerClassShort !== $handlerClassShort) {
-			throw new InvalidHandlerException(sprintf(
-				'Command handler "%s" class name must match command name. Expected name: "%s".',
-				$handlerClass,
-				$expectedHandlerClassShort
-			));
+		try {
+			(new ShortClassNameMatchesRule($expectedHandlerClassShort))->validate($handlerClass);
+		} catch (StaticAnalysisFailedException $exception) {
+			throw StaticAnalysisFailedException::with(
+				sprintf(
+					'Message handler must match command name. Expected name: "%s"',
+					$expectedHandlerClassShort
+				),
+				$handlerClass
+			);
 		}
 	}
 

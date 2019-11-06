@@ -17,6 +17,7 @@ use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodParameterTypeMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsInRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsNotNullableRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\MethodReturnTypeIsSetRule;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ShortClassNameMatchesRule;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
@@ -74,33 +75,40 @@ class EventSubscriberValidator
 		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
 		(new MethodReturnTypeIsInRule('void'))->validate($handleMethod);
 
-		$subscriberClassReflection = new \ReflectionClass($subscriberClass);
 		$eventClass = $this->messageTypeExtractor->extract($subscriberClass);
 
 		(new ClassIsFinalRule())->validate($eventClass);
 		(new ClassNameHasSuffixRule(self::EVENT_CLASS_NAME_SUFFIX))->validate($eventClass);
 		$eventName = $this->messageNameExtractor->extract($eventClass, self::EVENT_CLASS_NAME_SUFFIX);
 
-		$this->validateSubscriberClassName($subscriberClassReflection, $eventName);
+		$this->validateHandlerClassName($subscriberClass, $eventName);
 	}
 
 
 
 	/**
-	 * @param \ReflectionClass $subscriberClassReflection
-	 * @param string $eventName
+	 * @param string $handlerClass
+	 * @param string $messageName
+	 * @throws StaticAnalysisFailedException
 	 */
-	private function validateSubscriberClassName(\ReflectionClass $subscriberClassReflection, string $eventName) : void
+	private function validateHandlerClassName(string $handlerClass, string $messageName) : void
 	{
-		$subscriberClass = $subscriberClassReflection->getName();
+		$expectedHandlerClassShort = sprintf(
+			'#^(.+)%s%s$#',
+			self::SUBSCRIBER_CLASS_NAME_EVENT_PREFIX,
+			$messageName
+		);
 
-		$pattern = sprintf('#^(.+)%s%s$#', self::SUBSCRIBER_CLASS_NAME_EVENT_PREFIX, $eventName);
-		if (!preg_match($pattern, $subscriberClass, $matches)) {
-			throw new InvalidSubscriberException(sprintf(
-				'Event subscriber "%s" class name must match event name. Expected name: "%s".',
-				$subscriberClass,
-				$pattern
-			));
+		try {
+			(new ShortClassNameMatchesRule($expectedHandlerClassShort))->validate($handlerClass);
+		} catch (StaticAnalysisFailedException $exception) {
+			throw StaticAnalysisFailedException::with(
+				sprintf(
+					'Message handler must match command name. Expected name: "%s"',
+					$expectedHandlerClassShort
+				),
+				$handlerClass
+			);
 		}
 	}
 
