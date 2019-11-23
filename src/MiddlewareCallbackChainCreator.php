@@ -16,9 +16,9 @@ class MiddlewareCallbackChainCreator
 	 * @param MiddlewareCallback $endChainWithCallback
 	 * @return MiddlewareCallback
 	 */
-	public function create(array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
+	public static function create(array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
 	{
-		return $this->createMiddlewareCallback(0, $middleware, $endChainWithCallback);
+		return self::createMiddlewareCallback(0, $middleware, $endChainWithCallback);
 	}
 
 
@@ -29,7 +29,7 @@ class MiddlewareCallbackChainCreator
 	 * @param MiddlewareCallback $endChainWithCallback
 	 * @return MiddlewareCallback
 	 */
-	private function createMiddlewareCallback(int $index, array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
+	private static function createMiddlewareCallback(int $index, array $middleware, MiddlewareCallback $endChainWithCallback) : MiddlewareCallback
 	{
 		if (!array_key_exists($index, $middleware)) {
 			$callback = function (IMessage $message, MiddlewareContext $context) use ($endChainWithCallback) {
@@ -42,7 +42,7 @@ class MiddlewareCallbackChainCreator
 		$callback = function (IMessage $message, MiddlewareContext $context) use ($index, $middleware, $endChainWithCallback) {
 			$singleMiddleware = $middleware[$index];
 
-			return $singleMiddleware->handle($message, $context, $this->createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));
+			return $singleMiddleware->handle($message, $context, self::createMiddlewareCallback($index + 1, $middleware, $endChainWithCallback));
 		};
 
 		return MiddlewareCallback::fromClosure($callback);

@@ -51,11 +51,13 @@ class CommandHandlingTest extends DjTestCase
 
 		$handlerInvoker = new HandlerInvoker();
 
-		$bus = new MessageBus([
-			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
-			new SplitByHandlerTypeMiddleware(),
-			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
-		]);
+		$bus = new MessageBus(
+			...[
+				new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+				new SplitByHandlerTypeMiddleware(),
+				new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
+			]
+		);
 
 		$command = new PlaceOrderCommand();
 		$result = $bus->handle($command, MiddlewareContext::empty());
@@ -73,11 +75,13 @@ class CommandHandlingTest extends DjTestCase
 		$handlerProvider = new ArrayMapHandlerProvider([]);
 		$handlerInvoker = new HandlerInvoker();
 
-		$bus = new MessageBus([
-			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
-			new SplitByHandlerTypeMiddleware(),
-			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
-		]);
+		$bus = new MessageBus(
+			...[
+				new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+				new SplitByHandlerTypeMiddleware(),
+				new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
+			]
+		);
 
 		$command = new PlaceOrderCommand();
 
@@ -99,7 +103,7 @@ class CommandHandlingTest extends DjTestCase
 		$handlerInvoker = new HandlerInvoker();
 
 		$bus = new MessageBus(
-			[
+			...[
 				new HandlerTypesResolvingMiddleware($handlerTypesResolver),
 				new SplitByHandlerTypeMiddleware(),
 				new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),

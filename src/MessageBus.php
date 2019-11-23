@@ -12,11 +12,6 @@ final class MessageBus implements IMessageBus
 {
 
 	/**
-	 * @var MiddlewareCallbackChainCreator
-	 */
-	private $middlewareCallbackChainCreator;
-
-	/**
 	 * @var IMessageBusMiddleware[]
 	 */
 	private $middleware = [];
@@ -28,14 +23,9 @@ final class MessageBus implements IMessageBus
 
 
 
-	/**
-	 * @param IMessageBusMiddleware[] $middleware
-	 * @param MiddlewareCallbackChainCreator|null $middlewareCallbackChainCreator
-	 */
-	public function __construct(array $middleware, ?MiddlewareCallbackChainCreator $middlewareCallbackChainCreator = NULL)
+	public function __construct(IMessageBusMiddleware ...$middleware)
 	{
 		$this->middleware = $middleware;
-		$this->middlewareCallbackChainCreator = $middlewareCallbackChainCreator ?? new MiddlewareCallbackChainCreator();
 	}
 
 
@@ -67,7 +57,7 @@ final class MessageBus implements IMessageBus
 	{
 		$endChainWithCallback = MiddlewareCallback::empty();
 
-		return $this->middlewareCallbackChainCreator->create($this->middleware, $endChainWithCallback);
+		return MiddlewareCallbackChainCreator::create($this->middleware, $endChainWithCallback);
 	}
 
 }

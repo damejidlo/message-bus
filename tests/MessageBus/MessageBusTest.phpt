@@ -10,12 +10,13 @@ namespace DamejidloTests\MessageBus;
 require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\MessageBus\IMessage;
-use Damejidlo\MessageBus\IMessageBusMiddleware;
 use Damejidlo\MessageBus\MessageBus;
-use Damejidlo\MessageBus\Middleware\MiddlewareCallback;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
-use Damejidlo\MessageBus\MiddlewareCallbackChainCreator;
 use DamejidloTests\DjTestCase;
+use DamejidloTests\MessageBus\Fakes\ExceptionThrowingMiddleware;
+use DamejidloTests\MessageBus\Fakes\MiddlewareLog;
+use DamejidloTests\MessageBus\Fakes\RecordingMiddleware;
+use DamejidloTests\MessageBus\Fakes\ReturningMiddleware;
 use Mockery;
 use Mockery\MockInterface;
 use Tester\Assert;
@@ -27,50 +28,42 @@ class MessageBusTest extends DjTestCase
 
 	public function testHandleWithCorrectOrder() : void
 	{
-		$middleware = $this->mockMiddleware();
-
-		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-
 		$message = $this->mockMessage();
+		$context = MiddlewareContext::empty();
 
-		$callbackChainCalled = FALSE;
-		$result = 'some-result';
+		$log = new MiddlewareLog();
+		$middleware1 = new RecordingMiddleware(1, $log);
+		$middleware2 = new RecordingMiddleware(2, $log);
+		$returnValue = 333;
+		$middleware3 = new ReturningMiddleware($returnValue);
 
-		// expectations
-		$middlewareCallbackChainCreator->shouldReceive('create')->once()
-			->withArgs(function (array $actualMiddleware, MiddlewareCallback $endChainWithCallback) use ($middleware) : bool {
-				Assert::same([$middleware], $actualMiddleware);
-				return TRUE;
-			})->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($message, &$callbackChainCalled, $result) {
-				$callbackChainCalled = TRUE;
-				Assert::same($message, $actualMessage);
+		$messageBus = new MessageBus(...[
+			$middleware1,
+			$middleware2,
+			$middleware3,
+		]);
 
-				return $result;
-			}));
+		$actualResult = $messageBus->handle($message, $context);
+		Assert::same($returnValue, $actualResult);
 
-		$messageBus = new MessageBus([$middleware], $middlewareCallbackChainCreator);
+		Assert::same([1, 2], array_keys($log->middlewareCalled));
 
-		$actualResult = $messageBus->handle($message, MiddlewareContext::empty());
-		Assert::same($result, $actualResult);
-
-		Assert::true($callbackChainCalled);
+		Assert::same($message, $middleware1->getMessage());
+		Assert::same($message, $middleware2->getMessage());
+		Assert::same($context, $middleware1->getContext());
+		Assert::same($context, $middleware2->getContext());
 	}
 
 
 
 	public function testHandleFails() : void
 	{
-		$middlewareCallbackChainCreator = $this->mockMiddlewareCallbackChainCreator();
-
 		$exception = new \Exception();
+		$middleware = new ExceptionThrowingMiddleware($exception);
 
-		// expectations
-		$middlewareCallbackChainCreator->shouldReceive('create')->once()
-			->andReturn(MiddlewareCallback::fromClosure(function (IMessage $actualMessage) use ($exception) : void {
-				throw $exception;
-			}));
-
-		$messageBus = new MessageBus([], $middlewareCallbackChainCreator);
+		$messageBus = new MessageBus(...[
+			$middleware,
+		]);
 
 		$message = $this->mockMessage();
 
@@ -83,35 +76,11 @@ class MessageBusTest extends DjTestCase
 
 
 	/**
-	 * @return MiddlewareCallbackChainCreator|MockInterface
-	 */
-	private function mockMiddlewareCallbackChainCreator() : MiddlewareCallbackChainCreator
-	{
-		$mock = Mockery::mock(MiddlewareCallbackChainCreator::class);
-
-		return $mock;
-	}
-
-
-
-	/**
 	 * @return IMessage|MockInterface
 	 */
 	private function mockMessage() : IMessage
 	{
 		$mock = Mockery::mock(IMessage::class);
-
-		return $mock;
-	}
-
-
-
-	/**
-	 * @return IMessageBusMiddleware|MockInterface
-	 */
-	private function mockMiddleware() : IMessageBusMiddleware
-	{
-		$mock = Mockery::mock(IMessageBusMiddleware::class);
 
 		return $mock;
 	}

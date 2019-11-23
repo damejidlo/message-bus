@@ -180,7 +180,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 			$this->messageRecordingMiddleware,
 		];
 
-		$messageBus = new MessageBus($middleware);
+		$messageBus = new MessageBus(...$middleware);
 
 		// handler-invoking event bus
 
@@ -196,7 +196,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($subscriberProvider, $subscriberInvoker),
 		];
 
-		$this->handlerInvokingEventBus = new MessageBus($middleware);
+		$this->handlerInvokingEventBus = new MessageBus(...$middleware);
 
 		// event dispatcher
 
@@ -236,7 +236,7 @@ class AsynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
 		];
 
-		$messageBus = new MessageBus($middleware);
+		$messageBus = new MessageBus(...$middleware);
 
 		$this->commandBus = new CommandBus($messageBus);
 	}
