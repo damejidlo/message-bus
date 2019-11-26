@@ -49,11 +49,9 @@ class EventHandlingTest extends DjTestCase
 		$handlerInvoker = new HandlerInvoker();
 
 		$bus = new MessageBus(
-			...[
-				new HandlerTypesResolvingMiddleware($handlerTypesResolver),
-				new SplitByHandlerTypeMiddleware(),
-				new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
-			]
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker)
 		);
 
 		$event = new OrderPlacedEvent();
@@ -76,11 +74,9 @@ class EventHandlingTest extends DjTestCase
 		$handlerInvoker = new HandlerInvoker();
 
 		$bus = new MessageBus(
-			...[
-				new HandlerTypesResolvingMiddleware($handlerTypesResolver),
-				new SplitByHandlerTypeMiddleware(),
-				new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
-			]
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker)
 		);
 
 		$event = new OrderPlacedEvent();
@@ -104,11 +100,9 @@ class EventHandlingTest extends DjTestCase
 		$handlerInvoker = new HandlerInvoker();
 
 		$bus = new MessageBus(
-			...[
-				new HandlerTypesResolvingMiddleware($handlerTypesResolver),
-				new SplitByHandlerTypeMiddleware(),
-				new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
-			]
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker)
 		);
 
 		$event = new OrderPlacedEvent();

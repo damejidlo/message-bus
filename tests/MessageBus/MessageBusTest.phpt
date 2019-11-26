@@ -37,11 +37,11 @@ class MessageBusTest extends DjTestCase
 		$returnValue = 333;
 		$middleware3 = new ReturningMiddleware($returnValue);
 
-		$messageBus = new MessageBus(...[
+		$messageBus = new MessageBus(
 			$middleware1,
 			$middleware2,
-			$middleware3,
-		]);
+			$middleware3
+		);
 
 		$actualResult = $messageBus->handle($message, $context);
 		Assert::same($returnValue, $actualResult);
@@ -61,9 +61,7 @@ class MessageBusTest extends DjTestCase
 		$exception = new \Exception();
 		$middleware = new ExceptionThrowingMiddleware($exception);
 
-		$messageBus = new MessageBus(...[
-			$middleware,
-		]);
+		$messageBus = new MessageBus($middleware);
 
 		$message = $this->mockMessage();
 
