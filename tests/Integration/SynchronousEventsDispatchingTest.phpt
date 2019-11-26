@@ -9,24 +9,23 @@ namespace DamejidloTests\Integration;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-use Damejidlo\CommandBus\CommandBus;
-use Damejidlo\CommandBus\ICommandBus;
-use Damejidlo\CommandBus\Implementation\NewEntityId;
-use Damejidlo\CommandBus\Middleware\EventDispatchingMiddleware;
-use Damejidlo\EventBus\EventBus;
-use Damejidlo\EventBus\Implementation\CommandBusAwareEventDispatcher;
-use Damejidlo\EventBus\Implementation\InMemoryEventQueue;
-use Damejidlo\EventBus\SynchronousEventDispatcher;
-use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
-use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
+use Damejidlo\MessageBus\Commands\CommandBus;
+use Damejidlo\MessageBus\Commands\ICommandBus;
+use Damejidlo\MessageBus\Commands\NewEntityId;
+use Damejidlo\MessageBus\Events\CommandBusAwareEventDispatcher;
+use Damejidlo\MessageBus\Events\InMemoryEventQueue;
+use Damejidlo\MessageBus\Events\SynchronousEventDispatcher;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
-use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
+use Damejidlo\MessageBus\MessageBus;
+use Damejidlo\MessageBus\Middleware\EventDispatchingMiddleware;
 use Damejidlo\MessageBus\Middleware\GuardAgainstNestedHandlingMiddleware;
+use Damejidlo\MessageBus\Middleware\HandlerInvokingMiddleware;
+use Damejidlo\MessageBus\Middleware\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Middleware\IsCurrentlyHandlingAwareMiddleware;
 use Damejidlo\MessageBus\Middleware\LoggingMiddleware;
-use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
+use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
@@ -161,20 +160,14 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($subscriberProvider, $subscriberInvoker),
 		];
 
-		$messageBus = new MiddlewareSupportingMessageBus();
-		foreach ($middleware as $oneMiddleware) {
-			$messageBus->appendMiddleware($oneMiddleware);
-		}
-
-
-		$eventBus = new EventBus($messageBus);
+		$messageBus = new MessageBus(...$middleware);
 
 		// event dispatcher
 
 		$isCurrentlyHandlingAwareMiddleware = new IsCurrentlyHandlingAwareMiddleware();
 		$eventQueue = new InMemoryEventQueue();
 
-		$synchronousEventDispatcher = new SynchronousEventDispatcher($eventBus);
+		$synchronousEventDispatcher = new SynchronousEventDispatcher($messageBus);
 		$commandBusAwareEventDispatcher = new CommandBusAwareEventDispatcher(
 			$isCurrentlyHandlingAwareMiddleware,
 			$eventQueue,
@@ -207,10 +200,7 @@ class SynchronousEventsDispatchingTest extends DjTestCase
 			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker),
 		];
 
-		$messageBus = new MiddlewareSupportingMessageBus();
-		foreach ($middleware as $oneMiddleware) {
-			$messageBus->appendMiddleware($oneMiddleware);
-		}
+		$messageBus = new MessageBus(...$middleware);
 
 		$this->commandBus = new CommandBus($messageBus);
 	}

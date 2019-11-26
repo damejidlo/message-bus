@@ -2,11 +2,11 @@
 
 namespace DamejidloTests\MessageBus\Logging\Fixtures;
 
-use Damejidlo\EventBus\IDomainEvent;
+use Damejidlo\MessageBus\Events\IEvent;
 
 
 
-class TestEvent implements IDomainEvent
+class TestEvent implements IEvent
 {
 
 }

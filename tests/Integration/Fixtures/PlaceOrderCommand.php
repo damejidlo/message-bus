@@ -2,7 +2,7 @@
 
 namespace DamejidloTests\Integration\Fixtures;
 
-use Damejidlo\CommandBus\ICommand;
+use Damejidlo\MessageBus\Commands\ICommand;
 
 
 

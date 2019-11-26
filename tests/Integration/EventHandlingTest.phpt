@@ -10,14 +10,14 @@ namespace DamejidloTests\Integration;
 require_once __DIR__ . '/../bootstrap.php';
 
 use Damejidlo\MessageBus\Handling\HandlerCannotBeProvidedException;
-use Damejidlo\MessageBus\Handling\HandlerInvokingMiddleware;
-use Damejidlo\MessageBus\Handling\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerProvider;
 use Damejidlo\MessageBus\Handling\Implementation\ArrayMapHandlerTypesResolver;
 use Damejidlo\MessageBus\Handling\Implementation\HandlerInvoker;
-use Damejidlo\MessageBus\Handling\SplitByHandlerTypeMiddleware;
+use Damejidlo\MessageBus\MessageBus;
+use Damejidlo\MessageBus\Middleware\HandlerInvokingMiddleware;
+use Damejidlo\MessageBus\Middleware\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
-use Damejidlo\MessageBus\MiddlewareSupportingMessageBus;
+use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\CreateInvoiceOnOrderPlaced;
 use DamejidloTests\Integration\Fixtures\NotifyUserOnOrderPlaced;
@@ -48,10 +48,11 @@ class EventHandlingTest extends DjTestCase
 
 		$handlerInvoker = new HandlerInvoker();
 
-		$bus = new MiddlewareSupportingMessageBus();
-		$bus->appendMiddleware(new HandlerTypesResolvingMiddleware($handlerTypesResolver));
-		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
-		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
+		$bus = new MessageBus(
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker)
+		);
 
 		$event = new OrderPlacedEvent();
 
@@ -72,10 +73,11 @@ class EventHandlingTest extends DjTestCase
 		$handlerProvider = new ArrayMapHandlerProvider([]);
 		$handlerInvoker = new HandlerInvoker();
 
-		$bus = new MiddlewareSupportingMessageBus();
-		$bus->appendMiddleware(new HandlerTypesResolvingMiddleware($handlerTypesResolver));
-		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
-		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
+		$bus = new MessageBus(
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker)
+		);
 
 		$event = new OrderPlacedEvent();
 
@@ -97,10 +99,11 @@ class EventHandlingTest extends DjTestCase
 		$handlerProvider = new ArrayMapHandlerProvider([]);
 		$handlerInvoker = new HandlerInvoker();
 
-		$bus = new MiddlewareSupportingMessageBus();
-		$bus->appendMiddleware(new HandlerTypesResolvingMiddleware($handlerTypesResolver));
-		$bus->appendMiddleware(new SplitByHandlerTypeMiddleware());
-		$bus->appendMiddleware(new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker));
+		$bus = new MessageBus(
+			new HandlerTypesResolvingMiddleware($handlerTypesResolver),
+			new SplitByHandlerTypeMiddleware(),
+			new HandlerInvokingMiddleware($handlerProvider, $handlerInvoker)
+		);
 
 		$event = new OrderPlacedEvent();
 
