@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\StaticAnalysis\Events;
 
-use Damejidlo\MessageBus\Events\IEvent;
+use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidationConfiguration;
 use Damejidlo\MessageBus\StaticAnalysis\MessageNameExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
@@ -24,9 +24,6 @@ use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 class EventSubscriberValidator
 {
-
-	private const EVENT_CLASS_NAME_SUFFIX = 'Event';
-	private const SUBSCRIBER_CLASS_NAME_EVENT_PREFIX = 'On';
 
 	/**
 	 * @var MessageTypeExtractor
@@ -56,32 +53,39 @@ class EventSubscriberValidator
 	 */
 	public function validate(string $subscriberClass) : void
 	{
-		(new ClassExistsRule())->validate($subscriberClass);
-		(new ClassIsFinalRule())->validate($subscriberClass);
+		$configuration = MessageHandlerValidationConfiguration::event();
 
-		$handleMethodName = 'handle';
+		(new ClassExistsRule())->validate($subscriberClass);
+
+		if ($configuration->handlerClassMustBeFinal()) {
+			(new ClassIsFinalRule())->validate($subscriberClass);
+		}
+
+		$handleMethodName = $configuration->handleMethodName();
 		(new ClassHasPublicMethodRule($handleMethodName))->validate($subscriberClass);
 
 		$handleMethod = ReflectionHelper::requireMethodReflection($subscriberClass, $handleMethodName);
 		(new MethodHasOneParameterRule())->validate($handleMethod);
 
 		$parameter = $handleMethod->getParameters()[0];
-		$parameterName = 'event';
+		$parameterName = $configuration->handleMethodParameterName();
 		(new MethodParameterNameMatchesRule($parameterName))->validate($parameter);
-		$parameterType = IEvent::class;
+		$parameterType = $configuration->getHandleMethodParameterType();
 		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
 		(new MethodReturnTypeIsSetRule())->validate($handleMethod);
 		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
-		(new MethodReturnTypeIsInRule('void'))->validate($handleMethod);
+		$handleMethodAllowedReturnTypes = $configuration->handleMethodAllowedReturnTypes();
+		(new MethodReturnTypeIsInRule(...$handleMethodAllowedReturnTypes))->validate($handleMethod);
 
 		$eventClass = $this->messageTypeExtractor->extract($subscriberClass);
 
 		(new ClassIsFinalRule())->validate($eventClass);
-		(new ClassNameHasSuffixRule(self::EVENT_CLASS_NAME_SUFFIX))->validate($eventClass);
-		$eventName = $this->messageNameExtractor->extract($eventClass, self::EVENT_CLASS_NAME_SUFFIX);
+		$messageClassSuffix = $configuration->messageClassSuffix();
+		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($eventClass);
+		$eventName = $this->messageNameExtractor->extract($eventClass, $messageClassSuffix);
 
-		$this->validateHandlerClassName($subscriberClass, $eventName);
+		$this->validateHandlerClassName($subscriberClass, $eventName, $configuration);
 	}
 
 
@@ -89,13 +93,14 @@ class EventSubscriberValidator
 	/**
 	 * @param string $handlerClass
 	 * @param string $messageName
+	 * @param MessageHandlerValidationConfiguration $configuration
 	 * @throws StaticAnalysisFailedException
 	 */
-	private function validateHandlerClassName(string $handlerClass, string $messageName) : void
+	private function validateHandlerClassName(string $handlerClass, string $messageName, MessageHandlerValidationConfiguration $configuration) : void
 	{
 		$expectedHandlerClassShort = sprintf(
-			'#^(.+)%s%s$#',
-			self::SUBSCRIBER_CLASS_NAME_EVENT_PREFIX,
+			'#^%s%s$#',
+			$configuration->handlerClassPrefixRegex(),
 			$messageName
 		);
 

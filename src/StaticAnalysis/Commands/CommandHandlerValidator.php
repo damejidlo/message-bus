@@ -3,8 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\StaticAnalysis\Commands;
 
-use Damejidlo\MessageBus\Commands\ICommand;
-use Damejidlo\MessageBus\Commands\NewEntityId;
+use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidationConfiguration;
 use Damejidlo\MessageBus\StaticAnalysis\MessageNameExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
@@ -25,9 +24,6 @@ use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 class CommandHandlerValidator
 {
-
-	private const COMMAND_CLASS_NAME_SUFFIX = 'Command';
-	private const HANDLER_CLASS_NAME_SUFFIX = 'Handler';
 
 	/**
 	 * @var MessageTypeExtractor
@@ -57,32 +53,39 @@ class CommandHandlerValidator
 	 */
 	public function validate(string $handlerClass) : void
 	{
-		(new ClassExistsRule())->validate($handlerClass);
-		(new ClassIsFinalRule())->validate($handlerClass);
+		$configuration = MessageHandlerValidationConfiguration::command();
 
-		$handleMethodName = 'handle';
+		(new ClassExistsRule())->validate($handlerClass);
+
+		if ($configuration->handlerClassMustBeFinal()) {
+			(new ClassIsFinalRule())->validate($handlerClass);
+		}
+
+		$handleMethodName = $configuration->handleMethodName();
 		(new ClassHasPublicMethodRule($handleMethodName))->validate($handlerClass);
 
 		$handleMethod = ReflectionHelper::requireMethodReflection($handlerClass, $handleMethodName);
 		(new MethodHasOneParameterRule())->validate($handleMethod);
 
 		$parameter = $handleMethod->getParameters()[0];
-		$parameterName = 'command';
+		$parameterName = $configuration->handleMethodParameterName();
 		(new MethodParameterNameMatchesRule($parameterName))->validate($parameter);
-		$parameterType = ICommand::class;
+		$parameterType = $configuration->getHandleMethodParameterType();
 		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
 		(new MethodReturnTypeIsSetRule())->validate($handleMethod);
 		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
-		(new MethodReturnTypeIsInRule('void', NewEntityId::class))->validate($handleMethod);
+		$handleMethodAllowedReturnTypes = $configuration->handleMethodAllowedReturnTypes();
+		(new MethodReturnTypeIsInRule(...$handleMethodAllowedReturnTypes))->validate($handleMethod);
 
 		$commandClass = $this->messageTypeExtractor->extract($handlerClass);
 
 		(new ClassIsFinalRule())->validate($commandClass);
-		(new ClassNameHasSuffixRule(self::COMMAND_CLASS_NAME_SUFFIX))->validate($commandClass);
-		$commandName = $this->messageNameExtractor->extract($commandClass, self::COMMAND_CLASS_NAME_SUFFIX);
+		$messageClassSuffix = $configuration->messageClassSuffix();
+		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($commandClass);
+		$commandName = $this->messageNameExtractor->extract($commandClass, $messageClassSuffix);
 
-		$this->validateHandlerClassName($handlerClass, $commandName);
+		$this->validateHandlerClassName($handlerClass, $commandName, $configuration);
 	}
 
 
@@ -90,14 +93,15 @@ class CommandHandlerValidator
 	/**
 	 * @param string $handlerClass
 	 * @param string $messageName
+	 * @param MessageHandlerValidationConfiguration $configuration
 	 * @throws StaticAnalysisFailedException
 	 */
-	private function validateHandlerClassName(string $handlerClass, string $messageName) : void
+	private function validateHandlerClassName(string $handlerClass, string $messageName, MessageHandlerValidationConfiguration $configuration) : void
 	{
 		$expectedHandlerClassShort = sprintf(
 			'#^%s%s$#',
 			$messageName,
-			self::HANDLER_CLASS_NAME_SUFFIX
+			$configuration->handlerClassSuffix()
 		);
 
 		try {
