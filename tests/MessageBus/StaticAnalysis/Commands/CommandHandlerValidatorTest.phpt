@@ -9,7 +9,7 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Commands;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Damejidlo\MessageBus\StaticAnalysis\Commands\CommandHandlerValidator;
+use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidator;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\CommandHasIncorrectNameHandler;
@@ -41,7 +41,7 @@ class CommandHandlerValidatorTest extends DjTestCase
 	 */
 	public function testValidateSucceeds(string $handlerClassName) : void
 	{
-		$validator = new CommandHandlerValidator();
+		$validator = new MessageHandlerValidator();
 
 		Assert::noError(function () use ($validator, $handlerClassName) : void {
 			$validator->validate($handlerClassName);
@@ -71,7 +71,7 @@ class CommandHandlerValidatorTest extends DjTestCase
 	 */
 	public function testValidateFails(string $handlerClassName, ?string $expectedExceptionMessage = NULL) : void
 	{
-		$validator = new CommandHandlerValidator();
+		$validator = new MessageHandlerValidator();
 
 		Assert::exception(function () use ($validator, $handlerClassName) : void {
 			$validator->validate($handlerClassName);
@@ -159,7 +159,7 @@ class CommandHandlerValidatorTest extends DjTestCase
 			[
 				CommandNameDoesNotMatchHandler::class,
 				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\CommandNameDoesNotMatchHandler": '
-				. 'Message handler must match command name. Expected name: "#^ValidHandler$#"',
+				. 'Message handler must match message name. Expected name: "#^ValidHandler$#"',
 			],
 		];
 	}

@@ -9,7 +9,7 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Events;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-use Damejidlo\MessageBus\StaticAnalysis\Events\EventSubscriberValidator;
+use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidator;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\DoSomethingOnSomethingValidHappened;
@@ -34,7 +34,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 
 	public function testValidateSucceeds() : void
 	{
-		$validator = new EventSubscriberValidator();
+		$validator = new MessageHandlerValidator();
 
 		Assert::noError(function () use ($validator) : void {
 			$validator->validate(DoSomethingOnSomethingValidHappened::class);
@@ -51,7 +51,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 	 */
 	public function testValidateFails(string $subscriberClassName, ?string $expectedExceptionMessage = NULL) : void
 	{
-		$validator = new EventSubscriberValidator();
+		$validator = new MessageHandlerValidator();
 
 		Assert::exception(function () use ($validator, $subscriberClassName) : void {
 			$validator->validate($subscriberClassName);
@@ -135,7 +135,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 			[
 				EventNameDoesNotMatchSubscriber::class,
 				'Static analysis failed for class "DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\EventNameDoesNotMatchSubscriber": '
-				. 'Message handler must match command name. Expected name: "#^(.+)OnSomethingValidHappened$#"',
+				. 'Message handler must match message name. Expected name: "#^(.+)OnSomethingValidHappened$#"',
 			],
 		];
 	}
