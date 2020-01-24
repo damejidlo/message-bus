@@ -77,7 +77,10 @@ class MessageHandlerValidator
 
 		$messageClass = $this->messageTypeExtractor->extract($handlerClass);
 
-		(new ClassIsFinalRule())->validate($messageClass);
+		if ($configuration->messageClassMustBeFinal()) {
+			(new ClassIsFinalRule())->validate($messageClass);
+		}
+
 		$messageClassSuffix = $configuration->messageClassSuffix();
 		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($messageClass);
 		$messageName = $this->messageNameExtractor->extract($messageClass, $messageClassSuffix);

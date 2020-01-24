@@ -18,6 +18,11 @@ class MessageHandlerValidationConfiguration
 	private $handlerClassMustBeFinal = TRUE;
 
 	/**
+	 * @var bool
+	 */
+	private $messageClassMustBeFinal = TRUE;
+
+	/**
 	 * @var string
 	 */
 	private $handleMethodName = 'handle';
@@ -102,6 +107,13 @@ class MessageHandlerValidationConfiguration
 	public function handlerClassMustBeFinal() : bool
 	{
 		return $this->handlerClassMustBeFinal;
+	}
+
+
+
+	public function messageClassMustBeFinal() : bool
+	{
+		return $this->messageClassMustBeFinal;
 	}
 
 
