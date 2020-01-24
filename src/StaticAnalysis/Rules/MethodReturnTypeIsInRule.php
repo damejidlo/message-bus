@@ -37,10 +37,14 @@ class MethodReturnTypeIsInRule
 		}
 
 		$returnTypeName = $returnType->getName();
-		if (! in_array($returnTypeName, $this->returnTypes, TRUE)) {
-			$this->fail($method);
-			return;
+
+		foreach ($this->returnTypes as $supportedReturnType) {
+			if ($returnTypeName === $supportedReturnType || is_subclass_of($returnTypeName, $supportedReturnType)) {
+				return;
+			}
 		}
+
+		$this->fail($method);
 	}
 
 
