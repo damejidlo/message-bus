@@ -3,8 +3,7 @@ declare(strict_types = 1);
 
 namespace Damejidlo\MessageBus\StaticAnalysis;
 
-use Damejidlo\MessageBus\Commands\ICommandHandler;
-use Damejidlo\MessageBus\Events\IEventSubscriber;
+use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassHasPublicMethodRule;
 use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassIsFinalRule;
@@ -23,6 +22,11 @@ class MessageHandlerValidator
 {
 
 	/**
+	 * @var MessageHandlerValidationConfigurations
+	 */
+	private $configurations;
+
+	/**
 	 * @var MessageTypeExtractor
 	 */
 	private $messageTypeExtractor;
@@ -35,9 +39,11 @@ class MessageHandlerValidator
 
 
 	public function __construct(
+		?MessageHandlerValidationConfigurations $configurations = NULL,
 		?MessageTypeExtractor $messageTypeExtractor = NULL,
 		?MessageNameExtractor $messageNameExtractor = NULL
 	) {
+		$this->configurations = $configurations ?? MessageHandlerValidationConfigurations::default();
 		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
 		$this->messageNameExtractor = $messageNameExtractor ?? new MessageNameExtractor();
 	}
@@ -52,7 +58,7 @@ class MessageHandlerValidator
 	{
 		(new ClassExistsRule())->validate($handlerClass);
 
-		$configuration = $this->resolveConfiguration($handlerClass);
+		$configuration = $this->configurations->get(HandlerType::fromString($handlerClass));
 
 		if ($configuration->handlerClassMustBeFinal()) {
 			(new ClassIsFinalRule())->validate($handlerClass);
@@ -86,21 +92,6 @@ class MessageHandlerValidator
 		$messageName = $this->messageNameExtractor->extract($messageClass, $messageClassSuffix);
 
 		$this->validateHandlerClassName($handlerClass, $messageName, $configuration);
-	}
-
-
-
-	private function resolveConfiguration(string $handlerClass) : MessageHandlerValidationConfiguration
-	{
-		if (is_subclass_of($handlerClass, ICommandHandler::class)) {
-			return MessageHandlerValidationConfiguration::command();
-		}
-
-		if (is_subclass_of($handlerClass, IEventSubscriber::class)) {
-			return MessageHandlerValidationConfiguration::event();
-		}
-
-		throw new \LogicException(sprintf('Unsupported handler class: "%s".', $handlerClass));
 	}
 
 

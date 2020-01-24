@@ -42,4 +42,11 @@ final class HandlerType
 		return $this->type;
 	}
 
+
+
+	public function isSubtypeOf(HandlerType $handlerType) : bool
+	{
+		return is_subclass_of($this->type, $handlerType->toString());
+	}
+
 }
