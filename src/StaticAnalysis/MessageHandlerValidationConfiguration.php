@@ -15,52 +15,81 @@ class MessageHandlerValidationConfiguration
 	/**
 	 * @var bool
 	 */
-	private $handlerClassMustBeFinal = TRUE;
+	private $handlerClassMustBeFinal;
 
 	/**
 	 * @var bool
 	 */
-	private $messageClassMustBeFinal = TRUE;
+	private $messageClassMustBeFinal;
 
 	/**
 	 * @var string
 	 */
-	private $handleMethodName = 'handle';
+	private $handleMethodName;
 
 	/**
 	 * @var string
 	 */
-	private $handleMethodParameterName = 'message';
+	private $handleMethodParameterName;
 
 	/**
 	 * @var string
 	 */
-	private $handleMethodParameterType = IMessage::class;
+	private $handleMethodParameterType;
 
 	/**
 	 * @var string[]
 	 */
-	private $handleMethodAllowedReturnTypes = ['void'];
+	private $handleMethodAllowedReturnTypes;
 
 	/**
 	 * @var string
 	 */
-	private $messageClassSuffix = '';
+	private $messageClassSuffix;
 
 	/**
 	 * @var string
 	 */
-	private $handlerClassSuffix = '';
+	private $handlerClassSuffix;
 
 	/**
 	 * @var string
 	 */
-	private $handlerClassPrefixRegex = '';
+	private $handlerClassPrefixRegex;
 
 
 
-	private function __construct()
-	{
+	/**
+	 * @param bool $handlerClassMustBeFinal
+	 * @param bool $messageClassMustBeFinal
+	 * @param string $handleMethodName
+	 * @param string $handleMethodParameterName
+	 * @param string $handleMethodParameterType
+	 * @param string[] $handleMethodAllowedReturnTypes
+	 * @param string $messageClassSuffix
+	 * @param string $handlerClassSuffix
+	 * @param string $handlerClassPrefixRegex
+	 */
+	public function __construct(
+		bool $handlerClassMustBeFinal = TRUE,
+		bool $messageClassMustBeFinal = TRUE,
+		string $handleMethodName = 'handle',
+		string $handleMethodParameterName = 'message',
+		string $handleMethodParameterType = IMessage::class,
+		array $handleMethodAllowedReturnTypes = ['void'],
+		string $messageClassSuffix = '',
+		string $handlerClassSuffix = '',
+		string $handlerClassPrefixRegex = ''
+	) {
+		$this->handlerClassMustBeFinal = $handlerClassMustBeFinal;
+		$this->messageClassMustBeFinal = $messageClassMustBeFinal;
+		$this->handleMethodName = $handleMethodName;
+		$this->handleMethodParameterName = $handleMethodParameterName;
+		$this->handleMethodParameterType = $handleMethodParameterType;
+		$this->handleMethodAllowedReturnTypes = $handleMethodAllowedReturnTypes;
+		$this->messageClassSuffix = $messageClassSuffix;
+		$this->handlerClassSuffix = $handlerClassSuffix;
+		$this->handlerClassPrefixRegex = $handlerClassPrefixRegex;
 	}
 
 
