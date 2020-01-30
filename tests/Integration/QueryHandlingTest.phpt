@@ -18,9 +18,9 @@ use Damejidlo\MessageBus\Middleware\HandlerInvokingMiddleware;
 use Damejidlo\MessageBus\Middleware\HandlerTypesResolvingMiddleware;
 use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
+use Damejidlo\MessageBus\StaticAnalysis\ConfigurableHandlerValidator;
 use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidationConfiguration;
 use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidationConfigurations;
-use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidator;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\GetOrderQuery;
 use DamejidloTests\Integration\Fixtures\GetOrderQueryHandler;
@@ -52,7 +52,7 @@ class QueryHandlingTest extends DjTestCase
 			),
 		]);
 
-		$validator = new MessageHandlerValidator($configurations);
+		$validator = new ConfigurableHandlerValidator($configurations);
 
 		Assert::noError(function () use ($validator) : void {
 			$validator->validate(HandlerType::fromString(GetOrderQueryHandler::class));

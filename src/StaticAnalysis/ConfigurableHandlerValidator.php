@@ -18,7 +18,7 @@ use Damejidlo\MessageBus\StaticAnalysis\Rules\ShortClassNameMatchesRule;
 
 
 
-class MessageHandlerValidator
+final class ConfigurableHandlerValidator implements IMessageHandlerValidator
 {
 
 	/**
