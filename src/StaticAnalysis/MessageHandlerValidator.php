@@ -31,21 +31,14 @@ class MessageHandlerValidator
 	 */
 	private $messageTypeExtractor;
 
-	/**
-	 * @var MessageNameExtractor
-	 */
-	private $messageNameExtractor;
-
 
 
 	public function __construct(
 		?MessageHandlerValidationConfigurations $configurations = NULL,
-		?MessageTypeExtractor $messageTypeExtractor = NULL,
-		?MessageNameExtractor $messageNameExtractor = NULL
+		?MessageTypeExtractor $messageTypeExtractor = NULL
 	) {
 		$this->configurations = $configurations ?? MessageHandlerValidationConfigurations::default();
 		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
-		$this->messageNameExtractor = $messageNameExtractor ?? new MessageNameExtractor();
 	}
 
 
@@ -91,25 +84,25 @@ class MessageHandlerValidator
 
 		$messageClassSuffix = $configuration->messageClassSuffix();
 		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($messageType->toString());
-		$messageName = $this->messageNameExtractor->extract($messageType, $messageClassSuffix);
+		$shortMessageName = $messageType->shortName($messageClassSuffix);
 
-		$this->validateHandlerClassName($handlerClass, $messageName, $configuration);
+		$this->validateHandlerClassName($handlerClass, $shortMessageName, $configuration);
 	}
 
 
 
 	/**
 	 * @param string $handlerClass
-	 * @param string $messageName
+	 * @param string $shortMessageName
 	 * @param MessageHandlerValidationConfiguration $configuration
 	 * @throws StaticAnalysisFailedException
 	 */
-	private function validateHandlerClassName(string $handlerClass, string $messageName, MessageHandlerValidationConfiguration $configuration) : void
+	private function validateHandlerClassName(string $handlerClass, string $shortMessageName, MessageHandlerValidationConfiguration $configuration) : void
 	{
 		$expectedHandlerClassShort = sprintf(
 			'#^%s%s%s$#',
 			$configuration->handlerClassPrefixRegex(),
-			$messageName,
+			$shortMessageName,
 			$configuration->handlerClassSuffix()
 		);
 

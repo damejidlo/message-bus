@@ -5,6 +5,9 @@ namespace Damejidlo\MessageBus\Handling;
 use Damejidlo\MessageBus\Commands\ICommand;
 use Damejidlo\MessageBus\Events\IEvent;
 use Damejidlo\MessageBus\IMessage;
+use Damejidlo\MessageBus\StaticAnalysis\ReflectionHelper;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassNameHasSuffixRule;
+use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
 
@@ -64,6 +67,26 @@ final class MessageType
 	public function isHandlerRequired() : bool
 	{
 		return ! is_subclass_of($this->type, IEvent::class);
+	}
+
+
+
+	/**
+	 * @param string $suffix
+	 * @return string message name without namespace and suffix
+	 * @throws StaticAnalysisFailedException
+	 */
+	public function shortName(string $suffix) : string
+	{
+		$messageTypeReflection = ReflectionHelper::requireClassReflection($this->toString());
+
+		$rule = new ClassNameHasSuffixRule($suffix);
+		$rule->validate($this->toString());
+
+		$matches = [];
+		preg_match($rule->getRegexPattern(), $messageTypeReflection->getShortName(), $matches);
+
+		return (string) $matches[1];
 	}
 
 }
