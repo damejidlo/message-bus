@@ -32,7 +32,6 @@ final class ShortClassNameMatchesRule
 	{
 		$typeReflection = ReflectionHelper::requireClassReflection($type);
 
-		$matches = [];
 		if (! preg_match($this->regexPattern, $typeReflection->getShortName(), $matches)) {
 			throw StaticAnalysisFailedException::with(
 				sprintf(

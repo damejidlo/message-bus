@@ -32,7 +32,6 @@ final class ClassNameHasSuffixRule
 	{
 		$typeReflection = ReflectionHelper::requireClassReflection($type);
 
-		$matches = [];
 		if (! preg_match($this->getRegexPattern(), $typeReflection->getShortName(), $matches)) {
 			throw StaticAnalysisFailedException::with(
 				sprintf(

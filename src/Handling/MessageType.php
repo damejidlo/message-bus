@@ -83,7 +83,6 @@ final class MessageType
 		$rule = new ClassNameHasSuffixRule($suffix);
 		$rule->validate($this->toString());
 
-		$matches = [];
 		preg_match($rule->getRegexPattern(), $messageTypeReflection->getShortName(), $matches);
 
 		return (string) $matches[1];
