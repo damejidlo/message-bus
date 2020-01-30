@@ -7,7 +7,7 @@ use ReflectionMethod;
 
 
 
-class MethodHasOneParameterRule
+final class MethodHasOneParameterRule
 {
 
 	/**

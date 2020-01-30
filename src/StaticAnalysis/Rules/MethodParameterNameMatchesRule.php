@@ -7,7 +7,7 @@ use ReflectionParameter;
 
 
 
-class MethodParameterNameMatchesRule
+final class MethodParameterNameMatchesRule
 {
 
 	/**

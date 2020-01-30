@@ -6,7 +6,7 @@ use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
 
-class MethodReturnTypeIsNotNullableRule
+final class MethodReturnTypeIsNotNullableRule
 {
 
 	/**

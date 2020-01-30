@@ -7,7 +7,7 @@ use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
 
-class ShortClassNameMatchesRule
+final class ShortClassNameMatchesRule
 {
 
 	/**

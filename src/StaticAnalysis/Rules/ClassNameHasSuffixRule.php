@@ -7,7 +7,7 @@ use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 
 
 
-class ClassNameHasSuffixRule
+final class ClassNameHasSuffixRule
 {
 
 	/**
