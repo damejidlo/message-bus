@@ -10,7 +10,7 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Commands;
 require_once __DIR__ . '/../../../bootstrap.php';
 
 use Damejidlo\MessageBus\Handling\HandlerType;
-use Damejidlo\MessageBus\StaticAnalysis\ConfigurableHandlerValidator;
+use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidatorFactory;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\CommandHasIncorrectNameHandler;
@@ -42,7 +42,7 @@ class CommandHandlerValidatorTest extends DjTestCase
 	 */
 	public function testValidateSucceeds(string $handlerClassName) : void
 	{
-		$validator = new ConfigurableHandlerValidator();
+		$validator = MessageHandlerValidatorFactory::createDefault();
 
 		Assert::noError(function () use ($validator, $handlerClassName) : void {
 			$validator->validate(HandlerType::fromString($handlerClassName));
@@ -72,7 +72,7 @@ class CommandHandlerValidatorTest extends DjTestCase
 	 */
 	public function testValidateFails(string $handlerClassName, ?string $expectedExceptionMessage = NULL) : void
 	{
-		$validator = new ConfigurableHandlerValidator();
+		$validator = MessageHandlerValidatorFactory::createDefault();
 
 		Assert::exception(function () use ($validator, $handlerClassName) : void {
 			$validator->validate(HandlerType::fromString($handlerClassName));

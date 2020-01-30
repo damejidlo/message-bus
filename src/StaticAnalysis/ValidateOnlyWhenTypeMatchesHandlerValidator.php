@@ -3,6 +3,7 @@
 namespace Damejidlo\MessageBus\StaticAnalysis;
 
 use Damejidlo\MessageBus\Handling\HandlerType;
+use Damejidlo\MessageBus\StaticAnalysis\Rules\ClassExistsRule;
 
 
 
@@ -38,6 +39,8 @@ final class ValidateOnlyWhenTypeMatchesHandlerValidator implements IMessageHandl
 
 	public function validate(HandlerType $type) : void
 	{
+		(new ClassExistsRule())->validate($type->toString());
+
 		if ($type->isSubtypeOf($this->type)) {
 			$this->validator->validate($type);
 		}

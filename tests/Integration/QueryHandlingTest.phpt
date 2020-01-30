@@ -20,13 +20,11 @@ use Damejidlo\MessageBus\Middleware\MiddlewareContext;
 use Damejidlo\MessageBus\Middleware\SplitByHandlerTypeMiddleware;
 use Damejidlo\MessageBus\StaticAnalysis\ConfigurableHandlerValidator;
 use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidationConfiguration;
-use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidationConfigurations;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\Integration\Fixtures\GetOrderQuery;
 use DamejidloTests\Integration\Fixtures\GetOrderQueryHandler;
 use DamejidloTests\Integration\Fixtures\GetOrderQueryResult;
 use DamejidloTests\Integration\Fixtures\IQuery;
-use DamejidloTests\Integration\Fixtures\IQueryHandler;
 use DamejidloTests\Integration\Fixtures\IQueryResult;
 use Tester\Assert;
 
@@ -37,22 +35,19 @@ class QueryHandlingTest extends DjTestCase
 
 	public function testValidation() : void
 	{
-		$configurations = MessageHandlerValidationConfigurations::fromArray([
-			new MessageHandlerValidationConfiguration(
-				HandlerType::fromString(IQueryHandler::class),
-				TRUE,
-				TRUE,
-				'handle',
-				'query',
-				IQuery::class,
-				[IQueryResult::class],
-				'Query',
-				'QueryHandler',
-				''
-			),
-		]);
+		$configuration = new MessageHandlerValidationConfiguration(
+			TRUE,
+			TRUE,
+			'handle',
+			'query',
+			IQuery::class,
+			[IQueryResult::class],
+			'Query',
+			'QueryHandler',
+			''
+		);
 
-		$validator = new ConfigurableHandlerValidator($configurations);
+		$validator = new ConfigurableHandlerValidator($configuration);
 
 		Assert::noError(function () use ($validator) : void {
 			$validator->validate(HandlerType::fromString(GetOrderQueryHandler::class));

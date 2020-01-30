@@ -3,22 +3,14 @@
 namespace Damejidlo\MessageBus\StaticAnalysis;
 
 use Damejidlo\MessageBus\Commands\ICommand;
-use Damejidlo\MessageBus\Commands\ICommandHandler;
 use Damejidlo\MessageBus\Commands\NewEntityId;
 use Damejidlo\MessageBus\Events\IEvent;
-use Damejidlo\MessageBus\Events\IEventSubscriber;
-use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\IMessage;
 
 
 
 class MessageHandlerValidationConfiguration
 {
-
-	/**
-	 * @var HandlerType
-	 */
-	private $supportedHandlerType;
 
 	/**
 	 * @var bool
@@ -68,7 +60,6 @@ class MessageHandlerValidationConfiguration
 
 
 	/**
-	 * @param HandlerType $supportedHandlerType
 	 * @param bool $handlerClassMustBeFinal
 	 * @param bool $messageClassMustBeFinal
 	 * @param string $handleMethodName
@@ -80,7 +71,6 @@ class MessageHandlerValidationConfiguration
 	 * @param string $handlerClassPrefixRegex
 	 */
 	public function __construct(
-		HandlerType $supportedHandlerType,
 		bool $handlerClassMustBeFinal = TRUE,
 		bool $messageClassMustBeFinal = TRUE,
 		string $handleMethodName = 'handle',
@@ -91,7 +81,6 @@ class MessageHandlerValidationConfiguration
 		string $handlerClassSuffix = '',
 		string $handlerClassPrefixRegex = ''
 	) {
-		$this->supportedHandlerType = $supportedHandlerType;
 		$this->handlerClassMustBeFinal = $handlerClassMustBeFinal;
 		$this->messageClassMustBeFinal = $messageClassMustBeFinal;
 		$this->handleMethodName = $handleMethodName;
@@ -107,7 +96,7 @@ class MessageHandlerValidationConfiguration
 
 	public static function command() : self
 	{
-		$configuration = new self(HandlerType::fromString(ICommandHandler::class));
+		$configuration = new self();
 
 		$configuration->handleMethodParameterName = 'command';
 		$configuration->handleMethodParameterType = ICommand::class;
@@ -127,7 +116,7 @@ class MessageHandlerValidationConfiguration
 
 	public static function event() : self
 	{
-		$configuration = new self(HandlerType::fromString(IEventSubscriber::class));
+		$configuration = new self();
 
 		$configuration->handleMethodParameterName = 'event';
 		$configuration->handleMethodParameterType = IEvent::class;
@@ -140,13 +129,6 @@ class MessageHandlerValidationConfiguration
 		$configuration->handlerClassPrefixRegex = '(.+)On';
 
 		return $configuration;
-	}
-
-
-
-	public function supports(HandlerType $handlerType) : bool
-	{
-		return $handlerType->isSubtypeOf($this->supportedHandlerType);
 	}
 
 

@@ -22,9 +22,9 @@ final class ConfigurableHandlerValidator implements IMessageHandlerValidator
 {
 
 	/**
-	 * @var MessageHandlerValidationConfigurations
+	 * @var MessageHandlerValidationConfiguration
 	 */
-	private $configurations;
+	private $configuration;
 
 	/**
 	 * @var MessageTypeExtractor
@@ -34,59 +34,52 @@ final class ConfigurableHandlerValidator implements IMessageHandlerValidator
 
 
 	public function __construct(
-		?MessageHandlerValidationConfigurations $configurations = NULL,
-		?MessageTypeExtractor $messageTypeExtractor = NULL
+		MessageHandlerValidationConfiguration $configuration
 	) {
-		$this->configurations = $configurations ?? MessageHandlerValidationConfigurations::default();
-		$this->messageTypeExtractor = $messageTypeExtractor ?? new MessageTypeExtractor();
+		$this->configuration = $configuration;
+		$this->messageTypeExtractor = new MessageTypeExtractor();
 	}
 
 
 
-	/**
-	 * @param HandlerType $handlerType
-	 * @throws StaticAnalysisFailedException
-	 */
 	public function validate(HandlerType $handlerType) : void
 	{
 		$handlerClass = $handlerType->toString();
 
 		(new ClassExistsRule())->validate($handlerClass);
 
-		$configuration = $this->configurations->get(HandlerType::fromString($handlerClass));
-
-		if ($configuration->handlerClassMustBeFinal()) {
+		if ($this->configuration->handlerClassMustBeFinal()) {
 			(new ClassIsFinalRule())->validate($handlerClass);
 		}
 
-		$handleMethodName = $configuration->handleMethodName();
+		$handleMethodName = $this->configuration->handleMethodName();
 		(new ClassHasPublicMethodRule($handleMethodName))->validate($handlerClass);
 
 		$handleMethod = ReflectionHelper::requireMethodReflection($handlerClass, $handleMethodName);
 		(new MethodHasOneParameterRule())->validate($handleMethod);
 
 		$parameter = $handleMethod->getParameters()[0];
-		$parameterName = $configuration->handleMethodParameterName();
+		$parameterName = $this->configuration->handleMethodParameterName();
 		(new MethodParameterNameMatchesRule($parameterName))->validate($parameter);
-		$parameterType = $configuration->getHandleMethodParameterType();
+		$parameterType = $this->configuration->getHandleMethodParameterType();
 		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
 		(new MethodReturnTypeIsSetRule())->validate($handleMethod);
 		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
-		$handleMethodAllowedReturnTypes = $configuration->handleMethodAllowedReturnTypes();
+		$handleMethodAllowedReturnTypes = $this->configuration->handleMethodAllowedReturnTypes();
 		(new MethodReturnTypeIsInRule(...$handleMethodAllowedReturnTypes))->validate($handleMethod);
 
 		$messageType = $this->messageTypeExtractor->extract(HandlerType::fromString($handlerClass), $handleMethodName);
 
-		if ($configuration->messageClassMustBeFinal()) {
+		if ($this->configuration->messageClassMustBeFinal()) {
 			(new ClassIsFinalRule())->validate($messageType->toString());
 		}
 
-		$messageClassSuffix = $configuration->messageClassSuffix();
+		$messageClassSuffix = $this->configuration->messageClassSuffix();
 		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($messageType->toString());
 		$shortMessageName = $messageType->shortName($messageClassSuffix);
 
-		$this->validateHandlerClassName($handlerClass, $shortMessageName, $configuration);
+		$this->validateHandlerClassName($handlerClass, $shortMessageName, $this->configuration);
 	}
 
 
