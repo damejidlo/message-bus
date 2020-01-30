@@ -51,11 +51,13 @@ class MessageHandlerValidator
 
 
 	/**
-	 * @param string $handlerClass
+	 * @param HandlerType $handlerType
 	 * @throws StaticAnalysisFailedException
 	 */
-	public function validate(string $handlerClass) : void
+	public function validate(HandlerType $handlerType) : void
 	{
+		$handlerClass = $handlerType->toString();
+
 		(new ClassExistsRule())->validate($handlerClass);
 
 		$configuration = $this->configurations->get(HandlerType::fromString($handlerClass));
@@ -81,15 +83,15 @@ class MessageHandlerValidator
 		$handleMethodAllowedReturnTypes = $configuration->handleMethodAllowedReturnTypes();
 		(new MethodReturnTypeIsInRule(...$handleMethodAllowedReturnTypes))->validate($handleMethod);
 
-		$messageClass = $this->messageTypeExtractor->extract($handlerClass);
+		$messageType = $this->messageTypeExtractor->extract(HandlerType::fromString($handlerClass), $handleMethodName);
 
 		if ($configuration->messageClassMustBeFinal()) {
-			(new ClassIsFinalRule())->validate($messageClass);
+			(new ClassIsFinalRule())->validate($messageType->toString());
 		}
 
 		$messageClassSuffix = $configuration->messageClassSuffix();
-		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($messageClass);
-		$messageName = $this->messageNameExtractor->extract($messageClass, $messageClassSuffix);
+		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($messageType->toString());
+		$messageName = $this->messageNameExtractor->extract($messageType, $messageClassSuffix);
 
 		$this->validateHandlerClassName($handlerClass, $messageName, $configuration);
 	}

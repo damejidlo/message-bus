@@ -55,7 +55,7 @@ class QueryHandlingTest extends DjTestCase
 		$validator = new MessageHandlerValidator($configurations);
 
 		Assert::noError(function () use ($validator) : void {
-			$validator->validate(GetOrderQueryHandler::class);
+			$validator->validate(HandlerType::fromString(GetOrderQueryHandler::class));
 		});
 	}
 

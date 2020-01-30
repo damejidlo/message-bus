@@ -32,6 +32,13 @@ final class MessageType
 
 
 
+	public static function fromString(string $type) : self
+	{
+		return new self($type);
+	}
+
+
+
 	public function toString() : string
 	{
 		return $this->type;

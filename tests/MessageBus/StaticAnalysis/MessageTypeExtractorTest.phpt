@@ -9,6 +9,7 @@ namespace DamejidloTests\MessageBus\StaticAnalysis;
 
 require_once __DIR__ . '/../../bootstrap.php';
 
+use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\StaticAnalysis\MessageTypeExtractor;
 use DamejidloTests\DjTestCase;
 use DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\ValidCommand;
@@ -24,7 +25,7 @@ class MessageTypeExtractorTest extends DjTestCase
 	{
 		$extractor = new MessageTypeExtractor();
 
-		Assert::same(ValidCommand::class, $extractor->extract(ValidHandler::class));
+		Assert::same(ValidCommand::class, $extractor->extract(HandlerType::fromString(ValidHandler::class), 'handle')->toString());
 	}
 
 }

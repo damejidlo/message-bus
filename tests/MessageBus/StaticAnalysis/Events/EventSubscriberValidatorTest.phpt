@@ -9,6 +9,7 @@ namespace DamejidloTests\MessageBus\StaticAnalysis\Events;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
+use Damejidlo\MessageBus\Handling\HandlerType;
 use Damejidlo\MessageBus\StaticAnalysis\MessageHandlerValidator;
 use Damejidlo\MessageBus\StaticAnalysis\StaticAnalysisFailedException;
 use DamejidloTests\DjTestCase;
@@ -37,7 +38,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 		$validator = new MessageHandlerValidator();
 
 		Assert::noError(function () use ($validator) : void {
-			$validator->validate(DoSomethingOnSomethingValidHappened::class);
+			$validator->validate(HandlerType::fromString(DoSomethingOnSomethingValidHappened::class));
 		});
 	}
 
@@ -54,7 +55,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 		$validator = new MessageHandlerValidator();
 
 		Assert::exception(function () use ($validator, $subscriberClassName) : void {
-			$validator->validate($subscriberClassName);
+			$validator->validate(HandlerType::fromString($subscriberClassName));
 		}, StaticAnalysisFailedException::class, $expectedExceptionMessage);
 	}
 
