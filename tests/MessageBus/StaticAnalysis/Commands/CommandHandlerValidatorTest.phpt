@@ -139,7 +139,7 @@ class CommandHandlerValidatorTest extends DjTestCase
 				HandleMethodHasIncorrectReturnTypeHandler::class,
 				'Static analysis failed for class '
 				. '"DamejidloTests\MessageBus\StaticAnalysis\Commands\Fixtures\HandleMethodHasIncorrectReturnTypeHandler": '
-				. 'Method "handle" return type must be in [void, Damejidlo\MessageBus\Commands\NewEntityId]',
+				. 'Method "handle" return type must be "void|Damejidlo\MessageBus\Commands\NewEntityId"',
 			],
 			[
 				HandleMethodHasNullableNewEntityIdReturnTypeHandler::class,

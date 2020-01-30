@@ -56,7 +56,7 @@ final class MethodReturnTypeIsInRule
 	private function fail(\ReflectionMethod $method) : void
 	{
 		throw StaticAnalysisFailedException::with(
-			sprintf('Method "%s" return type must be in [%s]', $method->getName(), implode(', ', $this->returnTypes)),
+			sprintf('Method "%s" return type must be "%s"', $method->getName(), implode('|', $this->returnTypes)),
 			$method->getDeclaringClass()->getName()
 		);
 	}

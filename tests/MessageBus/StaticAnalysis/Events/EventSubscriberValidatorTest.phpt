@@ -121,7 +121,7 @@ class EventSubscriberValidatorTest extends DjTestCase
 				HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened::class,
 				'Static analysis failed for class '
 				. '"DamejidloTests\MessageBus\StaticAnalysis\Events\Fixtures\HandleMethodHasIncorrectReturnTypeOnSomethingValidHappened": '
-				. 'Method "handle" return type must be in [void]',
+				. 'Method "handle" return type must be "void"',
 			],
 			[
 				NotFinalEventOnSomethingInvalidHappened::class,
