@@ -47,7 +47,7 @@ final class ClassNameHasSuffixRule
 
 	public function getRegexPattern() : string
 	{
-		return sprintf('#^(.*)%s$#', $this->suffix);
+		return sprintf('#^(.+)%s$#', $this->suffix);
 	}
 
 }
