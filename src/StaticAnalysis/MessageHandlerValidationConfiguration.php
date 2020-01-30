@@ -133,28 +133,28 @@ class MessageHandlerValidationConfiguration
 
 
 
-	public function handlerClassMustBeFinal() : bool
+	public function shouldHandlerClassBeFinal() : bool
 	{
 		return $this->handlerClassMustBeFinal;
 	}
 
 
 
-	public function messageClassMustBeFinal() : bool
+	public function shouldMessageClassBeFinal() : bool
 	{
 		return $this->messageClassMustBeFinal;
 	}
 
 
 
-	public function handleMethodName() : string
+	public function getHandleMethodName() : string
 	{
 		return $this->handleMethodName;
 	}
 
 
 
-	public function handleMethodParameterName() : string
+	public function getHandleMethodParameterName() : string
 	{
 		return $this->handleMethodParameterName;
 	}
@@ -171,28 +171,28 @@ class MessageHandlerValidationConfiguration
 	/**
 	 * @return string[]
 	 */
-	public function handleMethodAllowedReturnTypes() : array
+	public function getHandleMethodAllowedReturnTypes() : array
 	{
 		return $this->handleMethodAllowedReturnTypes;
 	}
 
 
 
-	public function messageClassSuffix() : string
+	public function getMessageClassSuffix() : string
 	{
 		return $this->messageClassSuffix;
 	}
 
 
 
-	public function handlerClassSuffix() : string
+	public function getHandlerClassSuffix() : string
 	{
 		return $this->handlerClassSuffix;
 	}
 
 
 
-	public function handlerClassPrefixRegex() : string
+	public function getHandlerClassPrefixRegex() : string
 	{
 		return $this->handlerClassPrefixRegex;
 	}

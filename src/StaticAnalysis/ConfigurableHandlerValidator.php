@@ -48,34 +48,34 @@ final class ConfigurableHandlerValidator implements IMessageHandlerValidator
 
 		(new ClassExistsRule())->validate($handlerClass);
 
-		if ($this->configuration->handlerClassMustBeFinal()) {
+		if ($this->configuration->shouldHandlerClassBeFinal()) {
 			(new ClassIsFinalRule())->validate($handlerClass);
 		}
 
-		$handleMethodName = $this->configuration->handleMethodName();
+		$handleMethodName = $this->configuration->getHandleMethodName();
 		(new ClassHasPublicMethodRule($handleMethodName))->validate($handlerClass);
 
 		$handleMethod = ReflectionHelper::requireMethodReflection($handlerClass, $handleMethodName);
 		(new MethodHasOneParameterRule())->validate($handleMethod);
 
 		$parameter = $handleMethod->getParameters()[0];
-		$parameterName = $this->configuration->handleMethodParameterName();
+		$parameterName = $this->configuration->getHandleMethodParameterName();
 		(new MethodParameterNameMatchesRule($parameterName))->validate($parameter);
 		$parameterType = $this->configuration->getHandleMethodParameterType();
 		(new MethodParameterTypeMatchesRule($parameterType))->validate($parameter);
 
 		(new MethodReturnTypeIsSetRule())->validate($handleMethod);
 		(new MethodReturnTypeIsNotNullableRule())->validate($handleMethod);
-		$handleMethodAllowedReturnTypes = $this->configuration->handleMethodAllowedReturnTypes();
+		$handleMethodAllowedReturnTypes = $this->configuration->getHandleMethodAllowedReturnTypes();
 		(new MethodReturnTypeIsInRule(...$handleMethodAllowedReturnTypes))->validate($handleMethod);
 
 		$messageType = $this->messageTypeExtractor->extract(HandlerType::fromString($handlerClass), $handleMethodName);
 
-		if ($this->configuration->messageClassMustBeFinal()) {
+		if ($this->configuration->shouldMessageClassBeFinal()) {
 			(new ClassIsFinalRule())->validate($messageType->toString());
 		}
 
-		$messageClassSuffix = $this->configuration->messageClassSuffix();
+		$messageClassSuffix = $this->configuration->getMessageClassSuffix();
 		(new ClassNameHasSuffixRule($messageClassSuffix))->validate($messageType->toString());
 		$shortMessageName = $messageType->shortName($messageClassSuffix);
 
@@ -94,9 +94,9 @@ final class ConfigurableHandlerValidator implements IMessageHandlerValidator
 	{
 		$expectedHandlerClassShort = sprintf(
 			'#^%s%s%s$#',
-			$configuration->handlerClassPrefixRegex(),
+			$configuration->getHandlerClassPrefixRegex(),
 			$shortMessageName,
-			$configuration->handlerClassSuffix()
+			$configuration->getHandlerClassSuffix()
 		);
 
 		try {
