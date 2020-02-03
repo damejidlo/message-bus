@@ -30,13 +30,6 @@ final class ValidateOnlyWhenTypeMatchesHandlerValidator implements IMessageHandl
 
 
 
-	public static function create(HandlerType $type, IMessageHandlerValidator $validator) : self
-	{
-		return new self($type, $validator);
-	}
-
-
-
 	public function validate(HandlerType $type) : void
 	{
 		(new ClassExistsRule())->validate($type->toString());
