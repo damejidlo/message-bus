@@ -1,5 +1,9 @@
 # Dáme jídlo message bus
 
+## Abandoned
+
+Use fork at https://github.com/ondrejbouda/message-bus or very similar library https://github.com/nepada/message-bus .
+
 ## What is this
 
 Message bus is a library (or a collection of libraries) used by Dáme jídlo for **separating different layers and contexts** within it's monolithic backend application.
